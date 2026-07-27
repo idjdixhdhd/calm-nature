@@ -169,6 +169,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice nature photography · lake reflection mountains"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -184,6 +188,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice nature photography · lake reflection mountains"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -199,6 +207,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice nature photography · lake reflection mountains"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -214,6 +226,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice nature photography · desert dunes"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -229,6 +245,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice nature photography · desert dunes"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -244,6 +264,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice nature photography · desert dunes"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -259,6 +283,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice · rainforest"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -274,6 +302,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice · rainforest"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -289,6 +321,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice · rainforest"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
     }
   },
   {
@@ -304,6 +340,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice · milky way"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "night": "./media/audio/music_night.mp3"
     }
   },
   {
@@ -319,6 +359,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice · milky way"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "night": "./media/audio/music_night.mp3"
     }
   },
   {
@@ -334,6 +378,10 @@
       "source": "Pixabay",
       "license": "Pixabay License (free, no attribution required)",
       "note": "Editor’s Choice · milky way"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "night": "./media/audio/music_night.mp3"
     }
   }
 ]
