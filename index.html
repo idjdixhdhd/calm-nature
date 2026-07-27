@@ -117,6 +117,44 @@
   #view-player.rays #rays{opacity:1;animation:raysShift 18s ease-in-out infinite}
   @keyframes raysShift{0%,100%{transform:translateX(-3%)}50%{transform:translateX(3%)}}
 
+  /* ---- extra depth & life layers ---- */
+  #mist2{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(95% 42% at 28% 120%,rgba(255,255,255,.10),transparent 60%);transition:opacity 1.4s ease}
+  #view-player.mist #mist2{opacity:1;animation:mistDrift2 44s ease-in-out infinite}
+  @keyframes mistDrift2{0%,100%{transform:translateX(4%)}50%{transform:translateX(-4%)}}
+
+  #pollen{position:absolute;inset:-12%;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.55),transparent),
+      radial-gradient(1.6px 1.6px at 68% 58%,rgba(255,255,255,.45),transparent),
+      radial-gradient(1.6px 1.6px at 44% 82%,rgba(255,255,255,.4),transparent),
+      radial-gradient(2px 2px at 86% 24%,rgba(255,255,255,.45),transparent),
+      radial-gradient(1.4px 1.4px at 32% 64%,rgba(255,255,255,.4),transparent);
+    transition:opacity 1.6s ease}
+  #view-player.pollen #pollen{opacity:.85;animation:pollenFloat 28s linear infinite}
+  @keyframes pollenFloat{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(-9%) translateX(3%)}100%{transform:translateY(-16%) translateX(0)}}
+
+  #stars{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;
+    background-image:
+      radial-gradient(1.5px 1.5px at 14% 18%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 58% 32%,#fff,transparent),
+      radial-gradient(1.7px 1.7px at 82% 14%,#fff,transparent),
+      radial-gradient(1.2px 1.2px at 34% 68%,#fff,transparent),
+      radial-gradient(1.5px 1.5px at 72% 74%,#fff,transparent),
+      radial-gradient(1.3px 1.3px at 48% 48%,#fff,transparent),
+      radial-gradient(1.4px 1.4px at 90% 56%,#fff,transparent),
+      radial-gradient(1.1px 1.1px at 24% 88%,#fff,transparent);
+    transition:opacity 1.6s ease}
+  #view-player.stars #stars{opacity:.95;animation:twinkle 5s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.45}50%{opacity:1}}
+
+  /* richer, slower cinematic Ken Burns for still images */
+  #pimg{animation:kenburns 46s ease-in-out infinite}
+  @keyframes kenburns{0%{transform:scale(1.0) translate(0,0)}20%{transform:scale(1.12) translate(-1.6%,-1%)}40%{transform:scale(1.08) translate(1.4%,.8%)}60%{transform:scale(1.18) translate(-.8%,1.2%)}80%{transform:scale(1.1) translate(1%,-.6%)}100%{transform:scale(1.0) translate(0,0)}}
+
+  /* refine premium vignette + grain */
+  #vignette{background:radial-gradient(125% 125% at 50% 38%,transparent 42%,rgba(0,0,0,.62) 100%)}
+  #grain{opacity:.05}
+
   #ptop{position:fixed;top:max(14px,var(--safe-t));left:max(16px,var(--safe-l));right:max(16px,var(--safe-r));z-index:7;display:flex;justify-content:space-between;align-items:flex-start;transition:opacity .55s ease}
   #ptitle{pointer-events:none;text-shadow:0 2px 18px rgba(0,0,0,.7)}
   #ptitle .t{font-size:26px;letter-spacing:.08em;font-weight:600;line-height:1.05}
@@ -235,6 +273,9 @@
   <div id="cg"></div>
   <div id="mist"></div>
   <div id="rays"></div>
+  <div id="mist2"></div>
+  <div id="pollen"></div>
+  <div id="stars"></div>
 
   <div id="ptop">
     <div id="ptitle">
@@ -297,6 +338,7 @@
 <script>
 "use strict";
 const SCENES_URL = "./scenes.json";
+const FALLBACK_SCENES = [{"id":"meadow","title":"晨雾草甸","subtitle":"Misty Meadow","category":"oneday","type":"24h","video":"./media/forest.mp4","poster":"./media/forest.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3","night":"./media/audio/music_night.mp3"},"credit":{"video":"Pixabay 森林/草甸晨雾视频","audio":"开源 beach-wallpaper（wind / music_day / music_night）"}},{"id":"rain","title":"雨落窗前","subtitle":"Rain on Window","category":"short","type":"loop","video":"./media/rain.mp4","poster":"./media/rain.jpg","audio":{"main":"./media/audio/rain.mp3"},"credit":{"video":"Pixabay 雨景视频","audio":"Pixabay nils_vega – rain"}},{"id":"campfire","title":"林间篝火","subtitle":"Campfire","category":"short","type":"loop","video":"./media/campfire.mp4","poster":"./media/campfire.jpg","audio":{"main":"./media/audio/campfire.mp3"},"credit":{"video":"Pixabay 篝火视频","audio":"开源 beach-wallpaper（campfire）"}},{"id":"stars","title":"星河低语","subtitle":"Starry Night","category":"short","type":"loop","video":"./media/stars.mp4","poster":"./media/stars.jpg","audio":{"night":"./media/audio/music_night.mp3","wind":"./media/audio/wind.mp3"},"credit":{"video":"Pixabay 星空延时视频","audio":"开源 beach-wallpaper（music_night / wind）"}},{"id":"mountain","title":"群山青翠","subtitle":"Alpine Valleys","category":"majestic","type":"loop","mediaType":"video","video":"./media/mountain.mp4","poster":"./media/mountain.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 山景延时摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"ocean","title":"悬崖怒海","subtitle":"Cliffs & Waves","category":"majestic","type":"loop","mediaType":"video","video":"./media/ocean.mp4","poster":"./media/ocean.jpg","audio":{"wind":"./media/audio/wind.mp3","main":"./media/audio/seagulls.mp3"},"credit":{"video":"Pixabay 海岸航拍摄影（Pixabay License）","audio":"开源 beach-wallpaper（seagulls / wind）"}},{"id":"waterfall","title":"热带飞瀑","subtitle":"Jungle Falls","category":"majestic","type":"loop","mediaType":"video","video":"./media/waterfall.mp4","poster":"./media/waterfall.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 瀑布摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"aurora","title":"极光之夜","subtitle":"Aurora Borealis","category":"majestic","type":"loop","mediaType":"video","video":"./media/aurora.mp4","poster":"./media/aurora.jpg","audio":{"night":"./media/audio/music_night.mp3","wind":"./media/audio/wind.mp3"},"credit":{"video":"Pixabay 极光摄影（Pixabay License）","audio":"开源 beach-wallpaper（music_night / wind）"}},{"id":"snow","title":"雪原日落","subtitle":"Snowy Sunset","category":"majestic","type":"loop","mediaType":"video","video":"./media/snow.mp4","poster":"./media/snow.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 雪原航拍摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"water-1","title":"水韵·静流 · 其一","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-1.jpg","poster":"./media/water-1.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice nature photography · lake reflection mountains"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"water-2","title":"水韵·静流 · 其二","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-2.jpg","poster":"./media/water-2.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice nature photography · lake reflection mountains"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"water-3","title":"水韵·静流 · 其三","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-3.jpg","poster":"./media/water-3.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice nature photography · lake reflection mountains"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"extreme-1","title":"苍茫·极境 · 其一","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-1.jpg","poster":"./media/extreme-1.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice nature photography · desert dunes"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"extreme-2","title":"苍茫·极境 · 其二","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-2.jpg","poster":"./media/extreme-2.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice nature photography · desert dunes"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"extreme-3","title":"苍茫·极境 · 其三","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-3.jpg","poster":"./media/extreme-3.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice nature photography · desert dunes"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"forest-1","title":"幽林·秘境 · 其一","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-1.jpg","poster":"./media/forest-1.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice · rainforest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"forest-2","title":"幽林·秘境 · 其二","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-2.jpg","poster":"./media/forest-2.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice · rainforest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"forest-3","title":"幽林·秘境 · 其三","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-3.jpg","poster":"./media/forest-3.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice · rainforest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"}},{"id":"sky-1","title":"天垂·奇景 · 其一","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-1.jpg","poster":"./media/sky-1.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice · milky way"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"}},{"id":"sky-2","title":"天垂·奇景 · 其二","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-2.jpg","poster":"./media/sky-2.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice · milky way"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"}},{"id":"sky-3","title":"天垂·奇景 · 其三","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-3.jpg","poster":"./media/sky-3.jpg","credit":{"source":"Pixabay","license":"Pixabay License (free, no attribution required)","note":"Editor’s Choice · milky way"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"}}];
 const DEMO_SECONDS = 120;
 let scenes = [], cats = [], currentScene = null;
 let vh = 0, mode = "real", lastT = performance.now();
@@ -529,9 +571,11 @@ function enterPlayer(id){
   const gate = document.getElementById("gate");
   gate.classList.remove("hidden"); gate.style.display="flex";
   const vp = document.getElementById("view-player");
-  vp.classList.remove("idle","mist","rays");
+  vp.classList.remove("idle","mist","rays","pollen","stars");
   if(currentScene.category==="forest"||currentScene.category==="water") vp.classList.add("mist");
+  if(currentScene.category==="forest") vp.classList.add("pollen");
   if(currentScene.type==="24h") vp.classList.add("rays");
+  if(currentScene.category==="sky"||currentScene.type==="24h") vp.classList.add("stars");
 
   videoEl = document.getElementById("pv");
   const pimg = document.getElementById("pimg");
@@ -572,7 +616,7 @@ function exitPlayer(){
   const pimg = document.getElementById("pimg"); pimg.style.display="none"; pimg.style.backgroundImage="";
   Audio.clear();
   currentScene = null;
-  document.getElementById("view-player").classList.remove("mist","rays","idle");
+  document.getElementById("view-player").classList.remove("mist","rays","idle","pollen","stars");
   showView("gallery");
 }
 function startVideo(){
@@ -764,13 +808,17 @@ function init(){
   initCursorGlow();
   requestAnimationFrame(loop);
 
-  fetch(SCENES_URL).then(r=>r.json()).then(data=>{
+  function applyScenes(data){
     scenes = data;
     const map = {};
     scenes.forEach(s=>{ (map[s.category]=map[s.category]||[]).push(s); });
     cats = Object.keys(map).map(k=>({id:k, scenes:map[k]}));
     renderGallery();
-  }).catch(e=> console.error("scenes load failed", e));
+  }
+  fetch(SCENES_URL).then(r=>r.json()).then(applyScenes).catch(e=>{
+    console.warn("scenes fetch failed, using inline fallback", e);
+    if(FALLBACK_SCENES && FALLBACK_SCENES.length) applyScenes(FALLBACK_SCENES);
+  });
 
   document.getElementById("btn-enter").addEventListener("click", ()=> showView("guide"));
   document.getElementById("btn-gal-from-guide").addEventListener("click", ()=> showView("gallery"));
