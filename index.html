@@ -212,17 +212,104 @@
   .hidden{opacity:0!important;pointer-events:none!important}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes pulse{0%,100%{opacity:.4}50%{opacity:.85}}
+
+  /* ============ GLOBAL forest atmosphere ============ */
+  /* soft global vignette so every screen feels enclosed by nature */
+  #app-vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(130% 130% at 50% 42%,transparent 52%,rgba(0,0,0,.5) 100%);mix-blend-mode:multiply}
+
+  /* ---------- splash: a walk into the woods ---------- */
+  .splash-bg{position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(120% 80% at 50% -10%,rgba(180,230,200,.20),transparent 55%),
+      radial-gradient(90% 70% at 50% 118%,rgba(40,80,55,.55),transparent 60%),
+      linear-gradient(180deg,#0a1610 0%,#081410 38%,#06110c 100%);}
+  .splash-rays{position:absolute;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.0;
+    background:
+      linear-gradient(105deg,transparent 40%,rgba(255,240,200,.10) 50%,transparent 60%),
+      linear-gradient(80deg,transparent 46%,rgba(200,255,220,.08) 52%,transparent 60%);
+    animation:raysShift 20s ease-in-out infinite;transition:opacity 1.5s ease}
+  #view-splash.active .splash-rays{opacity:1}
+  .splash-mist{position:absolute;left:-10%;right:-10%;bottom:0;height:46%;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.0;
+    background:radial-gradient(120% 100% at 50% 120%,rgba(190,225,205,.22),rgba(190,225,205,.06) 45%,transparent 72%);
+    animation:mistDrift 26s ease-in-out infinite;transition:opacity 2s ease}
+  #view-splash.active .splash-mist{opacity:1}
+  .splash-trees{position:absolute;left:0;right:0;bottom:0;width:100%;height:34vh;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
+  #view-splash.active .splash-trees{opacity:.92}
+  .splash-title,.splash-tag,.splash-cta,.splash-hint{position:relative;z-index:2}
+  #view-splash{padding-top:max(22px,var(--safe-t))}
+
+  /* ---------- gallery: alive, not a black void ---------- */
+  #view-gallery{background:
+      radial-gradient(80% 50% at 18% 8%,rgba(120,200,160,.10),transparent 60%),
+      radial-gradient(70% 50% at 88% 22%,rgba(150,180,255,.08),transparent 60%),
+      radial-gradient(90% 60% at 50% 100%,rgba(255,190,120,.06),transparent 60%),
+      linear-gradient(180deg,#05100b,#030806);}
+  .gal-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(120% 120% at 50% 40%,transparent 50%,rgba(0,0,0,.55) 100%);}
+  /* per-category accent tint on the section header */
+  .cat[data-cat="oneday"]  .cat-head h3{color:#ffe2b0}
+  .cat[data-cat="short"]   .cat-head h3{color:#bfe9d2}
+  .cat[data-cat="majestic"] .cat-head h3{color:#ffd29a}
+  .cat[data-cat="forest"]  .cat-head h3{color:#aee9c4}
+  .cat[data-cat="water"]   .cat-head h3{color:#9fd8ff}
+  .cat[data-cat="sky"]     .cat-head h3{color:#c3b6ff}
+  .cat[data-cat="extreme"] .cat-head h3{color:#ffc9a0}
+  .cat .cat-head .en{color:var(--muted)}
+  .scard{border-color:rgba(255,255,255,.10)}
+  .scard .tag{backdrop-filter:blur(4px)}
+  /* faint glow that follows the category colour */
+  .cat[data-cat] .cards-row::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.4)}
+
+  /* ---------- player: canopy + light leak ---------- */
+  #canopy{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:multiply;
+    background:
+      radial-gradient(120% 60% at 50% -30%,rgba(0,0,0,.55),transparent 60%),
+      linear-gradient(180deg,rgba(8,16,10,.5),transparent 22%);
+    transition:opacity 1.4s ease}
+  #view-player.canopy #canopy{opacity:1}
+  #leak{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;
+    background:
+      radial-gradient(40% 55% at 12% 8%,rgba(255,225,170,.16),transparent 60%),
+      radial-gradient(36% 50% at 92% 92%,rgba(150,210,255,.10),transparent 62%);
+    animation:leakDrift 24s ease-in-out infinite;transition:opacity 1.6s ease}
+  #view-player.leak #leak{opacity:1}
+  @keyframes leakDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(2%,-2%)}}
+
+  /* make the natural particle layers read clearly */
+  #view-player.pollen #pollen{opacity:1}
+  #view-player.stars #stars{opacity:1;animation:twinkle 4s ease-in-out infinite}
+  #view-player.mist #mist,#view-player.mist #mist2{opacity:1}
 </style>
 </head>
 <body data-mood="mist">
 
 <canvas id="app-bg"></canvas>
+<div id="app-vignette"></div>
 
 <!-- SPLASH -->
 <div id="view-splash" class="view active">
   <div class="splash-ring"></div>
   <div class="splash-ring"></div>
   <div class="splash-ring"></div>
+  <div class="splash-bg"></div>
+  <div class="splash-rays"></div>
+  <svg class="splash-trees" viewBox="0 0 1200 240" preserveAspectRatio="none">
+    <path d="M0,240 L0,150 Q300,108 600,140 T1200,128 L1200,240 Z" fill="rgba(10,22,15,.85)"/>
+    <g fill="#040a07">
+      <polygon points="60,170 26,170 60,100"/>
+      <polygon points="150,176 108,176 150,80"/>
+      <polygon points="250,168 220,168 250,108"/>
+      <polygon points="350,180 302,180 350,70"/>
+      <polygon points="470,172 432,172 470,92"/>
+      <polygon points="600,178 548,178 600,58"/>
+      <polygon points="730,170 692,170 730,90"/>
+      <polygon points="860,180 814,180 860,74"/>
+      <polygon points="980,172 950,172 980,102"/>
+      <polygon points="1100,178 1052,178 1100,78"/>
+    </g>
+  </svg>
+  <div class="splash-mist"></div>
   <div class="splash-title serif">自然之境<span class="en orbit">Quiet Nature</span></div>
   <div class="splash-tag">一处只属于你的自然庇护所。<br>选一片景象，让时间慢下来。</div>
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
@@ -276,6 +363,8 @@
   <div id="mist2"></div>
   <div id="pollen"></div>
   <div id="stars"></div>
+  <div id="canopy"></div>
+  <div id="leak"></div>
 
   <div id="ptop">
     <div id="ptitle">
@@ -330,7 +419,7 @@
 </div>
 
 <div id="credits">
-  <h2>素材来源 / 授权（自我审核）</h2>
+  <h2>素材来源 / 授权</h2>
   <div id="credits-body"></div>
   <button class="close" id="credits-close">关闭</button>
 </div>
@@ -368,37 +457,39 @@ function initParticles(){
   const c = document.getElementById("app-bg");
   const ctx = c.getContext("2d");
   let w, h, pts = [];
-  function resize(){ w = c.width = innerWidth; h = c.height = innerHeight; }
+  function resize(){ const dpr = Math.min(2, window.devicePixelRatio||1); w = innerWidth; h = innerHeight; c.width = w*dpr; c.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
   function add(){
     pts = [];
-    const n = Math.min(90, Math.floor((w*h)/18000));
+    const n = Math.min(150, Math.floor((w*h)/11000));
     for(let i=0;i<n;i++){
-      pts.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.6+.4,
-        vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.18+.05,
-        a:Math.random()*.5+.15, pulse:Math.random()*Math.PI*2});
+      const spore = Math.random()<.12;
+      pts.push({x:Math.random()*w, y:Math.random()*h,
+        r:(spore?Math.random()*2.2+1.6:Math.random()*1.3+.4),
+        vx:(Math.random()-.5)*.22, vy:-(Math.random()*.22+.05),
+        a:Math.random()*.5+.18, pulse:Math.random()*Math.PI*2,
+        sway:Math.random()*Math.PI*2});
     }
   }
   resize(); add();
   window.addEventListener("resize", ()=>{resize();add();});
-  function draw(now){
+  function draw(){
     ctx.clearRect(0,0,w,h);
     const mood = document.body.dataset.mood || "mist";
-    const rgb = mood==="ember"?"255,189,122":(mood==="night"?"159,184,255":"184,224,200");
+    const rgb = mood==="ember"?"255,200,150":(mood==="night"?"180,200,255":"190,235,205");
+    ctx.globalCompositeOperation = "screen";
     pts.forEach(p=>{
-      p.x += p.vx; p.y += p.vy; p.pulse += .02;
-      if(p.x<0) p.x=w; if(p.x>w) p.x=0; if(p.y<0) p.y=h; if(p.y>h) p.y=0;
-      const a = p.a * (.7 + .3*Math.sin(p.pulse));
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle = "rgba("+rgb+","+a+")"; ctx.fill();
+      p.x += p.vx + Math.sin(p.sway)*.12; p.sway += .01; p.y += p.vy; p.pulse += .02;
+      if(p.y < -12){ p.y = h+12; p.x = Math.random()*w; }
+      if(p.x<0) p.x=w; if(p.x>w) p.x=0;
+      const a = p.a * (.6 + .4*Math.sin(p.pulse));
+      const R = p.r*4.6;
+      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,R);
+      g.addColorStop(0, "rgba("+rgb+","+a+")");
+      g.addColorStop(1, "rgba("+rgb+",0)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2); ctx.fill();
     });
-    for(let i=0;i<pts.length;i++){
-      for(let j=i+1;j<pts.length;j++){
-        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
-        if(d<110){
-          ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y);
-          ctx.strokeStyle = "rgba("+rgb+","+.08*(1-d/110)+")"; ctx.stroke();
-        }
-      }
-    }
+    ctx.globalCompositeOperation = "source-over";
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
@@ -526,6 +617,7 @@ function renderGallery(){
     const meta = CAT_META[cat.id] || {title:cat.id, en:cat.id, desc:""};
     const sec = document.createElement("section");
     sec.className = "cat";
+    sec.dataset.cat = cat.id;
     sec.innerHTML = `
       <div class="cat-head"><h3 class="serif">${meta.title}</h3><span class="en orbit">${meta.en}</span><span class="desc">${meta.desc}</span></div>
       <div class="cards-row"></div>`;
@@ -534,7 +626,7 @@ function renderGallery(){
       const card = document.createElement("div");
       card.className = "scard";
       card.innerHTML = `
-        <img src="${s.poster}" alt="${s.title}" loading="lazy">
+        <img src="${s.poster||s.image||s.video}" alt="${s.title}" loading="lazy">
         <div class="shade"></div>
         <div class="meta">
           <span class="tag">${s.type==="24h"?"24H":"LOOP"}</span>
@@ -571,11 +663,13 @@ function enterPlayer(id){
   const gate = document.getElementById("gate");
   gate.classList.remove("hidden"); gate.style.display="flex";
   const vp = document.getElementById("view-player");
-  vp.classList.remove("idle","mist","rays","pollen","stars");
+  vp.classList.remove("idle","mist","rays","pollen","stars","canopy","leak");
   if(currentScene.category==="forest"||currentScene.category==="water") vp.classList.add("mist");
   if(currentScene.category==="forest") vp.classList.add("pollen");
   if(currentScene.type==="24h") vp.classList.add("rays");
   if(currentScene.category==="sky"||currentScene.type==="24h") vp.classList.add("stars");
+  if(currentScene.category==="forest"||currentScene.category==="water") vp.classList.add("canopy");
+  vp.classList.add("leak");
 
   videoEl = document.getElementById("pv");
   const pimg = document.getElementById("pimg");
