@@ -433,14 +433,14 @@ const Audio = {
   },
   apply24h(h){
     if(!this.ctx || !currentScene || currentScene.type !== "24h") return;
-    const t = this.targets24h(h), map = currentScene.audio;
+    const t = this.targets24h(h), map = currentScene.audio || {};
     if(map.wind) this.fade(map.wind, t.wind);
     if(map.day) this.fade(map.day, t.day);
     if(map.night) this.fade(map.night, t.night);
   },
   applyLoop(){
     if(!this.ctx || !currentScene || currentScene.type !== "loop") return;
-    const map = currentScene.audio;
+    const map = currentScene.audio || {};
     let main = map.main || map.wind;
     if(main) this.fade(main, 1);
     if(map.day && !map.main) this.fade(map.day, .35);
@@ -694,13 +694,15 @@ function loop(now){
 function unlock(){
   if(unlocked) return;
   unlocked = true;
-  Audio.ensure();
-  Audio.ctx.resume();
-  if(currentScene.type === "24h") Audio.apply24h(vh);
-  else Audio.applyLoop();
+  try{
+    Audio.ensure();
+    if(Audio.ctx && Audio.ctx.state === "suspended") Audio.ctx.resume();
+    if(currentScene.type === "24h") Audio.apply24h(vh);
+    else Audio.applyLoop();
+  }catch(e){ console.warn("audio unlock skipped:", e); }
   const gate = document.getElementById("gate");
   gate.classList.add("hidden");
-  setTimeout(()=>gate.style.display="none", 900);
+  setTimeout(()=>{ try{ gate.style.display="none"; }catch(e){} }, 900);
   document.getElementById("view-player").classList.remove("idle");
   document.getElementById("btn-sound").textContent = "🔊";
   document.getElementById("btn-sound").classList.add("active");
@@ -717,13 +719,24 @@ function poke(){
 function buildCredits(specific){
   const s = specific || currentScene;
   if(s){
+    const c = s.credit || {};
+    const media = (s.mediaType === "image")
+      ? ("图片：" + (c.source || "Pixabay"))
+      : ("视频：" + (c.video || c.source || "Pixabay"));
+    const audioTxt = (s.audio && (s.audio.wind || s.audio.day || s.audio.night || s.audio.main))
+      ? "环境音：风声 / 氛围乐（开源素材）"
+      : (c.audio || "环境音：风声 / 氛围乐（开源素材）");
     document.getElementById("credits-body").innerHTML = `
-      <div class="row"><b>${s.title} · ${s.subtitle}</b><div>视频：${s.credit.video}</div><div>音频：${s.credit.audio}</div></div>
-      <div class="row"><b>授权说明</b><div>视频素材来自 Pixabay（Pixabay License：免费、可商用、无需署名）；音频来自开源 beach-wallpaper 项目或 Pixabay 音频素材。本页仅做沉浸式播放，未改动原始素材内容。</div></div>`;
+      <div class="row"><b>${s.title} · ${s.subtitle}</b><div>${media}</div><div>${audioTxt}</div></div>
+      <div class="row"><b>授权说明</b><div>素材来自 Pixabay（Pixabay License：免费、可商用、无需署名）与开源音频项目；本页仅做沉浸式播放，未改动原始素材。</div></div>`;
   } else if(scenes.length){
     let html = '<div class="row"><b>全部场景素材</b>';
-    scenes.forEach(x=>{ html += `<div style="margin-top:8px"><b>${x.title}</b> · 视频：${x.credit.video}</div>`; });
-    html += '</div><div class="row"><b>授权说明</b><div>所有视频素材来自 Pixabay（Pixabay License：免费、可商用、无需署名）；音频来自开源 beach-wallpaper 项目或 Pixabay 音频素材。本页仅做沉浸式播放，未改动原始素材内容。</div></div>';
+    scenes.forEach(x=>{
+      const c = x.credit || {};
+      const m = (x.mediaType === "image") ? (c.source || "Pixabay") : (c.video || c.source || "Pixabay");
+      html += `<div style="margin-top:8px"><b>${x.title}</b> · ${m}</div>`;
+    });
+    html += '</div><div class="row"><b>授权说明</b><div>所有素材来自 Pixabay（Pixabay License）与开源音频项目；可免费使用，无需署名。</div></div>';
     document.getElementById("credits-body").innerHTML = html;
   }
 }
