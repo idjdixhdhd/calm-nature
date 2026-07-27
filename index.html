@@ -101,8 +101,8 @@
   /* ---------- player ---------- */
   #view-player{flex-direction:column;overflow:hidden}
   #stage{position:absolute;inset:0;z-index:0;background:#000}
-  #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;animation:kenburns 60s linear infinite;transform:scale(1.05)}
+  #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.12) saturate(1.18) brightness(1.03)}
+  #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;animation:kenburns 60s linear infinite;transform:scale(1.05);filter:contrast(1.12) saturate(1.2) brightness(1.03)}
   @keyframes kenburns{0%{transform:scale(1.05) translate(0,0)}25%{transform:scale(1.12) translate(-1.5%,-1%)}50%{transform:scale(1.08) translate(1%,.5%)}75%{transform:scale(1.14) translate(-.5%,1%)}100%{transform:scale(1.05) translate(0,0)}}
   #vignette{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 48%,rgba(0,0,0,.55) 100%)}
   #grain{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -909,7 +909,7 @@ function init(){
     cats = Object.keys(map).map(k=>({id:k, scenes:map[k]}));
     renderGallery();
   }
-  fetch(SCENES_URL).then(r=>r.json()).then(applyScenes).catch(e=>{
+  fetch(SCENES_URL + "?v=20260728c").then(r=>r.json()).then(applyScenes).catch(e=>{
     console.warn("scenes fetch failed, using inline fallback", e);
     if(FALLBACK_SCENES && FALLBACK_SCENES.length) applyScenes(FALLBACK_SCENES);
   });
