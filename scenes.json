@@ -3,6 +3,8 @@
     "id": "meadow",
     "title": "晨雾草甸",
     "subtitle": "Misty Meadow",
+    "category": "oneday",
+    "type": "24h",
     "video": "./media/forest.mp4",
     "poster": "./media/forest.jpg",
     "audio": {
@@ -11,8 +13,147 @@
       "night": "./media/audio/music_night.mp3"
     },
     "credit": {
-      "video": "Pixabay 视频素材（森林/草甸晨雾）",
-      "audio": "开源 beach-wallpaper 项目（wind / music_day / music_night）"
+      "video": "Pixabay 森林/草甸晨雾视频",
+      "audio": "开源 beach-wallpaper（wind / music_day / music_night）"
+    }
+  },
+  {
+    "id": "rain",
+    "title": "雨落窗前",
+    "subtitle": "Rain on Window",
+    "category": "short",
+    "type": "loop",
+    "video": "./media/rain.mp4",
+    "poster": "./media/rain.jpg",
+    "audio": {
+      "main": "./media/audio/rain.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 雨景视频",
+      "audio": "Pixabay nils_vega – rain"
+    }
+  },
+  {
+    "id": "campfire",
+    "title": "林间篝火",
+    "subtitle": "Campfire",
+    "category": "short",
+    "type": "loop",
+    "video": "./media/campfire.mp4",
+    "poster": "./media/campfire.jpg",
+    "audio": {
+      "main": "./media/audio/campfire.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 篝火视频",
+      "audio": "开源 beach-wallpaper（campfire）"
+    }
+  },
+  {
+    "id": "stars",
+    "title": "星河低语",
+    "subtitle": "Starry Night",
+    "category": "short",
+    "type": "loop",
+    "video": "./media/stars.mp4",
+    "poster": "./media/stars.jpg",
+    "audio": {
+      "night": "./media/audio/music_night.mp3",
+      "wind": "./media/audio/wind.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 星空延时视频",
+      "audio": "开源 beach-wallpaper（music_night / wind）"
+    }
+  },
+  {
+    "id": "mountain",
+    "title": "群山青翠",
+    "subtitle": "Alpine Valleys",
+    "category": "majestic",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/mountain.jpg",
+    "poster": "./media/mountain.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 山景延时摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（wind / music_day）"
+    }
+  },
+  {
+    "id": "ocean",
+    "title": "悬崖怒海",
+    "subtitle": "Cliffs & Waves",
+    "category": "majestic",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/ocean.jpg",
+    "poster": "./media/ocean.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "main": "./media/audio/seagulls.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 海岸航拍摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（seagulls / wind）"
+    }
+  },
+  {
+    "id": "waterfall",
+    "title": "热带飞瀑",
+    "subtitle": "Jungle Falls",
+    "category": "majestic",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/waterfall.jpg",
+    "poster": "./media/waterfall.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 瀑布摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（wind / music_day）"
+    }
+  },
+  {
+    "id": "aurora",
+    "title": "极光之夜",
+    "subtitle": "Aurora Borealis",
+    "category": "majestic",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/aurora.jpg",
+    "poster": "./media/aurora.jpg",
+    "audio": {
+      "night": "./media/audio/music_night.mp3",
+      "wind": "./media/audio/wind.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 极光摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（music_night / wind）"
+    }
+  },
+  {
+    "id": "snow",
+    "title": "雪原日落",
+    "subtitle": "Snowy Sunset",
+    "category": "majestic",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/snow.jpg",
+    "poster": "./media/snow.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "video": "Pixabay 雪原航拍摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（wind / music_day）"
     }
   }
 ]
