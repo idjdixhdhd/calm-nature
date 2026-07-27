@@ -1,70 +1,18 @@
 [
   {
-    "id": "rain",
-    "title": "雨",
-    "subtitle": "Rain on the Window",
-    "video": "media/rain.mp4",
-    "poster": "media/rain.jpg",
-    "audio": ["media/audio/rain.mp3"],
-    "gain": 0.85,
-    "mood": "窗外雨落，城市灯火在玻璃上化开。",
-    "accent": "#7fb6d6",
-    "slot": { "from": 11, "to": 17 },
+    "id": "meadow",
+    "title": "晨雾草甸",
+    "subtitle": "Misty Meadow",
+    "video": "./media/forest.mp4",
+    "poster": "./media/forest.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3",
+      "night": "./media/audio/music_night.mp3"
+    },
     "credit": {
-      "video": "Pixabay 免费授权（视频 ID 11722）",
-      "audio": "Pixabay 免费授权（nils_vega – rain 365610）",
-      "poster": "AI 生成写实静帧（辅助封面）"
-    }
-  },
-  {
-    "id": "forest",
-    "title": "森林",
-    "subtitle": "Morning Mist Forest",
-    "video": "media/forest.mp4",
-    "poster": "media/forest.jpg",
-    "audio": ["media/audio/wind.mp3", "media/audio/music_day.mp3"],
-    "gain": 0.7,
-    "mood": "晨雾里的树林，风穿过叶隙。",
-    "accent": "#9fd3c7",
-    "slot": { "from": 5, "to": 11 },
-    "credit": {
-      "video": "Pixabay 免费授权（视频 ID 136188）",
-      "audio": "开源 beach-wallpaper 项目（wind / 日间环境乐，免费）",
-      "poster": "Pixabay 视频封面（tiny.jpg）"
-    }
-  },
-  {
-    "id": "campfire",
-    "title": "篝火",
-    "subtitle": "Campfire Night",
-    "video": "media/campfire.mp4",
-    "poster": "media/campfire.jpg",
-    "audio": ["media/audio/campfire.mp3", "media/audio/music_night.mp3"],
-    "gain": 0.8,
-    "mood": "夜里一团火，噼啪作响。",
-    "accent": "#ffb877",
-    "slot": { "from": 17, "to": 21 },
-    "credit": {
-      "video": "Pixabay 免费授权（视频 ID 240502）",
-      "audio": "开源 beach-wallpaper 项目（campfire loop / 夜乐，免费）",
-      "poster": "Pixabay 视频封面（tiny.jpg）"
-    }
-  },
-  {
-    "id": "stars",
-    "title": "星空",
-    "subtitle": "Starry Sky & Milky Way",
-    "video": "media/stars.mp4",
-    "poster": "media/stars.jpg",
-    "audio": ["media/audio/music_night.mp3", "media/audio/wind.mp3"],
-    "gain": 0.75,
-    "mood": "银河垂落山脊，万籁俱寂。",
-    "accent": "#a9b8ff",
-    "slot": { "from": 21, "to": 5 },
-    "credit": {
-      "video": "Pixabay 免费授权（视频 ID 169951）",
-      "audio": "开源 beach-wallpaper 项目（夜乐 / wind，免费）",
-      "poster": "Pixabay 视频封面（tiny.jpg）"
+      "video": "Pixabay 视频素材（森林/草甸晨雾）",
+      "audio": "开源 beach-wallpaper 项目（wind / music_day / music_night）"
     }
   }
 ]
