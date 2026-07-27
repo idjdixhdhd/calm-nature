@@ -155,5 +155,185 @@
       "video": "Pixabay 雪原航拍摄影（Pixabay License）",
       "audio": "开源 beach-wallpaper（wind / music_day）"
     }
+  },
+  {
+    "id": "water-1",
+    "title": "水韵·静流 · 其一",
+    "subtitle": "Still Waters",
+    "category": "water",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-1.jpg",
+    "poster": "./media/water-1.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice nature photography · lake reflection mountains"
+    }
+  },
+  {
+    "id": "water-2",
+    "title": "水韵·静流 · 其二",
+    "subtitle": "Still Waters",
+    "category": "water",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-2.jpg",
+    "poster": "./media/water-2.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice nature photography · lake reflection mountains"
+    }
+  },
+  {
+    "id": "water-3",
+    "title": "水韵·静流 · 其三",
+    "subtitle": "Still Waters",
+    "category": "water",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-3.jpg",
+    "poster": "./media/water-3.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice nature photography · lake reflection mountains"
+    }
+  },
+  {
+    "id": "extreme-1",
+    "title": "苍茫·极境 · 其一",
+    "subtitle": "Edge of Earth",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-1.jpg",
+    "poster": "./media/extreme-1.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice nature photography · desert dunes"
+    }
+  },
+  {
+    "id": "extreme-2",
+    "title": "苍茫·极境 · 其二",
+    "subtitle": "Edge of Earth",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-2.jpg",
+    "poster": "./media/extreme-2.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice nature photography · desert dunes"
+    }
+  },
+  {
+    "id": "extreme-3",
+    "title": "苍茫·极境 · 其三",
+    "subtitle": "Edge of Earth",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-3.jpg",
+    "poster": "./media/extreme-3.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice nature photography · desert dunes"
+    }
+  },
+  {
+    "id": "forest-1",
+    "title": "幽林·秘境 · 其一",
+    "subtitle": "Enchanted Woods",
+    "category": "forest",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-1.jpg",
+    "poster": "./media/forest-1.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice · rainforest"
+    }
+  },
+  {
+    "id": "forest-2",
+    "title": "幽林·秘境 · 其二",
+    "subtitle": "Enchanted Woods",
+    "category": "forest",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-2.jpg",
+    "poster": "./media/forest-2.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice · rainforest"
+    }
+  },
+  {
+    "id": "forest-3",
+    "title": "幽林·秘境 · 其三",
+    "subtitle": "Enchanted Woods",
+    "category": "forest",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-3.jpg",
+    "poster": "./media/forest-3.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice · rainforest"
+    }
+  },
+  {
+    "id": "sky-1",
+    "title": "天垂·奇景 · 其一",
+    "subtitle": "Sky & Wonders",
+    "category": "sky",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-1.jpg",
+    "poster": "./media/sky-1.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice · milky way"
+    }
+  },
+  {
+    "id": "sky-2",
+    "title": "天垂·奇景 · 其二",
+    "subtitle": "Sky & Wonders",
+    "category": "sky",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-2.jpg",
+    "poster": "./media/sky-2.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice · milky way"
+    }
+  },
+  {
+    "id": "sky-3",
+    "title": "天垂·奇景 · 其三",
+    "subtitle": "Sky & Wonders",
+    "category": "sky",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-3.jpg",
+    "poster": "./media/sky-3.jpg",
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free, no attribution required)",
+      "note": "Editor’s Choice · milky way"
+    }
   }
 ]
