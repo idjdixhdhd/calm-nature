@@ -1,399 +1,797 @@
 [
+
   {
+
     "id": "meadow",
+
     "title": "晨雾草甸",
+
     "subtitle": "Misty Meadow",
+
     "category": "oneday",
+
     "type": "24h",
+
     "video": "./media/forest.mp4",
+
     "poster": "./media/forest.jpg",
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3",
+
       "night": "./media/audio/music_night.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 森林/草甸晨雾视频",
+
       "audio": "开源 beach-wallpaper（wind / music_day / music_night）"
+
     }
+
   },
+
   {
+
     "id": "rain",
+
     "title": "雨落窗前",
+
     "subtitle": "Rain on Window",
+
     "category": "short",
+
     "type": "loop",
+
     "video": "./media/rain.mp4",
+
     "poster": "./media/rain.jpg",
+
     "audio": {
+
       "main": "./media/audio/rain.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 雨景视频",
+
       "audio": "Pixabay nils_vega – rain"
+
     }
+
   },
+
   {
+
     "id": "campfire",
+
     "title": "林间篝火",
+
     "subtitle": "Campfire",
+
     "category": "short",
+
     "type": "loop",
+
     "video": "./media/campfire.mp4",
+
     "poster": "./media/campfire.jpg",
+
     "audio": {
+
       "main": "./media/audio/campfire.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 篝火视频",
+
       "audio": "开源 beach-wallpaper（campfire）"
+
     }
+
   },
+
   {
+
     "id": "stars",
+
     "title": "星河低语",
+
     "subtitle": "Starry Night",
+
     "category": "short",
+
     "type": "loop",
+
     "video": "./media/stars.mp4",
+
     "poster": "./media/stars.jpg",
+
     "audio": {
+
       "night": "./media/audio/music_night.mp3",
+
       "wind": "./media/audio/wind.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 星空延时视频",
+
       "audio": "开源 beach-wallpaper（music_night / wind）"
+
     }
+
   },
+
   {
+
     "id": "mountain",
+
     "title": "群山青翠",
+
     "subtitle": "Alpine Valleys",
+
     "category": "majestic",
+
     "type": "loop",
+
     "mediaType": "video",
+
     "video": "./media/mountain.mp4",
+
     "poster": "./media/mountain.jpg",
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 山景延时摄影（Pixabay License）",
+
       "audio": "开源 beach-wallpaper（wind / music_day）"
+
     }
+
   },
+
   {
+
     "id": "ocean",
+
     "title": "悬崖怒海",
+
     "subtitle": "Cliffs & Waves",
+
     "category": "majestic",
+
     "type": "loop",
+
     "mediaType": "video",
+
     "video": "./media/ocean.mp4",
+
     "poster": "./media/ocean.jpg",
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "main": "./media/audio/seagulls.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 海岸航拍摄影（Pixabay License）",
+
       "audio": "开源 beach-wallpaper（seagulls / wind）"
+
     }
+
   },
+
   {
+
     "id": "waterfall",
+
     "title": "热带飞瀑",
+
     "subtitle": "Jungle Falls",
+
     "category": "majestic",
+
     "type": "loop",
+
     "mediaType": "video",
+
     "video": "./media/waterfall.mp4",
+
     "poster": "./media/waterfall.jpg",
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 瀑布摄影（Pixabay License）",
+
       "audio": "开源 beach-wallpaper（wind / music_day）"
+
     }
+
   },
+
   {
+
     "id": "aurora",
+
     "title": "极光之夜",
+
     "subtitle": "Aurora Borealis",
+
     "category": "majestic",
+
     "type": "loop",
+
     "mediaType": "video",
+
     "video": "./media/aurora.mp4",
+
     "poster": "./media/aurora.jpg",
+
     "audio": {
+
       "night": "./media/audio/music_night.mp3",
+
       "wind": "./media/audio/wind.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 极光摄影（Pixabay License）",
+
       "audio": "开源 beach-wallpaper（music_night / wind）"
+
     }
+
   },
+
   {
+
     "id": "snow",
+
     "title": "雪原日落",
+
     "subtitle": "Snowy Sunset",
+
     "category": "majestic",
+
     "type": "loop",
+
     "mediaType": "video",
+
     "video": "./media/snow.mp4",
+
     "poster": "./media/snow.jpg",
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "credit": {
+
       "video": "Pixabay 雪原航拍摄影（Pixabay License）",
+
       "audio": "开源 beach-wallpaper（wind / music_day）"
+
     }
+
   },
+
   {
+
     "id": "water-1",
+
     "title": "水韵·静流 · 其一",
+
     "subtitle": "Still Waters",
+
     "category": "water",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/water-1.jpg?v=20260728g",
-    "poster": "./media/water-1.jpg?v=20260728g",
+
+    "image": "./media/water-1.jpg?v=20260728orig",
+
+    "poster": "./media/water-1.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · calm water / lake / river"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "water-2",
+
     "title": "水韵·静流 · 其二",
+
     "subtitle": "Still Waters",
+
     "category": "water",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/water-2.jpg?v=20260728g",
-    "poster": "./media/water-2.jpg?v=20260728g",
+
+    "image": "./media/water-2.jpg?v=20260728orig",
+
+    "poster": "./media/water-2.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · calm water / lake / river"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "static"
+
   },
+
   {
+
     "id": "water-3",
+
     "title": "水韵·静流 · 其三",
+
     "subtitle": "Still Waters",
+
     "category": "water",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/water-3.jpg?v=20260728g",
-    "poster": "./media/water-3.jpg?v=20260728g",
+
+    "image": "./media/water-3.jpg?v=20260728orig",
+
+    "poster": "./media/water-3.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · calm water / lake / river"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "extreme-1",
+
     "title": "苍茫·极境 · 其一",
+
     "subtitle": "Edge of Earth",
+
     "category": "extreme",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/extreme-1.jpg?v=20260728g",
-    "poster": "./media/extreme-1.jpg?v=20260728g",
+
+    "image": "./media/extreme-1.jpg?v=20260728orig",
+
+    "poster": "./media/extreme-1.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · mountain / desert / glacier"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "extreme-2",
+
     "title": "苍茫·极境 · 其二",
+
     "subtitle": "Edge of Earth",
+
     "category": "extreme",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/extreme-2.jpg?v=20260728g",
-    "poster": "./media/extreme-2.jpg?v=20260728g",
+
+    "image": "./media/extreme-2.jpg?v=20260728orig",
+
+    "poster": "./media/extreme-2.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · mountain / desert / glacier"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "static"
+
   },
+
   {
+
     "id": "extreme-3",
+
     "title": "苍茫·极境 · 其三",
+
     "subtitle": "Edge of Earth",
+
     "category": "extreme",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/extreme-3.jpg?v=20260728g",
-    "poster": "./media/extreme-3.jpg?v=20260728g",
+
+    "image": "./media/extreme-3.jpg?v=20260728orig",
+
+    "poster": "./media/extreme-3.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · mountain / desert / glacier"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "forest-1",
+
     "title": "幽林·秘境 · 其一",
+
     "subtitle": "Enchanted Woods",
+
     "category": "forest",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/forest-1.jpg?v=20260728g",
-    "poster": "./media/forest-1.jpg?v=20260728g",
+
+    "image": "./media/forest-1.jpg?v=20260728orig",
+
+    "poster": "./media/forest-1.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · misty / enchanted forest"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "forest-2",
+
     "title": "幽林·秘境 · 其二",
+
     "subtitle": "Enchanted Woods",
+
     "category": "forest",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/forest-2.jpg?v=20260728g",
-    "poster": "./media/forest-2.jpg?v=20260728g",
+
+    "image": "./media/forest-2.jpg?v=20260728orig",
+
+    "poster": "./media/forest-2.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · misty / enchanted forest"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "forest-3",
+
     "title": "幽林·秘境 · 其三",
+
     "subtitle": "Enchanted Woods",
+
     "category": "forest",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/forest-3.jpg?v=20260728g",
-    "poster": "./media/forest-3.jpg?v=20260728g",
+
+    "image": "./media/forest-3.jpg?v=20260728orig",
+
+    "poster": "./media/forest-3.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · misty / enchanted forest"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "day": "./media/audio/music_day.mp3"
+
     },
+
     "motion": "subtle"
+
   },
+
   {
+
     "id": "sky-1",
+
     "title": "天垂·奇景 · 其一",
+
     "subtitle": "Sky & Wonders",
+
     "category": "sky",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/sky-1.jpg?v=20260728g",
-    "poster": "./media/sky-1.jpg?v=20260728g",
+
+    "image": "./media/sky-1.jpg?v=20260728orig",
+
+    "poster": "./media/sky-1.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · milky way / aurora / sky"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "night": "./media/audio/music_night.mp3"
+
     },
+
     "motion": "static"
+
   },
+
   {
+
     "id": "sky-2",
+
     "title": "天垂·奇景 · 其二",
+
     "subtitle": "Sky & Wonders",
+
     "category": "sky",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/sky-2.jpg?v=20260728g",
-    "poster": "./media/sky-2.jpg?v=20260728g",
+
+    "image": "./media/sky-2.jpg?v=20260728orig",
+
+    "poster": "./media/sky-2.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · milky way / aurora / sky"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "night": "./media/audio/music_night.mp3"
+
     },
+
     "motion": "static"
+
   },
+
   {
+
     "id": "sky-3",
+
     "title": "天垂·奇景 · 其三",
+
     "subtitle": "Sky & Wonders",
+
     "category": "sky",
+
     "type": "loop",
+
     "mediaType": "image",
-    "image": "./media/sky-3.jpg?v=20260728g",
-    "poster": "./media/sky-3.jpg?v=20260728g",
+
+    "image": "./media/sky-3.jpg?v=20260728orig",
+
+    "poster": "./media/sky-3.jpg?v=20260728orig",
+
     "credit": {
+
       "source": "Pexels",
+
       "license": "Pexels License (free, no attribution required)",
+
       "note": "Real 4K landscape photography · milky way / aurora / sky"
+
     },
+
     "audio": {
+
       "wind": "./media/audio/wind.mp3",
+
       "night": "./media/audio/music_night.mp3"
+
     },
+
     "motion": "subtle"
+
   }
+
 ]
