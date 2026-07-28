@@ -813,6 +813,104 @@
 
   .rd-row2 .rd-star{margin-left:auto;font-size:16px}
 
+  /* ============ SANCTUARY · new modules ============ */
+
+  /* mood heatmap */
+  .mood-heat{margin-top:16px}
+  .mood-heat .mh-title{font-size:11px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .mood-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+  .mood-cell{aspect-ratio:1;border-radius:4px;background:rgba(255,255,255,.06)}
+  .mood-cell[data-v="1"]{background:rgba(184,224,200,.35)}
+  .mood-cell[data-v="2"]{background:rgba(184,224,200,.62)}
+  .mood-cell[data-v="3"]{background:rgba(255,189,122,.5)}
+  .mood-cell[data-v="4"]{background:rgba(255,189,122,.82)}
+  .mood-cell[data-v="5"]{background:rgba(159,184,255,.6)}
+  .mood-cell[data-v="6"]{background:rgba(159,184,255,.92)}
+  .mood-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .mood-stat{font-size:12px;color:var(--muted);background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:6px 12px}
+  .mood-stat b{color:var(--accent)}
+
+  /* echo mixer */
+  .echo-orb{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;background:radial-gradient(circle at 38% 35%,rgba(var(--accent-rgb),.95),rgba(var(--accent-rgb),.12) 60%,transparent 74%);box-shadow:0 0 44px -4px rgba(var(--accent-rgb),.6);animation:echoBreath 5s ease-in-out infinite}
+  @keyframes echoBreath{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.07);opacity:1}}
+  .echo-master{display:flex;justify-content:center;margin-bottom:14px}
+  .echo-track{display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+  .echo-ic{font-size:24px;width:32px;text-align:center;flex:0 0 32px}
+  .echo-meta{flex:1;min-width:0}
+  .echo-name{font-size:14px;letter-spacing:.04em}
+  .echo-vol{width:100%;margin-top:8px;accent-color:var(--accent);height:20px}
+  .echo-toggle{font-size:12px;color:var(--muted);cursor:pointer;border:1px solid var(--glass-border);padding:7px 12px;border-radius:20px;transition:.2s;white-space:nowrap;flex:0 0 auto}
+  .echo-toggle.on{color:var(--accent);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .echo-toggle:active{transform:scale(.96)}
+  .echo-presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+  .echo-preset{font-size:12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;padding:7px 13px;cursor:pointer;color:var(--ui);transition:.2s}
+  .echo-preset:active{transform:scale(.96)}
+  .echo-preset .x{color:var(--muted);margin-left:7px}
+  .echo-preset .x:active{color:#ff8a8a}
+  .echo-name-in{background:rgba(0,0,0,.28);border:1px solid var(--glass-border);border-radius:30px;color:var(--ui);padding:7px 14px;font-size:12px;min-width:120px;outline:none}
+  .echo-name-in:focus{border-color:var(--accent)}
+
+  /* shared wall */
+  .wall-compose{display:flex;flex-direction:column;gap:10px}
+  .wall-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .wall-post{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:13px 15px}
+  .wall-post .wp-top{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}
+  .wall-post .wp-name{color:var(--accent)}
+  .wall-post .wp-text{font-size:15px;line-height:1.8;margin-top:7px;font-family:"Cormorant Garamond","Songti SC",serif;color:#eef3ee;white-space:pre-wrap;word-break:break-word}
+  .wall-post .wp-x{color:var(--muted);cursor:pointer;padding:2px 4px}
+  .wall-post .wp-x:active{color:#ff8a8a}
+  .wall-acts{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .wall-note{font-size:11px;color:var(--muted);line-height:1.7;background:rgba(0,0,0,.2);border:1px solid var(--glass-border);border-radius:12px;padding:11px 13px}
+
+  /* focus flow */
+  .flow-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .flow-ring{position:relative;width:210px;height:210px}
+  .flow-ring svg{transform:rotate(-90deg);display:block}
+  .flow-ring .fr-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .flow-ring .fr-t{font-size:40px;font-variant-numeric:tabular-nums;letter-spacing:.03em}
+  .flow-ring .fr-s{font-size:10px;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;margin-top:4px}
+  .flow-durs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .flow-dur{padding:8px 16px;border-radius:20px;border:1px solid var(--glass-border);background:var(--glass);font-size:13px;cursor:pointer;transition:.2s}
+  .flow-dur.sel{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .flow-dur:active{transform:scale(.96)}
+
+  /* collage create */
+  .create-preview{position:relative;width:100%;aspect-ratio:4/5;border-radius:18px;overflow:hidden;border:1px solid var(--glass-border);background:#0a0e0c}
+  .create-preview .cp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.6) contrast(1.05) saturate(1.08)}
+  .create-preview .cp-shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82),transparent 68%)}
+  .create-preview .cp-q{position:absolute;left:0;right:0;bottom:34px;padding:0 22px;font-family:"Cormorant Garamond","Songti SC",serif;font-size:21px;line-height:1.65;color:#fff;white-space:pre-wrap;word-break:break-word}
+  .create-preview .cp-a{position:absolute;left:22px;bottom:14px;font-size:12px;color:rgba(255,255,255,.78)}
+  .create-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .create-chip{padding:7px 13px;border-radius:18px;border:1px solid var(--glass-border);background:var(--glass);font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
+  .create-chip.sel{border-color:var(--accent);color:var(--accent)}
+  .create-chip:active{transform:scale(.96)}
+
+  /* playlists in favorites */
+  .pl-row{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .pl-row .pl-main{flex:1;min-width:0}
+  .pl-row .pl-name{font-size:15px;letter-spacing:.04em}
+  .pl-row .pl-sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .pl-row .pl-x{font-size:16px;color:var(--muted);cursor:pointer;padding:4px 6px}
+  .pl-row .pl-x:active{color:#ff8a8a}
+  .pl-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;padding-left:4px}
+  .pl-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ui)}
+  .pl-item .pli-x{margin-left:auto;color:var(--muted);cursor:pointer;padding:2px 4px}
+  .pl-item .pli-x:active{color:#ff8a8a}
+
+  /* queue next + auto buttons */
+  .qnext{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(94px + env(safe-area-inset-bottom));z-index:8;padding:9px 22px;border-radius:30px;border:1px solid var(--accent);background:rgba(10,14,13,.82);color:var(--accent);font-size:13px;letter-spacing:.1em;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;display:none;box-shadow:0 0 22px -6px rgba(var(--accent-rgb),.6)}
+  .qnext.show{display:block}
+  .qnext:active{transform:translateX(-50%) scale(.96)}
+  .qnext.auto{left:auto;right:max(16px,var(--safe-r));bottom:calc(150px + env(safe-area-inset-bottom));border-color:var(--glass-border);color:var(--muted);box-shadow:none;padding:7px 14px;font-size:12px}
+  .qnext.auto.on{color:var(--accent);border-color:var(--accent)}
+
+  /* floating mood badge */
+  .mood-badge{position:fixed;left:max(16px,var(--safe-l));bottom:calc(16px + env(safe-area-inset-bottom));z-index:9;display:none;align-items:center;gap:8px;padding:8px 15px;border-radius:30px;border:1px solid var(--glass-border);background:var(--glass-strong);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;font-size:12px;box-shadow:0 8px 24px -10px rgba(0,0,0,.6);transition:opacity .3s}
+  .mood-badge.show{display:flex}
+  .mood-badge:active{transform:scale(.97)}
+  .mood-badge .mb-e{font-size:18px}
+  .mood-badge .mb-t{color:var(--muted)}
+
 </style>
 
 </head>
@@ -1163,6 +1261,8 @@ let tlDragging = false, seekDragging = false, volume = 0.85;
 
 let imageProg = 0;
 
+let playQueue = [], queueIdx = -1, queueAuto = false, queueTimer = null;
+
 
 
 const MOODS = ["mist","ember","night"];
@@ -1511,6 +1611,8 @@ function showView(name){
 
   if(name!=="sanctuary"){ const sd=document.getElementById("sanct-detail"); if(sd) sd.classList.remove("open"); }
 
+  updateMoodBadge(name);
+
 }
 
 
@@ -1604,6 +1706,8 @@ const IMAGE_DURATION = 60;
 let imageStart = 0, imagePaused = false;
 
 function enterPlayer(id){
+
+  EchoMixer.stopAll(); FlowTimer.stop();
 
   currentScene = scenes.find(s=>s.id===id);
 
@@ -1713,6 +1817,8 @@ function enterPlayer(id){
 
   updateFavIcon();
 
+  updateQueueUI();
+
   poke();
 
 }
@@ -1726,6 +1832,8 @@ function exitPlayer(){
   Audio.clear();
 
   currentScene = null;
+
+  playQueue = []; queueIdx = -1; clearTimeout(queueTimer);
 
   document.getElementById("view-player").classList.remove("mist","rays","idle","pollen","stars");
 
@@ -2119,6 +2227,12 @@ const Sanctuary = {
 
     if(!this.store.solar) this.store.solar = {};
 
+    if(!this.store.echo) this.store.echo = [];
+    if(!this.store.echoLast) this.store.echoLast = null;
+    if(!this.store.wall) this.store.wall = [];
+    if(!this.store.collages) this.store.collages = [];
+    if(!this.store.playlists) this.store.playlists = [];
+
     return this.store;
 
   },
@@ -2157,7 +2271,15 @@ const MODULES = [
 
   {key:"fav",     icon:"✦",  title:"个人收藏", en:"My Favorites"},
 
-  {key:"solar",   icon:"🍃", title:"我的节气历", en:"Solar Terms"}
+  {key:"solar",   icon:"🍃", title:"我的节气历", en:"Solar Terms"},
+
+  {key:"echo",    icon:"🔊", title:"回声·声景", en:"Echo Mixer"},
+
+  {key:"flow",    icon:"⏳", title:"心流·专注", en:"Focus Flow"},
+
+  {key:"create",  icon:"🎴", title:"拼帖·创作", en:"Collage"},
+
+  {key:"wall",    icon:"✍️", title:"共笔墙", en:"Shared Wall"}
 
 ];
 
@@ -2385,13 +2507,17 @@ function updateSanctStatus(){
 
   setStatus("solar", "当前 · "+cur.n);
 
+  updateMoodBadge();
+
 }
 
 
 
 function openModule(key){
 
-  const titles = {mood:"心境", reader:"读者·每日一读", fav:"个人收藏", solar:"我的节气历"};
+  EchoMixer.stopAll(); FlowTimer.stop();
+
+  const titles = {mood:"心境", reader:"读者·每日一读", fav:"个人收藏", solar:"我的节气历", echo:"回声·声景", flow:"心流·专注", create:"拼帖·创作", wall:"共笔墙"};
 
   document.getElementById("sd-title").textContent = titles[key] || "";
 
@@ -2406,6 +2532,14 @@ function openModule(key){
   else if(key==="fav") renderFav(c);
 
   else if(key==="solar") renderSolar(c);
+
+  else if(key==="echo") renderEcho(c);
+
+  else if(key==="flow") renderFlow(c);
+
+  else if(key==="create") renderCreate(c);
+
+  else if(key==="wall") renderWall(c);
 
   document.getElementById("sanct-detail").classList.add("open");
 
@@ -2451,7 +2585,7 @@ function renderMood(c){
 
   c.innerHTML = html;
 
-
+  renderMoodHeatmap(c);
 
   let sel = rec ? rec.key : null;
 
@@ -2559,8 +2693,32 @@ const READER_LIB = [
 
   {t:"风大时，要表现逆的风骨；风小时，要表现顺的悠然。", a:"刘墉", tag:"自然"},
 
-  {t:"于千万人之中遇见你所要遇见的人，于千万年之中，时间的无涯的荒野里，没有早一步，也没有晚一步，刚巧赶上了。", a:"张爱玲", tag:"人生"}
+  {t:"于千万人之中遇见你所要遇见的人，于千万年之中，时间的无涯的荒野里，没有早一步，也没有晚一步，刚巧赶上了。", a:"张爱玲", tag:"人生"},
 
+  {t:"我们都是阴沟里的虫子，但总还是得有人仰望星空。", a:"王尔德", tag:"哲思"},
+  {t:"风可以吹起一张白纸，却无法吹走一只蝴蝶，因为生命的力量在于不顺从。", a:"冯骥才", tag:"自我"},
+  {t:"生活不能等待别人来安排，要自己去争取和奋斗。", a:"路遥《平凡的世界》", tag:"人生"},
+  {t:"其实地上本没有路，走的人多了，也便成了路。", a:"鲁迅", tag:"人生"},
+  {t:"你以为的巧合，不过是另一个人悄悄的努力。", a:"读者", tag:"治愈"},
+  {t:"人生如茶，苦如生命，香如年华，淡如清风。", a:"读者", tag:"人生"},
+  {t:"世间所有的相遇，都是久别重逢。", a:"白落梅", tag:"人生"},
+  {t:"愿你出走半生，归来仍是少年。", a:"读者", tag:"时光"},
+  {t:"最是人间留不住，朱颜辞镜花辞树。", a:"王国维", tag:"时光"},
+  {t:"星光不问赶路人，时光不负有心人。", a:"读者", tag:"时光"},
+  {t:"纵有疾风起，人生不言弃。", a:"瓦雷里（读者摘）", tag:"自我"},
+  {t:"雪莱说：冬天来了，春天还会远吗？", a:"雪莱", tag:"自然"},
+  {t:"海子说：面朝大海，春暖花开。", a:"海子", tag:"自然"},
+  {t:"树在，山在，大地在，岁月在，我在，你还要怎样更好的世界？", a:"张晓风", tag:"自然"},
+  {t:"一花一世界，一叶一菩提。", a:"读者", tag:"哲思"},
+  {t:"心若没有栖息的地方，到哪里都是流浪。", a:"三毛", tag:"自我"},
+  {t:"陪伴是最长情的告白。", a:"读者", tag:"治愈"},
+  {t:"人生得意须尽欢，莫使金樽空对月。", a:"李白", tag:"人生"},
+  {t:"宠辱不惊，看庭前花开花落；去留无意，望天上云卷云舒。", a:"《菜根谭》", tag:"哲思"},
+  {t:"且将新火试新茶，诗酒趁年华。", a:"苏轼", tag:"时光"},
+  {t:"人间烟火气，最抚凡人心。", a:"读者", tag:"治愈"},
+  {t:"落红不是无情物，化作春泥更护花。", a:"龚自珍", tag:"自然"},
+  {t:"不戚戚于贫贱，不汲汲于富贵。", a:"陶渊明", tag:"自我"},
+  {t:"当你穿过了暴风雨，你早已不再是原来那个人。", a:"村上春树", tag:"自我"}
 ];
 
 
@@ -2663,6 +2821,28 @@ function renderFav(c){
 
     });
 
+    html += `<div class="q-actions" style="margin-top:14px"><div class="q-btn primary" id="fav-newpl">＋ 新建播放列表</div></div>`;
+
+  }
+
+  const pls = Sanctuary.store.playlists||[];
+
+  if(pls.length){
+
+    html += `<div class="q-hint" style="margin-top:18px">我的播放列表</div>`;
+
+    pls.forEach((pl,pi)=>{
+
+      html += `<div class="pl-row" data-pi="${pi}"><div class="pl-main"><div class="pl-name">${escapeHtml(pl.name)}</div><div class="pl-sub">${pl.ids.length} 个场景 · 点 ▶ 连播</div></div><div class="q-x" data-plplay="${pi}" title="连播">▶</div><div class="pl-x" data-plrm="${pi}" title="删除">✕</div></div>`;
+
+      if(pl.ids.length){
+
+        html += `<div class="pl-list">` + pl.ids.map((sid,si)=>{ const sc=scenes.find(s=>s.id===sid); return `<div class="pl-item">${si+1}. ${sc?sc.title:sid}<span class="pli-x" data-pli="${pi}:${si}">✕</span></div>`; }).join("") + `</div>`;
+
+      }
+
+    });
+
   }
 
   c.innerHTML = html;
@@ -2676,6 +2856,46 @@ function renderFav(c){
   c.querySelectorAll("[data-rm]").forEach(el=> el.addEventListener("click", ()=>{
 
     const id = el.dataset.rm; Sanctuary.store.favorites = Sanctuary.store.favorites.filter(x=>x!==id); Sanctuary.save(); renderFav(c); updateFavIcon(); updateSanctStatus();
+
+  }));
+
+  const np = c.querySelector("#fav-newpl");
+
+  if(np) np.addEventListener("click", ()=>{
+
+    const nm = window.prompt("给播放列表起个名字：", "我的自然歌单");
+
+    if(nm===null) return;
+
+    Sanctuary.store.playlists = Sanctuary.store.playlists||[];
+
+    Sanctuary.store.playlists.push({name:(nm.trim()||("歌单 "+(Sanctuary.store.playlists.length+1))), ids:Sanctuary.store.favorites.slice()});
+
+    Sanctuary.save(); renderFav(c); flashToast("已建「"+nm+"」");
+
+  });
+
+  c.querySelectorAll("[data-plplay]").forEach(el=> el.addEventListener("click", ()=>{
+
+    const pl = (Sanctuary.store.playlists||[])[+el.dataset.plplay]; if(!pl||!pl.ids.length){ flashToast("列表是空的"); return; }
+
+    document.getElementById("sanct-detail").classList.remove("open"); startQueue(pl.ids, 0);
+
+  }));
+
+  c.querySelectorAll("[data-plrm]").forEach(el=> el.addEventListener("click", ()=>{
+
+    Sanctuary.store.playlists.splice(+el.dataset.plrm,1); Sanctuary.save(); renderFav(c);
+
+  }));
+
+  c.querySelectorAll("[data-pli]").forEach(el=> el.addEventListener("click", ()=>{
+
+    const parts = el.dataset.pli.split(":"); const pi=+parts[0], si=+parts[1];
+
+    const pl = (Sanctuary.store.playlists||[])[pi]; if(!pl) return;
+
+    pl.ids.splice(si,1); Sanctuary.save(); renderFav(c);
 
   }));
 
@@ -2791,6 +3011,405 @@ function openJournal(sceneId){
 
 
 
+// ---------- new sanctuary modules (echo / flow / create / wall / queue / badge) ----------
+
+const GISCUS = {
+  repo: "idjdixhdhd/calm-nature",
+  repoId: "",
+  category: "共笔墙",
+  categoryId: "",
+  enabled: false
+};
+
+const EchoMixer = {
+  els:{},
+  tracks:[
+    {key:"wind",  name:"风声",   icon:"🍃", url:"./media/audio/wind.mp3",        def:.5},
+    {key:"day",   name:"晨光乐", icon:"🌞", url:"./media/audio/music_day.mp3",   def:.4},
+    {key:"night", name:"星夜乐", icon:"🌙", url:"./media/audio/music_night.mp3", def:.4},
+    {key:"rain",  name:"雨声",   icon:"🌧️", url:"./media/audio/rain.mp3",         def:.5},
+    {key:"fire",  name:"篝火",   icon:"🔥", url:"./media/audio/campfire.mp3",     def:.5},
+    {key:"sea",   name:"海鸥",   icon:"🕊️", url:"./media/audio/seagulls.mp3",     def:.35}
+  ],
+  ensure(key){
+    if(this.els[key]) return this.els[key];
+    const t = this.tracks.find(x=>x.key===key); if(!t) return null;
+    const el = document.createElement("audio"); el.src = t.url; el.loop = true; el.preload = "auto";
+    this.els[key] = el; return el;
+  },
+  setVol(key, v){ const el = this.ensure(key); if(el) el.volume = Math.max(0, Math.min(1, v)); },
+  play(key){ const el = this.ensure(key); if(el){ el.volume = el.volume || 0.4; el.play().catch(()=>{}); } },
+  stop(key){ const el = this.els[key]; if(el){ try{ el.pause(); el.currentTime = 0; }catch(e){} } },
+  stopAll(){
+    Object.keys(this.els).forEach(k=>this.stop(k));
+    if(window._echoState){ Object.keys(window._echoState.on).forEach(k=> window._echoState.on[k]=false); }
+  }
+};
+
+function renderEcho(c){
+  Sanctuary.load();
+  const lib = EchoMixer.tracks;
+  if(!window._echoState){
+    const last = Sanctuary.store.echoLast;
+    const st = {on:{}, vols:{}};
+    lib.forEach(t=>{ st.on[t.key] = !!(last && last.on && last.on[t.key]); st.vols[t.key] = (last && last.vols && last.vols[t.key]!=null)? last.vols[t.key] : t.def; });
+    window._echoState = st;
+  }
+  const st = window._echoState;
+  let html = `<div class="echo-orb"></div>`;
+  html += `<div class="echo-master"><div class="demo" id="echo-stop">⏹ 停止全部</div></div>`;
+  lib.forEach(t=>{
+    html += `<div class="echo-track" data-k="${t.key}">
+      <div class="echo-ic">${t.icon}</div>
+      <div class="echo-meta"><div class="echo-name">${t.name}</div><input class="echo-vol" type="range" min="0" max="1" step="0.01" value="${st.vols[t.key]}" data-vol="${t.key}"></div>
+      <div class="echo-toggle ${st.on[t.key]?'on':''}" data-tg="${t.key}">${st.on[t.key]?'播放中':'播放'}</div>
+    </div>`;
+  });
+  html += `<div class="echo-presets" id="echo-presets"></div>`;
+  html += `<div class="wall-acts"><input class="echo-name-in" id="echo-name" placeholder="给这组声景起个名…"><div class="q-btn primary" id="echo-save" style="flex:0 0 auto">存为预设</div></div>`;
+  c.innerHTML = html;
+
+  function persist(){ Sanctuary.store.echoLast = {on:Object.assign({},st.on), vols:Object.assign({},st.vols)}; Sanctuary.save(); }
+  function applyTrack(key){ if(st.on[key]){ EchoMixer.setVol(key, st.vols[key]); EchoMixer.play(key); } else { EchoMixer.stop(key); } }
+
+  c.querySelectorAll("[data-tg]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const k = el.dataset.tg; st.on[k] = !st.on[k];
+      el.classList.toggle("on", st.on[k]); el.textContent = st.on[k] ? "播放中" : "播放";
+      applyTrack(k); persist();
+    });
+  });
+  c.querySelectorAll("[data-vol]").forEach(el=>{
+    el.addEventListener("input", ()=>{ const k = el.dataset.vol; st.vols[k] = parseFloat(el.value); if(st.on[k]) EchoMixer.setVol(k, st.vols[k]); persist(); });
+  });
+  c.querySelector("#echo-stop").addEventListener("click", ()=>{
+    EchoMixer.stopAll(); lib.forEach(t=>{ st.on[t.key]=false; });
+    c.querySelectorAll("[data-tg]").forEach(el=>{ el.classList.remove("on"); el.textContent="播放"; });
+    persist();
+  });
+  function paintPresets(){
+    const wrap = c.querySelector("#echo-presets");
+    const presets = Sanctuary.store.echo || [];
+    if(!presets.length){ wrap.innerHTML = `<span class="q-hint">还没有预设。调好你喜欢的声景，存一个吧。</span>`; return; }
+    wrap.innerHTML = presets.map((p,i)=>`<span class="echo-preset" data-pi="${i}">${escapeHtml(p.name)}<span class="x" data-px="${i}">✕</span></span>`).join("");
+    wrap.querySelectorAll("[data-pi]").forEach(el=>{
+      el.addEventListener("click", ()=>{
+        const p = presets[+el.dataset.pi]; if(!p) return;
+        lib.forEach(t=>{ st.on[t.key] = !!(p.on && p.on[t.key]); st.vols[t.key] = (p.vols && p.vols[t.key]!=null)? p.vols[t.key] : t.def; if(st.on[t.key]){ EchoMixer.setVol(t.key, st.vols[t.key]); EchoMixer.play(t.key); } else EchoMixer.stop(t.key); });
+        c.querySelectorAll("[data-tg]").forEach(tg=>{ const k=tg.dataset.tg; tg.classList.toggle("on", st.on[k]); tg.textContent = st.on[k]?"播放中":"播放"; });
+        c.querySelectorAll("[data-vol]").forEach(v=>{ v.value = st.vols[v.dataset.vol]; });
+        persist(); flashToast("已载入「"+p.name+"」");
+      });
+    });
+    wrap.querySelectorAll("[data-px]").forEach(el=>{
+      el.addEventListener("click", (e)=>{ e.stopPropagation(); const i=+el.dataset.px; Sanctuary.store.echo.splice(i,1); Sanctuary.save(); paintPresets(); });
+    });
+  }
+  paintPresets();
+  c.querySelector("#echo-save").addEventListener("click", ()=>{
+    const name = (c.querySelector("#echo-name").value || "").trim() || ("声景 "+(Sanctuary.store.echo.length+1));
+    Sanctuary.store.echo.push({name, on:Object.assign({},st.on), vols:Object.assign({},st.vols), ts:Date.now()});
+    Sanctuary.save(); paintPresets(); flashToast("已保存预设「"+name+"」");
+  });
+}
+
+const FlowTimer = {
+  running:false, remain:0, total:0, t:null, scene:null, _els:null,
+  start(sec, sceneId){
+    this.stop(); this.total = sec; this.remain = sec; this.scene = sceneId; this.running = true; this.render(); this.tick();
+  },
+  tick(){
+    if(!this.running) return;
+    if(this.remain <= 0){ this.done(); return; }
+    this.remain--; this.render();
+    this.t = setTimeout(()=>this.tick(), 1000);
+  },
+  pause(){ this.running = false; clearTimeout(this.t); this.render(); },
+  resume(){ if(this.remain > 0){ this.running = true; this.render(); this.tick(); } },
+  stop(){ this.running = false; clearTimeout(this.t); this.remain = 0; this.render(); },
+  done(){ this.running = false; clearTimeout(this.t); this.remain = 0; this.render(); flashToast("专注完成 · 去喝口水"); this.chime(); },
+  chime(){
+    try{
+      const AC = window.AudioContext || window.webkitAudioContext; const ac = new AC();
+      const o = ac.createOscillator(); const g = ac.createGain();
+      o.connect(g); g.connect(ac.destination); o.type = "sine"; o.frequency.value = 523.25;
+      const now = ac.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.18, now + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+      o.start(now); o.stop(now + 1.9);
+      setTimeout(()=>{ try{ ac.close(); }catch(e){} }, 2100);
+    }catch(e){}
+  },
+  render(){
+    const e = this._els; if(!e) return;
+    const m = Math.floor(this.remain/60), s = this.remain%60;
+    e.num.textContent = String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+    e.sub.textContent = this.running ? "专注中" : (this.remain>0 ? "已暂停" : "准备");
+    const C = 2*Math.PI*92;
+    e.ring.style.strokeDashoffset = (C*(1 - (this.total? this.remain/this.total : 0))).toFixed(1);
+  }
+};
+
+function renderFlow(c){
+  Sanctuary.load();
+  const defScene = (scenes.find(s=>s.type==="24h") || scenes[0] || {}).id;
+  let dur = 25*60, sceneId = defScene;
+  const C = 2*Math.PI*92;
+  let html = `<div class="flow-wrap">`;
+  html += `<div class="flow-ring"><svg width="210" height="210" viewBox="0 0 210 210"><circle cx="105" cy="105" r="92" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="8"/><circle id="flow-ring-c" cx="105" cy="105" r="92" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="0" style="transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.6))"/></svg><div class="fr-num"><div class="fr-t" id="flow-num">25:00</div><div class="fr-s" id="flow-sub">准备</div></div></div>`;
+  html += `<div class="flow-durs" id="flow-durs">` + [15,25,45].map(m=>`<div class="flow-dur${m===25?' sel':''}" data-min="${m}">${m} 分钟</div>`).join("") + `</div>`;
+  html += `<div class="flow-bg">背景：<span id="flow-scene" style="color:var(--accent)">${(scenes.find(s=>s.id===sceneId)||{}).title||""}</span> · 下方可换</div>`;
+  html += `<div class="q-hint" style="text-align:center">选一段自然做背景，开始一段不被打扰的专注。计时结束会有轻柔提示音。</div>`;
+  html += `<div class="echo-master"><div class="demo" id="flow-start">▶ 开始专注</div><div class="demo" id="flow-toggle">⏸ 暂停</div><div class="demo" id="flow-reset">↺ 重置</div></div>`;
+  html += `<div class="q-pick" id="flow-scenes">` + scenes.slice(0,12).map(s=>`<div class="qp${s.id===sceneId?' sel':''}" data-sid="${s.id}">${s.title}</div>`).join("") + `</div>`;
+  html += `</div>`;
+  c.innerHTML = html;
+  FlowTimer._els = { num:c.querySelector("#flow-num"), sub:c.querySelector("#flow-sub"), ring:c.querySelector("#flow-ring-c") };
+  FlowTimer.render();
+  c.querySelectorAll("[data-min]").forEach(el=> el.addEventListener("click", ()=>{
+    dur = (+el.dataset.min)*60;
+    c.querySelectorAll("[data-min]").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
+    if(!FlowTimer.running){ FlowTimer.remain = dur; FlowTimer.total = dur; FlowTimer.render(); }
+  }));
+  c.querySelectorAll("[data-sid]").forEach(el=> el.addEventListener("click", ()=>{
+    sceneId = el.dataset.sid;
+    c.querySelectorAll("[data-sid]").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
+    const sc = scenes.find(s=>s.id===sceneId); if(sc) c.querySelector("#flow-scene").textContent = sc.title;
+    FlowTimer.scene = sceneId;
+  }));
+  c.querySelector("#flow-start").addEventListener("click", ()=>{ FlowTimer.start(dur, sceneId); c.querySelector("#flow-toggle").textContent="⏸ 暂停"; flashToast("开始专注 · "+dur/60+" 分钟"); });
+  c.querySelector("#flow-toggle").addEventListener("click", ()=>{ if(FlowTimer.running) FlowTimer.pause(); else FlowTimer.resume(); c.querySelector("#flow-toggle").textContent = FlowTimer.running ? "⏸ 暂停" : "▶ 继续"; });
+  c.querySelector("#flow-reset").addEventListener("click", ()=>{ FlowTimer.stop(); FlowTimer.remain = dur; FlowTimer.total = dur; FlowTimer.render(); c.querySelector("#flow-toggle").textContent="⏸ 暂停"; });
+}
+
+function renderCreate(c){
+  Sanctuary.load();
+  const def = (scenes.find(s=>s.type==="24h") || scenes[0]).id;
+  let sceneId = def, src = "reader", ownText = "", ownAuthor = "佚名";
+  let html = `<div class="create-preview" id="cp"><img class="cp-img" id="cp-img" src="${(scenes.find(s=>s.id===def)||{}).poster||""}"><div class="cp-shade"></div><div class="cp-q" id="cp-q">${escapeHtml(READER_LIB[0].t)}</div><div class="cp-a" id="cp-a">—— ${escapeHtml(READER_LIB[0].a)}</div></div>`;
+  html += `<div class="q-hint">文字来源</div>`;
+  html += `<div class="create-row" id="cp-src"><div class="create-chip sel" data-src="reader">读者金句</div><div class="create-chip" data-src="own">自己写</div></div>`;
+  html += `<div id="cp-own" style="display:none"><textarea class="q-area" id="cp-text" placeholder="写一句你想留下的话…"></textarea><input class="echo-name-in" id="cp-author" placeholder="署名（可选）" style="margin-top:8px;width:100%"></div>`;
+  html += `<div class="q-hint">挑一张自然底图</div>`;
+  html += `<div class="create-row" id="cp-scenes">` + scenes.slice(0,12).map(s=>`<div class="create-chip${s.id===def?' sel':''}" data-sid="${s.id}">${s.title}</div>`).join("") + `</div>`;
+  html += `<div class="wall-acts"><div class="q-btn primary" id="cp-save">保存到我的拼帖</div><div class="q-btn" id="cp-export">导出图片</div></div>`;
+  c.innerHTML = html;
+  function refreshQuote(){
+    if(src==="reader"){ const q = READER_LIB[Math.floor(Math.random()*READER_LIB.length)]; c.querySelector("#cp-q").textContent = q.t; c.querySelector("#cp-a").textContent = "—— "+q.a; }
+    else { c.querySelector("#cp-q").textContent = ownText || "（在此写一句话）"; c.querySelector("#cp-a").textContent = ownAuthor ? "—— "+ownAuthor : ""; }
+  }
+  c.querySelectorAll("[data-src]").forEach(el=> el.addEventListener("click", ()=>{
+    src = el.dataset.src;
+    c.querySelectorAll("[data-src]").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
+    c.querySelector("#cp-own").style.display = src==="own" ? "block" : "none";
+    if(src==="own"){ ownText = c.querySelector("#cp-text").value; ownAuthor = c.querySelector("#cp-author").value || "佚名"; }
+    refreshQuote();
+  }));
+  c.querySelector("#cp-text").addEventListener("input", ()=>{ ownText = c.querySelector("#cp-text").value; if(src==="own") refreshQuote(); });
+  c.querySelector("#cp-author").addEventListener("input", ()=>{ ownAuthor = c.querySelector("#cp-author").value || "佚名"; if(src==="own") refreshQuote(); });
+  c.querySelectorAll("[data-sid]").forEach(el=> el.addEventListener("click", ()=>{
+    sceneId = el.dataset.sid;
+    c.querySelectorAll("[data-sid]").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
+    const sc = scenes.find(s=>s.id===sceneId); if(sc) c.querySelector("#cp-img").src = sc.poster||sc.image||sc.video;
+  }));
+  c.querySelector("#cp-save").addEventListener("click", ()=>{
+    if(src==="own"){ ownText = c.querySelector("#cp-text").value.trim(); ownAuthor = c.querySelector("#cp-author").value.trim()||"佚名"; }
+    const q = c.querySelector("#cp-q").textContent; const a = c.querySelector("#cp-a").textContent.replace(/^——\s*/,"");
+    Sanctuary.store.collages.push({sceneId, text:q, author:a, src, ts:Date.now()});
+    Sanctuary.save(); flashToast("已存入「我的拼帖」");
+  });
+  c.querySelector("#cp-export").addEventListener("click", ()=>{
+    if(src==="own"){ ownText = c.querySelector("#cp-text").value.trim(); ownAuthor = c.querySelector("#cp-author").value.trim()||"佚名"; }
+    const q = c.querySelector("#cp-q").textContent; const a = c.querySelector("#cp-a").textContent.replace(/^——\s*/,"");
+    exportCollagePNG(sceneId, q, a);
+  });
+}
+
+function wrapText(ctx, text, maxW){
+  const lines = []; let line = "";
+  for(const ch of text.split("")){
+    const test = line + ch;
+    if(ctx.measureText(test).width > maxW && line){ lines.push(line); line = ch; }
+    else line = test;
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+function exportCollagePNG(sceneId, text, author){
+  const sc = scenes.find(s=>s.id===sceneId); if(!sc) return;
+  const img = new Image(); img.crossOrigin = "anonymous";
+  img.onload = ()=>{
+    try{
+      const W=1080, H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+      const x=cv.getContext("2d");
+      x.fillStyle="#05080a"; x.fillRect(0,0,W,H);
+      const ir=Math.max(W/img.width, H/img.height); const iw=img.width*ir, ih=img.height*ir;
+      x.drawImage(img,(W-iw)/2,(H-ih)/2,iw,ih);
+      const g=x.createLinearGradient(0,H,0,H*0.35); g.addColorStop(0,"rgba(0,0,0,.85)"); g.addColorStop(1,"rgba(0,0,0,0)");
+      x.fillStyle=g; x.fillRect(0,0,W,H);
+      x.fillStyle="#fff"; x.textAlign="center"; x.textBaseline="alphabetic";
+      const fs=46; x.font='600 '+fs+'px "Songti SC",serif';
+      const maxW=W-140; const lines=wrapText(x,text,maxW);
+      let y=H-260; const lh=fs*1.45;
+      lines.forEach(ln=>{ x.fillText(ln, W/2, y); y+=lh; });
+      y += 30;
+      x.font='400 28px "Songti SC",serif'; x.fillStyle="rgba(255,255,255,.82)";
+      x.fillText("—— "+author, W/2, y);
+      const url=cv.toDataURL("image/png"); const a=document.createElement("a"); a.href=url; a.download="calm-nature-collage.png"; document.body.appendChild(a); a.click(); a.remove();
+      flashToast("已导出拼帖图片");
+    }catch(e){ flashToast("导出失败："+e.message); }
+  };
+  img.onerror = ()=> flashToast("图片加载失败，请用线上版导出");
+  img.src = sc.poster || sc.image || sc.video;
+}
+
+function downloadJSON(name, obj){
+  try{
+    const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }catch(e){ flashToast("导出失败"); }
+}
+
+function renderWall(c){
+  Sanctuary.load();
+  let html = `<div class="wall-compose">
+    <textarea class="q-area" id="wall-text" placeholder="在空栈留一句话——给未来的自己，或给偶然路过这里的人…"></textarea>
+    <input class="echo-name-in" id="wall-name" placeholder="署名（可选，默认「过客」）" style="width:100%">
+    <div class="wall-acts"><div class="q-btn primary" id="wall-post">张贴</div></div>
+  </div>`;
+  html += `<div class="wall-acts" style="margin-top:14px"><div class="q-btn" id="wall-export">导出共笔包</div><div class="q-btn" id="wall-import">导入共笔包</div><input type="file" id="wall-file" accept="application/json" style="display:none"></div>`;
+  html += `<div class="q-hint" style="margin-top:14px">📌 这里的留言存在你自己的设备上。想和朋友互看？点「导出共笔包」发对方，对方「导入」即可合并。想做真正多人实时共笔墙，见下方说明。</div>`;
+  html += `<div class="wall-note" id="wall-giscus"></div>`;
+  html += `<div class="wall-list" id="wall-list"></div>`;
+  c.innerHTML = html;
+
+  function paint(){
+    const list = c.querySelector("#wall-list");
+    const posts = (Sanctuary.store.wall||[]).slice().sort((a,b)=>b.ts-a.ts);
+    if(!posts.length){ list.innerHTML = `<div class="q-hint" style="text-align:center">还没有留言。写下第一句吧。</div>`; return; }
+    list.innerHTML = posts.map(p=>{
+      const d = new Date(p.ts); const ds = (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+      return `<div class="wall-post"><div class="wp-top"><span class="wp-name">${escapeHtml(p.name||"过客")}</span><span>${ds}</span></div><div class="wp-text">${escapeHtml(p.text)}</div><div class="wp-top" style="margin-top:8px"><span></span><span class="wp-x" data-del="${p.id}">删除</span></div></div>`;
+    }).join("");
+    list.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
+      Sanctuary.store.wall = Sanctuary.store.wall.filter(x=>x.id!==el.dataset.del); Sanctuary.save(); paint();
+    }));
+  }
+  paint();
+
+  c.querySelector("#wall-post").addEventListener("click", ()=>{
+    const text = c.querySelector("#wall-text").value.trim();
+    if(!text){ flashToast("写点什么再张贴吧"); return; }
+    const name = c.querySelector("#wall-name").value.trim() || "过客";
+    Sanctuary.store.wall.push({id:"w"+Date.now()+Math.floor(Math.random()*999), text, name, ts:Date.now()});
+    Sanctuary.save(); c.querySelector("#wall-text").value=""; paint(); flashToast("已张贴");
+  });
+  c.querySelector("#wall-export").addEventListener("click", ()=>{
+    downloadJSON("calm-nature-wall.json", {app:"calm-nature-wall", exportAt:Date.now(), posts:Sanctuary.store.wall||[]});
+    flashToast("已导出共笔包");
+  });
+  const fileEl = c.querySelector("#wall-file");
+  c.querySelector("#wall-import").addEventListener("click", ()=> fileEl.click());
+  fileEl.addEventListener("change", ()=>{
+    const f = fileEl.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const data = JSON.parse(r.result);
+        const incoming = (data.posts||[]).filter(p=>p&&p.text);
+        const cur = Sanctuary.store.wall||[];
+        const ids = new Set(cur.map(p=>p.id));
+        let added=0;
+        incoming.forEach(p=>{ if(!ids.has(p.id)){ cur.push(p); ids.add(p.id); added++; } });
+        Sanctuary.store.wall = cur; Sanctuary.save(); paint();
+        flashToast("已合并 "+added+" 条留言");
+      }catch(e){ flashToast("文件格式不对"); }
+    };
+    r.readAsText(f); fileEl.value="";
+  });
+
+  const gbox = c.querySelector("#wall-giscus");
+  if(GISCUS.enabled && GISCUS.repoId && GISCUS.categoryId){
+    gbox.innerHTML = `<b>多人实时共笔墙（已开启）</b><br>登录 GitHub 后即可与任何人互见留言。`;
+    const s = document.createElement("script");
+    s.src = "https://giscus.app/client.js";
+    s.setAttribute("data-repo", GISCUS.repo);
+    s.setAttribute("data-repo-id", GISCUS.repoId);
+    s.setAttribute("data-category", GISCUS.category);
+    s.setAttribute("data-category-id", GISCUS.categoryId);
+    s.setAttribute("data-mapping", "pathname");
+    s.setAttribute("data-reactions-enabled", "1");
+    s.setAttribute("data-emit-metadata", "0");
+    s.setAttribute("data-theme", "dark");
+    s.setAttribute("data-lang", "zh-CN");
+    s.crossOrigin = "anonymous"; s.async = true;
+    gbox.appendChild(s);
+  } else {
+    gbox.innerHTML = `<b>想要真正多人实时共笔墙？</b><br>① 打开 giscus.app，用 GitHub 登录，选仓库 <b>${GISCUS.repo}</b> 安装；<br>② 开启仓库的 Discussions；<br>③ 把安装后给的 repo-id / category-id 告诉我，我填进站点即可。之后任何人登录 GitHub 都能发、都能看到彼此的留言——这才是你说的"我加、别人加、互相看见"。`;
+  }
+}
+
+function renderMoodHeatmap(c){
+  Sanctuary.load();
+  const today = new Date();
+  let cells = "";
+  for(let i=139;i>=0;i--){
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    const key = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const rec = Sanctuary.store.moods[key];
+    let v = 0, label = "";
+    if(rec){ const fi = FEELINGS.findIndex(x=>x.key===rec.key); if(fi>=0){ v=fi+1; label=FEELINGS[fi].label; } }
+    cells += `<div class="mood-cell" data-v="${v}" title="${key}${label?(' · '+label):''}"></div>`;
+  }
+  const cnt = {}; FEELINGS.forEach(f=>cnt[f.key]=0);
+  Object.values(Sanctuary.store.moods).forEach(r=>{ if(cnt[r.key]!==undefined) cnt[r.key]++; });
+  let stats = "";
+  FEELINGS.forEach(f=>{ if(cnt[f.key]>0) stats += `<span class="mood-stat">${f.emoji} ${f.label} · <b>${cnt[f.key]}</b></span>`; });
+  if(!stats) stats = `<span class="mood-stat">还没攒够数据，多签到几天就有了</span>`;
+  const block = document.createElement("div");
+  block.className = "mood-heat";
+  block.innerHTML = `<div class="mh-title">心境轨迹 · 近 140 天</div><div class="mood-grid">${cells}</div><div class="mood-stats">${stats}</div>`;
+  c.appendChild(block);
+}
+
+function startQueue(ids, idx){
+  playQueue = ids.slice(); queueIdx = idx;
+  enterPlayer(playQueue[idx]);
+}
+function nextInQueue(){
+  if(playQueue.length===0 || queueIdx<0) return;
+  if(queueIdx >= playQueue.length-1){ flashToast("连播结束"); playQueue=[]; queueIdx=-1; updateQueueUI(); return; }
+  queueIdx++;
+  enterPlayer(playQueue[queueIdx]);
+}
+function updateQueueUI(){
+  const qn = document.getElementById("btn-next-q");
+  const qa = document.getElementById("btn-qauto");
+  if(!qn || !qa) return;
+  const active = playQueue.length>1 && queueIdx>=0;
+  qn.classList.toggle("show", active);
+  qa.classList.toggle("show", playQueue.length>0);
+  qa.classList.toggle("on", queueAuto);
+  qa.textContent = queueAuto ? "自动连播 · 开" : "自动连播 · 关";
+  clearTimeout(queueTimer);
+  if(active && queueAuto){ queueTimer = setTimeout(nextInQueue, 45000); }
+}
+function updateMoodBadge(forceName){
+  const el = document.getElementById("mood-badge"); if(!el) return;
+  let name = forceName;
+  if(!name){ const v = document.querySelector(".view.active"); name = v ? v.id.replace("view-","") : ""; }
+  const show = (name==="splash" || name==="guide" || name==="gallery");
+  el.classList.toggle("show", !!show);
+  if(!show) return;
+  Sanctuary.load();
+  const rec = Sanctuary.store.moods[Sanctuary.todayKey()];
+  const f = rec ? (FEELINGS.find(x=>x.key===rec.key)||FEELINGS[0]) : null;
+  el.querySelector(".mb-e").textContent = f ? f.emoji : "🌿";
+  el.querySelector(".mb-t").textContent = f ? ("今日 · "+f.label) : "今日心境";
+}
+
 // ---------- startup ----------
 
 function init(){
@@ -2887,7 +3506,23 @@ function init(){
   document.getElementById("btn-sanctuary-splash").addEventListener("click", ()=> showView("sanctuary"));
   document.getElementById("btn-sanct-gallery").addEventListener("click", ()=> showView("sanctuary"));
   document.getElementById("btn-sanct-back").addEventListener("click", ()=> showView("gallery"));
-  document.getElementById("sd-close").addEventListener("click", ()=> document.getElementById("sanct-detail").classList.remove("open"));
+  document.getElementById("sd-close").addEventListener("click", ()=>{ EchoMixer.stopAll(); FlowTimer.stop(); document.getElementById("sanct-detail").classList.remove("open"); });
+
+  // ---- floating mood badge ----
+  const mb = document.createElement("div"); mb.id = "mood-badge"; mb.className = "mood-badge";
+  mb.innerHTML = '<span class="mb-e">🌿</span><span class="mb-t">今日心境</span>';
+  document.body.appendChild(mb);
+  mb.addEventListener("click", ()=>{ showView("sanctuary"); openModule("mood"); });
+
+  // ---- queue next / auto buttons ----
+  const qn = document.createElement("div"); qn.id = "btn-next-q"; qn.className = "qnext"; qn.textContent = "下一景 ▶▏";
+  document.getElementById("dock").appendChild(qn);
+  qn.addEventListener("click", nextInQueue);
+  const qa = document.createElement("div"); qa.id = "btn-qauto"; qa.className = "qnext auto"; qa.textContent = "自动连播 · 关";
+  document.getElementById("dock").appendChild(qa);
+  qa.addEventListener("click", ()=>{ queueAuto = !queueAuto; updateQueueUI(); flashToast(queueAuto ? "已开启自动连播" : "已关闭自动连播"); });
+
+  updateMoodBadge(); updateQueueUI();
   document.getElementById("btn-fav").addEventListener("click", e=>{ e.stopPropagation(); poke(); toggleFavCurrent(); });
   document.getElementById("btn-journal").addEventListener("click", e=>{ e.stopPropagation(); poke(); openJournal(currentScene ? currentScene.id : null); });
   updateFavIcon();
