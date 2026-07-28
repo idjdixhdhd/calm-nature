@@ -163,17 +163,18 @@
     "category": "water",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/water-1.jpg",
-    "poster": "./media/water-1.jpg",
+    "image": "./media/water-1.jpg?v=20260728e",
+    "poster": "./media/water-1.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice nature photography · lake reflection mountains"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · calm water / lake / river"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "water-2",
@@ -182,17 +183,18 @@
     "category": "water",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/water-2.jpg",
-    "poster": "./media/water-2.jpg",
+    "image": "./media/water-2.jpg?v=20260728e",
+    "poster": "./media/water-2.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice nature photography · lake reflection mountains"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · calm water / lake / river"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "static"
   },
   {
     "id": "water-3",
@@ -201,17 +203,18 @@
     "category": "water",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/water-3.jpg",
-    "poster": "./media/water-3.jpg",
+    "image": "./media/water-3.jpg?v=20260728e",
+    "poster": "./media/water-3.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice nature photography · lake reflection mountains"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · calm water / lake / river"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "extreme-1",
@@ -220,17 +223,18 @@
     "category": "extreme",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/extreme-1.jpg",
-    "poster": "./media/extreme-1.jpg",
+    "image": "./media/extreme-1.jpg?v=20260728e",
+    "poster": "./media/extreme-1.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice nature photography · desert dunes"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · mountain / desert / glacier"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "extreme-2",
@@ -239,17 +243,18 @@
     "category": "extreme",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/extreme-2.jpg",
-    "poster": "./media/extreme-2.jpg",
+    "image": "./media/extreme-2.jpg?v=20260728e",
+    "poster": "./media/extreme-2.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice nature photography · desert dunes"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · mountain / desert / glacier"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "static"
   },
   {
     "id": "extreme-3",
@@ -258,17 +263,18 @@
     "category": "extreme",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/extreme-3.jpg",
-    "poster": "./media/extreme-3.jpg",
+    "image": "./media/extreme-3.jpg?v=20260728e",
+    "poster": "./media/extreme-3.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice nature photography · desert dunes"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · mountain / desert / glacier"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "forest-1",
@@ -277,17 +283,18 @@
     "category": "forest",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/forest-1.jpg",
-    "poster": "./media/forest-1.jpg",
+    "image": "./media/forest-1.jpg?v=20260728e",
+    "poster": "./media/forest-1.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice · rainforest"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · misty / enchanted forest"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "forest-2",
@@ -296,17 +303,18 @@
     "category": "forest",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/forest-2.jpg",
-    "poster": "./media/forest-2.jpg",
+    "image": "./media/forest-2.jpg?v=20260728e",
+    "poster": "./media/forest-2.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice · rainforest"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · misty / enchanted forest"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "forest-3",
@@ -315,17 +323,18 @@
     "category": "forest",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/forest-3.jpg",
-    "poster": "./media/forest-3.jpg",
+    "image": "./media/forest-3.jpg?v=20260728e",
+    "poster": "./media/forest-3.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice · rainforest"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · misty / enchanted forest"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
-    }
+    },
+    "motion": "subtle"
   },
   {
     "id": "sky-1",
@@ -334,17 +343,18 @@
     "category": "sky",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/sky-1.jpg",
-    "poster": "./media/sky-1.jpg",
+    "image": "./media/sky-1.jpg?v=20260728e",
+    "poster": "./media/sky-1.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice · milky way"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · milky way / aurora / sky"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "night": "./media/audio/music_night.mp3"
-    }
+    },
+    "motion": "static"
   },
   {
     "id": "sky-2",
@@ -353,17 +363,18 @@
     "category": "sky",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/sky-2.jpg",
-    "poster": "./media/sky-2.jpg",
+    "image": "./media/sky-2.jpg?v=20260728e",
+    "poster": "./media/sky-2.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice · milky way"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · milky way / aurora / sky"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "night": "./media/audio/music_night.mp3"
-    }
+    },
+    "motion": "static"
   },
   {
     "id": "sky-3",
@@ -372,16 +383,17 @@
     "category": "sky",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/sky-3.jpg",
-    "poster": "./media/sky-3.jpg",
+    "image": "./media/sky-3.jpg?v=20260728e",
+    "poster": "./media/sky-3.jpg?v=20260728e",
     "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free, no attribution required)",
-      "note": "Editor’s Choice · milky way"
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real 4K landscape photography · milky way / aurora / sky"
     },
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "night": "./media/audio/music_night.mp3"
-    }
+    },
+    "motion": "subtle"
   }
 ]
