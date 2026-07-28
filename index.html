@@ -771,6 +771,48 @@
 
   .sanct-banner .bt div{font-size:11px;color:var(--muted);margin-top:3px}
 
+
+  .sanct-today{display:flex;gap:10px;margin:0 auto 22px;max-width:640px;width:100%;padding:14px 16px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 46px -20px rgba(0,0,0,.55)}
+
+  .sanct-today .st-col{flex:1;min-width:0}
+
+  .sanct-today .st-col.st-read{flex:2.2}
+
+  .sanct-today .st-k{font-size:10px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+
+  .sanct-today .st-v{font-size:14px;margin-top:6px;color:var(--ui);line-height:1.5}
+
+  .sanct-today .st-read .st-v{color:var(--accent);font-family:"Cormorant Garamond","Songti SC",serif;font-size:15px}
+
+
+  .rd-feature{background:var(--glass);border:1px solid var(--glass-border);border-radius:18px;padding:20px 18px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 46px -20px rgba(0,0,0,.5)}
+
+  .rd-tag{font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+
+  .rd-text{font-family:"Cormorant Garamond","Songti SC",serif;font-size:21px;line-height:1.8;color:#eef3ee;margin-top:12px}
+
+  .rd-text.sm{font-size:15px;line-height:1.7;margin-top:0}
+
+  .rd-auth{font-size:12px;color:var(--muted);margin-top:12px}
+
+  .rd-auth.sm{margin-top:6px;font-size:11px}
+
+  .rd-acts{display:flex;align-items:center;gap:16px;margin-top:14px}
+
+  .rd-star{font-size:13px;color:var(--accent);cursor:pointer;letter-spacing:.05em}
+
+  .rd-star.on{color:var(--accent2)}
+
+  .rd-rand{font-size:13px;color:var(--muted);cursor:pointer;margin-left:auto;border:1px solid var(--glass-border);padding:7px 16px;border-radius:20px;transition:.2s}
+
+  .rd-rand:active{transform:scale(.96)}
+
+  .rd-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+
+  .rd-row2{display:flex;align-items:center;gap:10px}
+
+  .rd-row2 .rd-star{margin-left:auto;font-size:16px}
+
 </style>
 
 </head>
@@ -839,7 +881,7 @@
 
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
 
-  <div class="splash-sub"><button id="btn-sanctuary-splash" class="ghost">自我圣所 · Sanctuary</button></div>
+  <div class="splash-sub"><button id="btn-sanctuary-splash" class="ghost">空栈 · Entropy at Rest</button></div>
 
   <div class="splash-hint">轻触进入 · 开启声音体验更佳</div>
 
@@ -895,7 +937,7 @@
 
     <div class="gal-actions">
 
-      <div class="ic" id="btn-sanct-gallery" title="自我圣所">🏡</div>
+      <div class="ic" id="btn-sanct-gallery" title="空栈">🏡</div>
 
       <div class="ic" id="btn-mood" title="切换心境">🎨</div>
 
@@ -967,7 +1009,7 @@
 
         <div class="ic" id="btn-fav" title="收藏此景">♡</div>
 
-        <div class="ic" id="btn-journal" title="记一笔">📝</div>
+        <div class="ic" id="btn-journal" title="写今日一句">📝</div>
 
         <div class="ic" id="btn-sound" title="声音">🔊</div>
 
@@ -1063,7 +1105,7 @@
 
   <div class="gal-header">
 
-    <div class="gal-title serif">自我圣所<span class="en orbit">Sanctuary</span></div>
+    <div class="gal-title serif">空栈<span class="en orbit">Entropy at Rest</span></div>
 
     <div class="gal-actions"><div class="ic" id="btn-sanct-back" title="返回画廊">←</div></div>
 
@@ -2071,6 +2113,8 @@ const Sanctuary = {
 
     if(!this.store.journal) this.store.journal = [];
 
+    if(!this.store.quotes) this.store.quotes = [];
+
     if(!this.store.favorites) this.store.favorites = [];
 
     if(!this.store.solar) this.store.solar = {};
@@ -2107,9 +2151,9 @@ const FEELINGS = [
 
 const MODULES = [
 
-  {key:"mood",    icon:"🌗", title:"心境签到", en:"Daily Mood"},
+  {key:"mood",    icon:"🌗", title:"心境", en:"Daily Mood"},
 
-  {key:"journal", icon:"📖", title:"自然日记", en:"Nature Journal"},
+  {key:"reader",  icon:"📜", title:"读者·每日一读", en:"Daily Reader"},
 
   {key:"fav",     icon:"✦",  title:"个人收藏", en:"My Favorites"},
 
@@ -2241,7 +2285,9 @@ function renderSanctuary(){
 
   if(!body.dataset.rendered){
 
-    let html = `<div class="sanct-intro"><h2 class="serif">自我圣所</h2><div class="en orbit">A Sanctuary of Your Own</div><p>这里只属于你。记录每天的心境、写下与自然的相遇、收藏最爱的景象、跟随廿四节气呼吸。一切都存在你自己的设备上，不外传、不公开。</p></div>`;
+    let html = `<div class="sanct-intro"><h2 class="serif">空栈</h2><div class="en orbit">熵止 · Entropy at Rest</div><p>熵止，空栈。这是你心里的一座小岛——在这里，世界的熵增停了下来，你只管安放自己。每天一句读者、一种心情、一处收藏的自然、一个当下的节气。一切都存在你自己的设备上，不外传、不公开。</p></div>`;
+
+    html += sanctTodayHTML();
 
     html += `<div class="sanct-grid">`;
 
@@ -2271,6 +2317,42 @@ function renderSanctuary(){
 
 
 
+function sanctTodayHTML(){
+
+  Sanctuary.load();
+
+  const cur = currentSolarTerm();
+
+  const today = Sanctuary.todayKey();
+
+  const moodRec = Sanctuary.store.moods[today];
+
+  const moodF = moodRec ? (FEELINGS.find(x=>x.key===moodRec.key)||FEELINGS[0]) : null;
+
+  const moodTxt = moodF ? (moodF.emoji+" "+moodF.label) : "未签到";
+
+  const d = new Date();
+
+  const doy = Math.floor((d - new Date(d.getFullYear(),0,0))/86400000);
+
+  const q = READER_LIB[doy % READER_LIB.length];
+
+  const readTxt = q ? (q.t.length>22 ? q.t.slice(0,22)+"…" : q.t) : "—";
+
+  return `<div class="sanct-today">
+
+    <div class="st-col"><div class="st-k">节气</div><div class="st-v">${cur.n}</div></div>
+
+    <div class="st-col"><div class="st-k">心境</div><div class="st-v">${moodTxt}</div></div>
+
+    <div class="st-col st-read"><div class="st-k">今日一读</div><div class="st-v">${escapeHtml(readTxt)}</div></div>
+
+  </div>`;
+
+}
+
+
+
 function setStatus(key, txt){
 
   const el = document.querySelector('.sanct-card[data-mod="'+key+'"] .sc-status');
@@ -2295,7 +2377,7 @@ function updateSanctStatus(){
 
   setStatus("mood", moodF ? ("今日 · "+moodF.emoji+" "+moodF.label) : "今天还没签到");
 
-  setStatus("journal", Sanctuary.store.journal.length ? (Sanctuary.store.journal.length+" 篇手记") : "尚未动笔");
+  setStatus("reader", READER_LIB.length ? ("每日一读 · "+READER_LIB.length+" 句") : "空");
 
   setStatus("fav", Sanctuary.store.favorites.length ? (Sanctuary.store.favorites.length+" 个收藏") : "空空如也");
 
@@ -2309,7 +2391,7 @@ function updateSanctStatus(){
 
 function openModule(key){
 
-  const titles = {mood:"心境签到", journal:"自然日记", fav:"个人收藏", solar:"我的节气历"};
+  const titles = {mood:"心境", reader:"读者·每日一读", fav:"个人收藏", solar:"我的节气历"};
 
   document.getElementById("sd-title").textContent = titles[key] || "";
 
@@ -2319,7 +2401,7 @@ function openModule(key){
 
   if(key==="mood") renderMood(c);
 
-  else if(key==="journal") renderJournal(c);
+  else if(key==="reader") renderReader(c);
 
   else if(key==="fav") renderFav(c);
 
@@ -2347,17 +2429,21 @@ function renderMood(c){
 
     const f = FEELINGS.find(x=>x.key===rec.key)||FEELINGS[0];
 
-    html += `<div class="sanct-banner"><div class="bb">${f.emoji}</div><div class="bt"><b>今日已签到 · ${f.label}</b><div>${rec.note? "「"+escapeHtml(rec.note)+"」" : "今天已留下你的心境"}</div></div></div>`;
+    const scName = rec.scene ? ((scenes.find(s=>s.id===rec.scene)||{}).title||"") : "";
+
+    html += `<div class="sanct-banner"><div class="bb">${f.emoji}</div><div class="bt"><b>今日已签到 · ${f.label}</b><div>${rec.note? "「"+escapeHtml(rec.note)+"」" : (scName? "在 "+escapeHtml(scName) : "今天已留下你的心境")}</div></div></div>`;
 
   }
 
-  html += `<div class="q-hint">此刻的你，是怎样的心情？选一个，它会沉淀成你专属的自然日记。</div>`;
+  html += `<div class="q-hint">此刻的你，是怎样的心情？轻点一下就好——它只属于你。</div>`;
 
   html += `<div class="feel-grid" id="feel-grid">`;
 
   FEELINGS.forEach(f=>{ html += `<div class="feel${rec && rec.key===f.key?" sel":""}" data-k="${f.key}"><div class="fe">${f.emoji}</div><div class="fl">${f.label}</div></div>`; });
 
   html += `</div>`;
+
+  if(Sanctuary._scene){ const sc = scenes.find(s=>s.id===Sanctuary._scene); if(sc) html += `<div class="q-hint">此刻场景：${escapeHtml(sc.title)}</div>`; }
 
   html += `<textarea class="q-area" id="mood-note" placeholder="写一句此刻的心事（可选）…">${rec ? escapeHtml(rec.note||"") : ""}</textarea>`;
 
@@ -2381,7 +2467,7 @@ function renderMood(c){
 
     const note = c.querySelector("#mood-note").value.trim();
 
-    Sanctuary.store.moods[today] = {key:sel, note, ts:Date.now()};
+    Sanctuary.store.moods[today] = {key:sel, note, scene:Sanctuary._scene||null, ts:Date.now()};
 
     Sanctuary.save();
 
@@ -2401,95 +2487,153 @@ function renderMood(c){
 
 
 
-function renderJournal(c){
+const READER_LIB = [
+
+  {t:"命运有一半在你手里，只有另一半才在上帝手里。你一生的努力，就是：用你自己手里所拥有的，去获取上帝所掌握的。", a:"罗秋菊《上帝只掌握一半》", tag:"人生"},
+
+  {t:"生命是一个人自己的不可转让的专利。生命的过程，就是时间消费的过程。", a:"刘湛秋《心灵的轻松》", tag:"人生"},
+
+  {t:"我愿意以轻对重，以轻对累。", a:"刘湛秋", tag:"自我"},
+
+  {t:"常常会无端地想念一些人。想起一些人时，总感觉自己的生命是切成一段段的，每一段都和一些人联在一起。", a:"徐智慧《想念》", tag:"人生"},
+
+  {t:"何为富贵？无须向别人折腰，则为贵；无须向别人伸手，则为富。", a:"史玉柱", tag:"自我"},
+
+  {t:"世界上没有任何东西可以永恒。如果它流动，就会悄悄流逝；如果它生长，它就会慢慢凋零。", a:"读者", tag:"哲思"},
+
+  {t:"死水尚且有微澜，更何况是有花有草、有风有雨的生活，岂可就这样白白地沉寂、默默地荒废了！", a:"朱成玉", tag:"治愈"},
+
+  {t:"真诚都会有一点瑕疵，只有圆滑才能滴水不漏。", a:"读者", tag:"哲思"},
+
+  {t:"成熟的人不问过去，聪明的人不问现在，豁达的人不问未来。", a:"读者", tag:"人生"},
+
+  {t:"我们的成长是一列上了发条的火车，开动了就再也停不下来。沿途所有平凡的、单调的、寂寞的、惊艳的时光，拼凑起来刚好是我们最好的年代。", a:"读者", tag:"时光"},
+
+  {t:"你赞扬一棵树迎风挺拔，却忘了它年复一年形单影只的孤苦。", a:"乔小囧", tag:"自然"},
+
+  {t:"平视世界、平视现实、平视自己。", a:"朱华贤《平视》", tag:"自我"},
+
+  {t:"雨什么时候下？风什么时候起？只一个“等”字。", a:"筱楚《雨什么时候下》", tag:"自然"},
+
+  {t:"只要在我心身透支时，有一双温暖的手向我伸出，我便能借助这一臂之力走出困境。", a:"读者", tag:"治愈"},
+
+  {t:"除了你自己，没有任何人和任何事物可以给你带来平静。", a:"读者", tag:"自我"},
+
+  {t:"幸福的生活有三个不可缺的因素：一是有希望，二是有事做，三是能爱人。", a:"余也鲁《幸福三要素》", tag:"人生"},
+
+  {t:"风暴扭曲了大树，我相信，种子已经插入深沉的泥土；洪水卷走了两岸的房屋，我相信，孩子依然像天使一样依偎在母亲的怀抱。", a:"读者", tag:"自然"},
+
+  {t:"人生只是一个过程。大家都从容点不好么？", a:"读者", tag:"人生"},
+
+  {t:"孤独，孤是王者，独是独一无二。独一无二的王者要接受永远的孤独，不需要任何人的认同和理解。", a:"读者", tag:"自我"},
+
+  {t:"不乱于心，不困于情，不畏将来，不念过往。如此，安好。", a:"丰子恺", tag:"自我"},
+
+  {t:"你若爱，生活哪里都可爱。你若恨，生活哪里都可恨。", a:"丰子恺", tag:"治愈"},
+
+  {t:"星星在哪里都是很亮的，就看你有没有抬头去看它们。", a:"读者", tag:"哲思"},
+
+  {t:"人生就像一场旅行，不必在乎目的地，在乎的，是沿途的风景以及看风景的心情。", a:"读者", tag:"时光"},
+
+  {t:"心小了，所有的小事就大了；心大了，所有的大事都小了。", a:"读者", tag:"哲思"},
+
+  {t:"我们曾如此渴望命运的波澜，到最后才发现：人生最曼妙的风景，竟是内心的淡定与从容。", a:"杨绛", tag:"自我"},
+
+  {t:"年轻的时候，我们常常冲着镜子做鬼脸；年老的时候，镜子就冲着你做鬼脸。", a:"刘墉", tag:"时光"},
+
+  {t:"人生实在是一本书，内容复杂，分量沉重，值得翻到个人能翻到的最后一页，而且必须慢慢地翻。", a:"沈从文", tag:"人生"},
+
+  {t:"花开了，就像睡醒了似的。鸟飞了，就像在天上逛似的。虫子叫了，就像虫子在说话似的。", a:"萧红《呼兰河传》", tag:"自然"},
+
+  {t:"在黑白里温柔地爱彩色，在彩色里朝圣黑白。", a:"汪曾祺", tag:"哲思"},
+
+  {t:"一定要爱着点什么，恰似草木对光阴的钟情。", a:"汪曾祺", tag:"自然"},
+
+  {t:"四方食事，不过一碗人间烟火。", a:"汪曾祺", tag:"治愈"},
+
+  {t:"世间最可厌恶的事，莫过于一张生气的脸；世间最下流的事，莫如把生气的脸摆给旁人看。", a:"杨绛", tag:"自我"},
+
+  {t:"我们都是赶路的人，偶尔也要停下来，等一等灵魂。", a:"读者", tag:"时光"},
+
+  {t:"人总要沉下心来，过一段宁静自省的日子，整理自己。", a:"读者", tag:"自我"},
+
+  {t:"风大时，要表现逆的风骨；风小时，要表现顺的悠然。", a:"刘墉", tag:"自然"},
+
+  {t:"于千万人之中遇见你所要遇见的人，于千万年之中，时间的无涯的荒野里，没有早一步，也没有晚一步，刚巧赶上了。", a:"张爱玲", tag:"人生"}
+
+];
+
+
+
+function renderReader(c){
 
   Sanctuary.load();
 
-  let html = `<div class="q-actions" style="margin-bottom:4px"><div class="q-btn primary" id="j-new">＋ 记一笔</div></div>`;
+  const lib = READER_LIB;
 
-  html += `<div id="j-composer" style="display:none"></div>`;
+  const N = lib.length;
 
-  if(!Sanctuary.store.journal.length){
+  const now = new Date();
 
-    html += `<div class="q-hint" style="text-align:center;margin-top:20px">还没有手记。在任何场景里点 📝，或点上方「记一笔」，写下你与自然相遇的此刻。</div>`;
+  const doy = Math.floor((now - new Date(now.getFullYear(),0,0))/86400000);
 
-  } else {
+  let featured = doy % N;
 
-    [...Sanctuary.store.journal].reverse().forEach(en=>{
+  let tag = "全部";
 
-      const sc = scenes.find(s=>s.id===en.sceneId);
+  const savedSet = ()=> new Set(Sanctuary.store.quotes||[]);
 
-      const thumb = sc ? (sc.poster||sc.image||sc.video) : "";
+  function paint(){
 
-      const t = new Date(en.ts);
+    const s = savedSet();
 
-      const ts = (t.getMonth()+1)+"月"+t.getDate()+"日 "+String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
+    let items = lib;
 
-      html += `<div class="j-entry" data-id="${en.id}"><div class="j-top"><img class="j-thumb" src="${thumb}" alt=""><div><div class="j-scene">${escapeHtml(en.sceneTitle||"自然")}</div><div class="j-time">${ts}</div></div></div><div class="j-text">${escapeHtml(en.text)}</div><div class="j-del" data-del="${en.id}" title="删除">✕</div></div>`;
+    if(tag==="藏句") items = (Sanctuary.store.quotes||[]).map(id=>lib[id]).filter(Boolean);
 
-    });
+    else if(tag!=="全部") items = lib.filter(q=>q.tag===tag);
+
+    const f = lib[featured];
+
+    let html = "";
+
+    html += `<div class="rd-feature"><div class="rd-tag">今日一读 · ${now.getMonth()+1}月${now.getDate()}日</div><div class="rd-text">${escapeHtml(f.t)}</div><div class="rd-auth">—— ${escapeHtml(f.a)}</div><div class="rd-acts"><span class="rd-star ${s.has(featured)?'on':''}" data-star="${featured}">${s.has(featured)?'★ 已藏':'☆ 藏此句'}</span><span class="rd-rand" id="rd-rand">换一篇</span></div></div>`;
+
+    const tags = ["全部","自然","人生","治愈","哲思","时光","自我","藏句"];
+
+    html += `<div class="q-pick" id="rd-chips">` + tags.map(t=>`<div class="qp${t===tag?' sel':''}" data-tag="${t}">${t}</div>`).join("") + `</div>`;
+
+    if(!items.length){
+
+      html += `<div class="q-hint" style="text-align:center;margin-top:14px">这里还空着。去「全部」里藏几句你喜欢的吧。</div>`;
+
+    } else {
+
+      items.forEach(q=>{ const id=lib.indexOf(q); html += `<div class="rd-item"><div class="rd-text sm">${escapeHtml(q.t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(q.a)}</span><span class="rd-star ${s.has(id)?'on':''}" data-star="${id}">${s.has(id)?'★':'☆'}</span></div></div>`; });
+
+    }
+
+    c.innerHTML = html;
+
+    c.querySelector("#rd-rand").addEventListener("click", ()=>{ let r; do{ r=Math.floor(Math.random()*N); }while(r===featured && N>1); featured=r; paint(); });
+
+    c.querySelectorAll("[data-star]").forEach(el=> el.addEventListener("click", ()=>{
+
+      const id=+el.dataset.star; Sanctuary.store.quotes=Sanctuary.store.quotes||[];
+
+      const k=Sanctuary.store.quotes.indexOf(id);
+
+      if(k>=0) Sanctuary.store.quotes.splice(k,1); else Sanctuary.store.quotes.push(id);
+
+      Sanctuary.save(); paint(); updateSanctStatus();
+
+    }));
+
+    c.querySelectorAll("[data-tag]").forEach(el=> el.addEventListener("click", ()=>{ tag=el.dataset.tag; paint(); }));
 
   }
 
-  c.innerHTML = html;
-
-  c.querySelector("#j-new").addEventListener("click", ()=> openJournalComposer(c));
-
-  c.querySelectorAll(".j-del").forEach(x=> x.addEventListener("click", ()=>{
-
-    const id = x.dataset.del;
-
-    Sanctuary.store.journal = Sanctuary.store.journal.filter(e=>e.id!==id);
-
-    Sanctuary.save(); renderJournal(c); updateSanctStatus();
-
-  }));
-
-}
-
-
-
-function openJournalComposer(c, presetSceneId){
-
-  const box = c.querySelector("#j-composer");
-
-  if(!box) return;
-
-  let sel = presetSceneId || Sanctuary._draft || (scenes[0] && scenes[0].id);
-
-  Sanctuary._draft = sel;
-
-  let chips = `<div class="q-pick" id="j-pick">`;
-
-  scenes.forEach(s=> chips += `<div class="qp${s.id===sel?" sel":""}" data-id="${s.id}">${s.title}</div>`);
-
-  chips += `</div>`;
-
-  box.innerHTML = chips + `<textarea class="q-area" id="j-text" placeholder="此刻的自然，让你想到什么？写一句吧…"></textarea><div class="q-actions"><div class="q-btn primary" id="j-save">保存手记</div><div class="q-btn" id="j-cancel">取消</div></div>`;
-
-  box.style.display = "block";
-
-  box.querySelectorAll(".qp").forEach(el=> el.addEventListener("click", ()=>{
-
-    box.querySelectorAll(".qp").forEach(x=>x.classList.remove("sel")); el.classList.add("sel"); Sanctuary._draft = el.dataset.id;
-
-  }));
-
-  box.querySelector("#j-save").addEventListener("click", ()=>{
-
-    const sc = scenes.find(s=>s.id===Sanctuary._draft);
-
-    const txt = box.querySelector("#j-text").value.trim();
-
-    if(!txt){ flashToast("写点什么再保存吧"); return; }
-
-    Sanctuary.store.journal.push({id:"j"+Date.now(), sceneId:sc?sc.id:null, sceneTitle:sc?sc.title:"自然", text:txt, ts:Date.now()});
-
-    Sanctuary.save(); box.style.display = "none"; renderJournal(c); updateSanctStatus(); flashToast("已记下这一刻");
-
-  });
-
-  box.querySelector("#j-cancel").addEventListener("click", ()=>{ box.style.display = "none"; });
+  paint();
 
 }
 
@@ -2639,9 +2783,9 @@ function toggleFavCurrent(){
 
 function openJournal(sceneId){
 
-  showView("sanctuary"); openModule("journal");
+  Sanctuary._scene = sceneId || null;
 
-  if(sceneId){ const c = document.getElementById("sd-content"); openJournalComposer(c, sceneId); }
+  showView("sanctuary"); openModule("mood");
 
 }
 
