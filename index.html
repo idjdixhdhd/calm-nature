@@ -620,6 +620,157 @@
 
   .cat[data-cat="extreme"] .cat-head h3{text-shadow:0 0 28px rgba(255,201,160,.35)}
 
+
+
+  /* ============ SANCTUARY (自我圣所) ============ */
+
+  .splash-sub{margin-top:18px;animation:fadeUp 1.2s .9s both}
+
+  .splash-sub .ghost{padding:12px 30px;border-radius:50px;border:1px solid var(--glass-border);background:transparent;color:var(--muted);font-size:12px;letter-spacing:.22em;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .2s,color .3s,box-shadow .3s}
+
+  .splash-sub .ghost:hover{color:var(--ui);box-shadow:0 0 22px -6px rgba(var(--accent-rgb),.5)}
+
+  .splash-sub .ghost:active{transform:scale(.96)}
+
+
+  #view-sanctuary{flex-direction:column;padding:0;overflow-y:auto;overflow-x:hidden;
+    background:
+      radial-gradient(80% 50% at 18% 6%,rgba(160,214,184,.12),transparent 60%),
+      radial-gradient(70% 50% at 86% 18%,rgba(255,206,150,.10),transparent 60%),
+      radial-gradient(90% 60% at 50% 100%,rgba(150,180,255,.08),transparent 60%),
+      linear-gradient(180deg,#05100b,#030806);}
+
+  .sanct-body{padding:6px max(18px,var(--safe-l)) calc(30px + var(--safe-b)) max(18px,var(--safe-r));flex:1;display:flex;flex-direction:column;justify-content:center;min-height:100%}
+
+  .sanct-intro{text-align:center;margin:4vh 0 3vh}
+
+  .sanct-intro h2{font-size:clamp(26px,6vw,42px);letter-spacing:.1em}
+
+  .sanct-intro .en{font-size:11px;letter-spacing:.42em;color:var(--muted);margin-top:8px}
+
+  .sanct-intro p{font-size:13px;color:var(--muted);line-height:1.9;max-width:440px;margin:16px auto 0}
+
+  .sanct-grid{display:grid;gap:16px;grid-template-columns:1fr;max-width:640px;width:100%;margin:0 auto;padding-bottom:24px}
+
+  @media(min-width:560px){.sanct-grid{grid-template-columns:1fr 1fr}}
+
+  .sanct-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:22px 20px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 46px -20px rgba(0,0,0,.55);cursor:pointer;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s;display:flex;flex-direction:column;gap:10px}
+
+  .sanct-card:active{transform:scale(.98)}
+
+  .sanct-card:hover{transform:translateY(-5px);box-shadow:0 22px 50px -14px rgba(var(--accent-rgb),.25),0 0 0 1px rgba(var(--accent-rgb),.4)}
+
+  .sanct-card .sci{font-size:30px;filter:drop-shadow(0 0 14px rgba(var(--accent-rgb),.5));line-height:1}
+
+  .sanct-card h3{font-size:19px;letter-spacing:.06em}
+
+  .sanct-card .sc-en{font-size:9px;letter-spacing:.32em;color:var(--muted);text-transform:uppercase}
+
+  .sanct-card .sc-status{font-size:12px;color:var(--accent);margin-top:auto;min-height:16px;line-height:1.5}
+
+
+  .sanct-detail{position:absolute;inset:0;z-index:12;display:none;flex-direction:column;background:linear-gradient(180deg,rgba(5,14,11,.92),rgba(3,8,6,.98));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:max(16px,var(--safe-t)) max(18px,var(--safe-l)) calc(20px + var(--safe-b)) max(18px,var(--safe-r));animation:fade .35s ease}
+
+  .sanct-detail.open{display:flex}
+
+  .sd-head{display:flex;justify-content:space-between;align-items:center;padding:8px 0 14px;border-bottom:1px solid var(--glass-border);margin-bottom:14px}
+
+  .sd-title{font-size:20px;letter-spacing:.08em}
+
+  .sd-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:14px}
+
+
+  .feel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+  .feel{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:14px 8px;text-align:center;cursor:pointer;transition:.25s}
+
+  .feel:active{transform:scale(.95)}
+
+  .feel.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 22px -4px rgba(var(--accent-rgb),.7)}
+
+  .feel .fe{font-size:26px;line-height:1}
+
+  .feel .fl{font-size:13px;margin-top:6px;letter-spacing:.05em}
+
+
+  .q-row{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center}
+
+  .q-row .q-thumb{width:54px;height:54px;border-radius:12px;object-fit:cover;flex:0 0 54px;background:#0a0e0c;border:1px solid var(--glass-border)}
+
+  .q-row .q-main{flex:1;min-width:0}
+
+  .q-row .q-t{font-size:15px;letter-spacing:.04em}
+
+  .q-row .q-s{font-size:11px;color:var(--muted);margin-top:3px}
+
+  .q-row .q-x{font-size:18px;color:var(--muted);cursor:pointer;padding:6px}
+
+  .q-row .q-x:active{color:#ff8a8a}
+
+
+  .j-entry{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:14px 16px;position:relative}
+
+  .j-entry .j-top{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+
+  .j-entry .j-thumb{width:48px;height:48px;border-radius:12px;object-fit:cover;flex:0 0 48px}
+
+  .j-entry .j-scene{font-size:14px;letter-spacing:.04em}
+
+  .j-entry .j-time{font-size:11px;color:var(--muted)}
+
+  .j-entry .j-text{font-size:16px;line-height:1.8;color:#eef3ee;font-family:"Cormorant Garamond","Songti SC",serif}
+
+  .j-entry .j-del{position:absolute;top:12px;right:12px;font-size:16px;color:var(--muted);cursor:pointer;padding:4px}
+
+  .j-entry .j-del:active{color:#ff8a8a}
+
+
+  .st-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+  .st-cell{background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;font-size:13px;transition:.2s;position:relative;line-height:1.3}
+
+  .st-cell:active{transform:scale(.95)}
+
+  .st-cell.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 18px -4px rgba(var(--accent-rgb),.7);color:var(--accent)}
+
+  .st-cell .st-d{font-size:9px;color:var(--muted);margin-top:3px}
+
+  .st-cell .st-dot{position:absolute;top:5px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+
+
+  .q-area{width:100%;min-height:96px;resize:none;border-radius:16px;border:1px solid var(--glass-border);background:rgba(0,0,0,.28);color:var(--ui);padding:14px 16px;font-size:15px;line-height:1.8;font-family:inherit;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-sizing:border-box}
+
+  .q-area:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+
+  .q-actions{display:flex;gap:12px;margin-top:6px}
+
+  .q-btn{flex:1;padding:13px;border-radius:30px;border:1px solid var(--glass-border);background:rgba(var(--accent-rgb),.14);color:var(--ui);font-size:14px;letter-spacing:.16em;cursor:pointer;text-align:center;transition:.2s;box-sizing:border-box}
+
+  .q-btn:active{transform:scale(.97)}
+
+  .q-btn.primary{background:linear-gradient(135deg,rgba(var(--accent-rgb),.3),rgba(var(--accent-rgb),.1));box-shadow:0 0 24px -6px rgba(var(--accent-rgb),.6)}
+
+  .q-hint{font-size:11px;color:var(--muted);line-height:1.7}
+
+  .q-pick{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+
+  .q-pick .qp{padding:8px 14px;border-radius:20px;border:1px solid var(--glass-border);background:var(--glass);font-size:12px;cursor:pointer;transition:.2s}
+
+  .q-pick .qp.sel{border-color:var(--accent);color:var(--accent)}
+
+  .q-pick .qp:active{transform:scale(.96)}
+
+
+  .sanct-banner{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+
+  .sanct-banner .bb{font-size:28px;line-height:1}
+
+  .sanct-banner .bt{flex:1;min-width:0}
+
+  .sanct-banner .bt b{font-size:15px;letter-spacing:.04em}
+
+  .sanct-banner .bt div{font-size:11px;color:var(--muted);margin-top:3px}
+
 </style>
 
 </head>
@@ -688,6 +839,8 @@
 
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
 
+  <div class="splash-sub"><button id="btn-sanctuary-splash" class="ghost">自我圣所 · Sanctuary</button></div>
+
   <div class="splash-hint">轻触进入 · 开启声音体验更佳</div>
 
 </div>
@@ -741,6 +894,8 @@
     <div class="gal-title serif">自然之境<span class="en orbit">Gallery</span></div>
 
     <div class="gal-actions">
+
+      <div class="ic" id="btn-sanct-gallery" title="自我圣所">🏡</div>
 
       <div class="ic" id="btn-mood" title="切换心境">🎨</div>
 
@@ -806,15 +961,19 @@
 
     </div>
 
-    <div class="btns">
+      <div class="btns">
 
-      <div class="ic" id="btn-back" title="返回画廊">←</div>
+        <div class="ic" id="btn-back" title="返回画廊">←</div>
 
-      <div class="ic" id="btn-sound" title="声音">🔊</div>
+        <div class="ic" id="btn-fav" title="收藏此景">♡</div>
 
-      <div class="ic" id="btn-info2" title="素材来源">ⓘ</div>
+        <div class="ic" id="btn-journal" title="记一笔">📝</div>
 
-    </div>
+        <div class="ic" id="btn-sound" title="声音">🔊</div>
+
+        <div class="ic" id="btn-info2" title="素材来源">ⓘ</div>
+
+      </div>
 
   </div>
 
@@ -891,6 +1050,38 @@
       <div class="go" id="gate-go">轻触开启</div>
 
     </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- SANCTUARY (自我圣所) -->
+
+<div id="view-sanctuary" class="view">
+
+  <div class="gal-header">
+
+    <div class="gal-title serif">自我圣所<span class="en orbit">Sanctuary</span></div>
+
+    <div class="gal-actions"><div class="ic" id="btn-sanct-back" title="返回画廊">←</div></div>
+
+  </div>
+
+  <div class="sanct-body" id="sanct-body"></div>
+
+  <div class="sanct-detail" id="sanct-detail">
+
+    <div class="sd-head">
+
+      <div class="sd-title serif" id="sd-title">--</div>
+
+      <div class="ic" id="sd-close" title="返回">←</div>
+
+    </div>
+
+    <div class="sd-content" id="sd-content"></div>
 
   </div>
 
@@ -1274,6 +1465,10 @@ function showView(name){
 
   if(name==="gallery") renderGallery();
 
+  if(name==="sanctuary") renderSanctuary();
+
+  if(name!=="sanctuary"){ const sd=document.getElementById("sanct-detail"); if(sd) sd.classList.remove("open"); }
+
 }
 
 
@@ -1473,6 +1668,8 @@ function enterPlayer(id){
   }
 
   buildCredits();
+
+  updateFavIcon();
 
   poke();
 
@@ -1858,6 +2055,598 @@ function cycleMood(){
 
 
 
+// ---------- SANCTUARY (自我圣所) · 纯本地 localStorage，不联网不公开 ----------
+
+const Sanctuary = {
+
+  store:null,
+
+  load(){
+
+    try{ this.store = JSON.parse(localStorage.getItem("quiet-nature-sanctuary")||"null"); }catch(e){ this.store=null; }
+
+    if(!this.store || typeof this.store!=="object") this.store = {moods:{},journal:[],favorites:[],solar:{}};
+
+    if(!this.store.moods) this.store.moods = {};
+
+    if(!this.store.journal) this.store.journal = [];
+
+    if(!this.store.favorites) this.store.favorites = [];
+
+    if(!this.store.solar) this.store.solar = {};
+
+    return this.store;
+
+  },
+
+  save(){ try{ localStorage.setItem("quiet-nature-sanctuary", JSON.stringify(this.store)); }catch(e){} },
+
+  todayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+
+};
+
+
+
+const FEELINGS = [
+
+  {key:"calm",    label:"宁静", emoji:"🌿", mood:"mist"},
+
+  {key:"soft",    label:"温柔", emoji:"🌸", mood:"ember"},
+
+  {key:"joy",     label:"雀跃", emoji:"🌞", mood:"ember"},
+
+  {key:"reflect", label:"深思", emoji:"💧", mood:"mist"},
+
+  {key:"heavy",   label:"怅惘", emoji:"🍂", mood:"night"},
+
+  {key:"tired",   label:"疲惫", emoji:"🌙", mood:"night"}
+
+];
+
+
+
+const MODULES = [
+
+  {key:"mood",    icon:"🌗", title:"心境签到", en:"Daily Mood"},
+
+  {key:"journal", icon:"📖", title:"自然日记", en:"Nature Journal"},
+
+  {key:"fav",     icon:"✦",  title:"个人收藏", en:"My Favorites"},
+
+  {key:"solar",   icon:"🍃", title:"我的节气历", en:"Solar Terms"}
+
+];
+
+
+
+const SOLAR_TERMS = [
+
+  {n:"小寒",en:"Minor Cold",m:1,d:6,cat:"extreme",mood:"night"},
+
+  {n:"大寒",en:"Major Cold",m:1,d:20,cat:"extreme",mood:"night"},
+
+  {n:"立春",en:"Start of Spring",m:2,d:4,cat:"forest",mood:"mist"},
+
+  {n:"雨水",en:"Rain Water",m:2,d:19,cat:"water",mood:"mist"},
+
+  {n:"惊蛰",en:"Awakening",m:3,d:6,cat:"forest",mood:"mist"},
+
+  {n:"春分",en:"Spring Equinox",m:3,d:21,cat:"water",mood:"mist"},
+
+  {n:"清明",en:"Pure Brightness",m:4,d:5,cat:"forest",mood:"mist"},
+
+  {n:"谷雨",en:"Grain Rain",m:4,d:20,cat:"water",mood:"mist"},
+
+  {n:"立夏",en:"Start of Summer",m:5,d:6,cat:"forest",mood:"ember"},
+
+  {n:"小满",en:"Grain Buds",m:5,d:21,cat:"water",mood:"ember"},
+
+  {n:"芒种",en:"Grain in Ear",m:6,d:6,cat:"forest",mood:"ember"},
+
+  {n:"夏至",en:"Summer Solstice",m:6,d:21,cat:"water",mood:"ember"},
+
+  {n:"小暑",en:"Minor Heat",m:7,d:7,cat:"water",mood:"ember"},
+
+  {n:"大暑",en:"Major Heat",m:7,d:23,cat:"water",mood:"ember"},
+
+  {n:"立秋",en:"Start of Autumn",m:8,d:8,cat:"forest",mood:"ember"},
+
+  {n:"处暑",en:"End of Heat",m:8,d:23,cat:"water",mood:"mist"},
+
+  {n:"白露",en:"White Dew",m:9,d:8,cat:"water",mood:"mist"},
+
+  {n:"秋分",en:"Autumn Equinox",m:9,d:23,cat:"forest",mood:"mist"},
+
+  {n:"寒露",en:"Cold Dew",m:10,d:8,cat:"extreme",mood:"night"},
+
+  {n:"霜降",en:"Frost's Descent",m:10,d:24,cat:"extreme",mood:"night"},
+
+  {n:"立冬",en:"Start of Winter",m:11,d:8,cat:"extreme",mood:"night"},
+
+  {n:"小雪",en:"Minor Snow",m:11,d:22,cat:"extreme",mood:"night"},
+
+  {n:"大雪",en:"Major Snow",m:12,d:7,cat:"extreme",mood:"night"},
+
+  {n:"冬至",en:"Winter Solstice",m:12,d:22,cat:"extreme",mood:"night"}
+
+];
+
+
+
+function currentSolarTerm(){
+
+  const now = new Date(), mo = now.getMonth()+1, da = now.getDate();
+
+  if(mo < 1 || (mo===1 && da < 6)) return SOLAR_TERMS[SOLAR_TERMS.length-1];
+
+  let idx = 0;
+
+  for(let i=0;i<SOLAR_TERMS.length;i++){
+
+    const t = SOLAR_TERMS[i];
+
+    if(mo > t.m || (mo===t.m && da >= t.d)) idx = i;
+
+  }
+
+  return SOLAR_TERMS[idx];
+
+}
+
+
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+
+
+function flashToast(msg){
+
+  let t = document.getElementById("qn-toast");
+
+  if(!t){
+
+    t = document.createElement("div"); t.id = "qn-toast";
+
+    t.style.cssText = "position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);z-index:60;background:rgba(10,14,13,.86);border:1px solid var(--glass-border);color:var(--ui);padding:10px 20px;border-radius:30px;font-size:13px;letter-spacing:.08em;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:80vw;text-align:center";
+
+    document.body.appendChild(t);
+
+  }
+
+  t.textContent = msg; t.style.opacity = "1"; t.style.transform = "translateX(-50%) translateY(0)";
+
+  clearTimeout(t._t); t._t = setTimeout(()=>{ t.style.opacity = "0"; t.style.transform = "translateX(-50%) translateY(8px)"; }, 1600);
+
+}
+
+
+
+function applyMoodToApp(mood){
+
+  document.body.dataset.mood = mood;
+
+  const mi = MOODS.indexOf(mood); if(mi>=0) moodIdx = mi;
+
+  const btn = document.getElementById("btn-mood");
+
+  if(btn) btn.title = "心境："+({mist:"晨雾",ember:"篝火",night:"星夜"})[mood];
+
+}
+
+
+
+function renderSanctuary(){
+
+  const body = document.getElementById("sanct-body");
+
+  if(!body.dataset.rendered){
+
+    let html = `<div class="sanct-intro"><h2 class="serif">自我圣所</h2><div class="en orbit">A Sanctuary of Your Own</div><p>这里只属于你。记录每天的心境、写下与自然的相遇、收藏最爱的景象、跟随廿四节气呼吸。一切都存在你自己的设备上，不外传、不公开。</p></div>`;
+
+    html += `<div class="sanct-grid">`;
+
+    MODULES.forEach(m=>{
+
+      html += `<div class="sanct-card" data-mod="${m.key}"><div class="sci">${m.icon}</div><div><h3>${m.title}</h3><div class="sc-en">${m.en}</div></div><div class="sc-status">—</div></div>`;
+
+    });
+
+    html += `</div>`;
+
+    body.innerHTML = html;
+
+    body.dataset.rendered = "1";
+
+    body.querySelectorAll(".sanct-card").forEach(card=>{
+
+      card.addEventListener("click", ()=> openModule(card.dataset.mod));
+
+    });
+
+  }
+
+  updateSanctStatus();
+
+}
+
+
+
+function setStatus(key, txt){
+
+  const el = document.querySelector('.sanct-card[data-mod="'+key+'"] .sc-status');
+
+  if(el) el.textContent = txt;
+
+}
+
+
+
+function updateSanctStatus(){
+
+  if(!document.getElementById("sanct-body").dataset.rendered) return;
+
+  Sanctuary.load();
+
+  const today = Sanctuary.todayKey();
+
+  const moodRec = Sanctuary.store.moods[today];
+
+  const moodF = moodRec ? (FEELINGS.find(x=>x.key===moodRec.key)||FEELINGS[0]) : null;
+
+  setStatus("mood", moodF ? ("今日 · "+moodF.emoji+" "+moodF.label) : "今天还没签到");
+
+  setStatus("journal", Sanctuary.store.journal.length ? (Sanctuary.store.journal.length+" 篇手记") : "尚未动笔");
+
+  setStatus("fav", Sanctuary.store.favorites.length ? (Sanctuary.store.favorites.length+" 个收藏") : "空空如也");
+
+  const cur = currentSolarTerm();
+
+  setStatus("solar", "当前 · "+cur.n);
+
+}
+
+
+
+function openModule(key){
+
+  const titles = {mood:"心境签到", journal:"自然日记", fav:"个人收藏", solar:"我的节气历"};
+
+  document.getElementById("sd-title").textContent = titles[key] || "";
+
+  const c = document.getElementById("sd-content");
+
+  c.innerHTML = "";
+
+  if(key==="mood") renderMood(c);
+
+  else if(key==="journal") renderJournal(c);
+
+  else if(key==="fav") renderFav(c);
+
+  else if(key==="solar") renderSolar(c);
+
+  document.getElementById("sanct-detail").classList.add("open");
+
+  c.scrollTop = 0;
+
+}
+
+
+
+function renderMood(c){
+
+  Sanctuary.load();
+
+  const today = Sanctuary.todayKey();
+
+  const rec = Sanctuary.store.moods[today];
+
+  let html = "";
+
+  if(rec){
+
+    const f = FEELINGS.find(x=>x.key===rec.key)||FEELINGS[0];
+
+    html += `<div class="sanct-banner"><div class="bb">${f.emoji}</div><div class="bt"><b>今日已签到 · ${f.label}</b><div>${rec.note? "「"+escapeHtml(rec.note)+"」" : "今天已留下你的心境"}</div></div></div>`;
+
+  }
+
+  html += `<div class="q-hint">此刻的你，是怎样的心情？选一个，它会沉淀成你专属的自然日记。</div>`;
+
+  html += `<div class="feel-grid" id="feel-grid">`;
+
+  FEELINGS.forEach(f=>{ html += `<div class="feel${rec && rec.key===f.key?" sel":""}" data-k="${f.key}"><div class="fe">${f.emoji}</div><div class="fl">${f.label}</div></div>`; });
+
+  html += `</div>`;
+
+  html += `<textarea class="q-area" id="mood-note" placeholder="写一句此刻的心事（可选）…">${rec ? escapeHtml(rec.note||"") : ""}</textarea>`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="mood-save">保存签到</div><div class="q-btn" id="mood-apply">应用氛围</div></div>`;
+
+  c.innerHTML = html;
+
+
+
+  let sel = rec ? rec.key : null;
+
+  c.querySelectorAll(".feel").forEach(el=>{
+
+    el.addEventListener("click", ()=>{ c.querySelectorAll(".feel").forEach(x=>x.classList.remove("sel")); el.classList.add("sel"); sel = el.dataset.k; });
+
+  });
+
+  c.querySelector("#mood-save").addEventListener("click", ()=>{
+
+    if(!sel) sel = FEELINGS[0].key;
+
+    const note = c.querySelector("#mood-note").value.trim();
+
+    Sanctuary.store.moods[today] = {key:sel, note, ts:Date.now()};
+
+    Sanctuary.save();
+
+    renderMood(c); updateSanctStatus(); flashToast("已签到 · "+ (FEELINGS.find(x=>x.key===sel)||FEELINGS[0]).label);
+
+  });
+
+  c.querySelector("#mood-apply").addEventListener("click", ()=>{
+
+    const f = FEELINGS.find(x=>x.key===(sel||(rec&&rec.key)))||FEELINGS[0];
+
+    applyMoodToApp(f.mood); flashToast("已应用「"+f.label+"」的氛围");
+
+  });
+
+}
+
+
+
+function renderJournal(c){
+
+  Sanctuary.load();
+
+  let html = `<div class="q-actions" style="margin-bottom:4px"><div class="q-btn primary" id="j-new">＋ 记一笔</div></div>`;
+
+  html += `<div id="j-composer" style="display:none"></div>`;
+
+  if(!Sanctuary.store.journal.length){
+
+    html += `<div class="q-hint" style="text-align:center;margin-top:20px">还没有手记。在任何场景里点 📝，或点上方「记一笔」，写下你与自然相遇的此刻。</div>`;
+
+  } else {
+
+    [...Sanctuary.store.journal].reverse().forEach(en=>{
+
+      const sc = scenes.find(s=>s.id===en.sceneId);
+
+      const thumb = sc ? (sc.poster||sc.image||sc.video) : "";
+
+      const t = new Date(en.ts);
+
+      const ts = (t.getMonth()+1)+"月"+t.getDate()+"日 "+String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
+
+      html += `<div class="j-entry" data-id="${en.id}"><div class="j-top"><img class="j-thumb" src="${thumb}" alt=""><div><div class="j-scene">${escapeHtml(en.sceneTitle||"自然")}</div><div class="j-time">${ts}</div></div></div><div class="j-text">${escapeHtml(en.text)}</div><div class="j-del" data-del="${en.id}" title="删除">✕</div></div>`;
+
+    });
+
+  }
+
+  c.innerHTML = html;
+
+  c.querySelector("#j-new").addEventListener("click", ()=> openJournalComposer(c));
+
+  c.querySelectorAll(".j-del").forEach(x=> x.addEventListener("click", ()=>{
+
+    const id = x.dataset.del;
+
+    Sanctuary.store.journal = Sanctuary.store.journal.filter(e=>e.id!==id);
+
+    Sanctuary.save(); renderJournal(c); updateSanctStatus();
+
+  }));
+
+}
+
+
+
+function openJournalComposer(c, presetSceneId){
+
+  const box = c.querySelector("#j-composer");
+
+  if(!box) return;
+
+  let sel = presetSceneId || Sanctuary._draft || (scenes[0] && scenes[0].id);
+
+  Sanctuary._draft = sel;
+
+  let chips = `<div class="q-pick" id="j-pick">`;
+
+  scenes.forEach(s=> chips += `<div class="qp${s.id===sel?" sel":""}" data-id="${s.id}">${s.title}</div>`);
+
+  chips += `</div>`;
+
+  box.innerHTML = chips + `<textarea class="q-area" id="j-text" placeholder="此刻的自然，让你想到什么？写一句吧…"></textarea><div class="q-actions"><div class="q-btn primary" id="j-save">保存手记</div><div class="q-btn" id="j-cancel">取消</div></div>`;
+
+  box.style.display = "block";
+
+  box.querySelectorAll(".qp").forEach(el=> el.addEventListener("click", ()=>{
+
+    box.querySelectorAll(".qp").forEach(x=>x.classList.remove("sel")); el.classList.add("sel"); Sanctuary._draft = el.dataset.id;
+
+  }));
+
+  box.querySelector("#j-save").addEventListener("click", ()=>{
+
+    const sc = scenes.find(s=>s.id===Sanctuary._draft);
+
+    const txt = box.querySelector("#j-text").value.trim();
+
+    if(!txt){ flashToast("写点什么再保存吧"); return; }
+
+    Sanctuary.store.journal.push({id:"j"+Date.now(), sceneId:sc?sc.id:null, sceneTitle:sc?sc.title:"自然", text:txt, ts:Date.now()});
+
+    Sanctuary.save(); box.style.display = "none"; renderJournal(c); updateSanctStatus(); flashToast("已记下这一刻");
+
+  });
+
+  box.querySelector("#j-cancel").addEventListener("click", ()=>{ box.style.display = "none"; });
+
+}
+
+
+
+function renderFav(c){
+
+  Sanctuary.load();
+
+  let html = "";
+
+  if(!Sanctuary.store.favorites.length){
+
+    html += `<div class="q-hint" style="text-align:center;margin-top:20px">还没有收藏。在播放任意场景时点 ♡，把喜欢的自然收进这里；也可以从画廊进入场景后收藏。</div>`;
+
+  } else {
+
+    Sanctuary.store.favorites.forEach(id=>{
+
+      const sc = scenes.find(s=>s.id===id);
+
+      if(!sc) return;
+
+      const thumb = sc.poster||sc.image||sc.video;
+
+      html += `<div class="q-row" data-id="${id}"><img class="q-thumb" src="${thumb}" alt=""><div class="q-main"><div class="q-t">${sc.title}</div><div class="q-s">${sc.subtitle||""}</div></div><div class="q-x" data-play="${id}" title="播放">▶</div><div class="q-x" data-rm="${id}" title="移除">✕</div></div>`;
+
+    });
+
+  }
+
+  c.innerHTML = html;
+
+  c.querySelectorAll("[data-play]").forEach(el=> el.addEventListener("click", ()=>{
+
+    const id = el.dataset.play; document.getElementById("sanct-detail").classList.remove("open"); enterPlayer(id);
+
+  }));
+
+  c.querySelectorAll("[data-rm]").forEach(el=> el.addEventListener("click", ()=>{
+
+    const id = el.dataset.rm; Sanctuary.store.favorites = Sanctuary.store.favorites.filter(x=>x!==id); Sanctuary.save(); renderFav(c); updateFavIcon(); updateSanctStatus();
+
+  }));
+
+}
+
+
+
+function renderSolar(c){
+
+  Sanctuary.load();
+
+  const cur = currentSolarTerm();
+
+  const rec = (Sanctuary.store.solar||{})[cur.n];
+
+  let html = `<div class="sanct-banner"><div class="bb">🍃</div><div class="bt"><b>当前节气 · ${cur.n}</b><div>${cur.m}月${cur.d}日 · 推荐「${(CAT_META[cur.cat]||{}).title||cur.cat}」</div></div></div>`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="solar-play">播放推荐场景</div><div class="q-btn" id="solar-apply">应用氛围</div></div>`;
+
+  html += `<div class="q-hint">为这个节气留下一句话（可选）：</div>`;
+
+  html += `<textarea class="q-area" id="solar-note" placeholder="关于这个节气的感受…">${rec ? escapeHtml(rec.note||"") : ""}</textarea>`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="solar-save">保存手记</div></div>`;
+
+  html += `<div class="q-hint" style="margin-top:10px">廿四节气</div>`;
+
+  html += `<div class="st-grid" id="st-grid">`;
+
+  SOLAR_TERMS.forEach(t=>{
+
+    const isCur = t.n===cur.n;
+
+    html += `<div class="st-cell${isCur?" cur":""}" data-n="${t.n}">${t.n}<div class="st-d">${t.m}/${t.d}</div>${isCur?'<div class="st-dot"></div>':''}</div>`;
+
+  });
+
+  html += `</div>`;
+
+  c.innerHTML = html;
+
+
+
+  c.querySelector("#solar-play").addEventListener("click", ()=>{
+
+    const sc = scenes.find(s=>s.category===cur.cat);
+
+    if(sc){ document.getElementById("sanct-detail").classList.remove("open"); enterPlayer(sc.id); }
+
+    else flashToast("该分类暂无可播放场景");
+
+  });
+
+  c.querySelector("#solar-apply").addEventListener("click", ()=>{ applyMoodToApp(cur.mood); flashToast("已应用「"+cur.n+"」氛围"); });
+
+  c.querySelector("#solar-save").addEventListener("click", ()=>{
+
+    Sanctuary.store.solar = Sanctuary.store.solar||{};
+
+    Sanctuary.store.solar[cur.n] = {note:c.querySelector("#solar-note").value.trim(), ts:Date.now()};
+
+    Sanctuary.save(); flashToast("已记录「"+cur.n+"」"); renderSolar(c);
+
+  });
+
+  c.querySelectorAll(".st-cell").forEach(el=> el.addEventListener("click", ()=>{
+
+    const t = SOLAR_TERMS.find(x=>x.n===el.dataset.n); if(!t) return;
+
+    flashToast(t.n+" · "+t.m+"月"+t.d+"日 · "+((CAT_META[t.cat]||{}).title||t.cat));
+
+  }));
+
+}
+
+
+
+function isFav(id){ return Sanctuary.store.favorites.indexOf(id) >= 0; }
+
+function updateFavIcon(){
+
+  const b = document.getElementById("btn-fav"); if(!b) return;
+
+  if(currentScene && isFav(currentScene.id)){ b.textContent = "♥"; b.classList.add("active"); }
+
+  else { b.textContent = "♡"; b.classList.remove("active"); }
+
+}
+
+function toggleFavCurrent(){
+
+  if(!currentScene) return;
+
+  Sanctuary.load();
+
+  const i = Sanctuary.store.favorites.indexOf(currentScene.id);
+
+  if(i>=0){ Sanctuary.store.favorites.splice(i,1); flashToast("已取消收藏"); }
+
+  else { Sanctuary.store.favorites.push(currentScene.id); flashToast("已收藏 · "+currentScene.title); }
+
+  Sanctuary.save(); updateFavIcon(); updateSanctStatus();
+
+}
+
+function openJournal(sceneId){
+
+  showView("sanctuary"); openModule("journal");
+
+  if(sceneId){ const c = document.getElementById("sd-content"); openJournalComposer(c, sceneId); }
+
+}
+
+
+
 // ---------- startup ----------
 
 function init(){
@@ -1949,6 +2738,15 @@ function init(){
     document.getElementById("vol-icon").textContent = v===0?"🔇":(v<.45?"🔈":"🔊");
 
   });
+
+  // ---- sanctuary navigation & player buttons ----
+  document.getElementById("btn-sanctuary-splash").addEventListener("click", ()=> showView("sanctuary"));
+  document.getElementById("btn-sanct-gallery").addEventListener("click", ()=> showView("sanctuary"));
+  document.getElementById("btn-sanct-back").addEventListener("click", ()=> showView("gallery"));
+  document.getElementById("sd-close").addEventListener("click", ()=> document.getElementById("sanct-detail").classList.remove("open"));
+  document.getElementById("btn-fav").addEventListener("click", e=>{ e.stopPropagation(); poke(); toggleFavCurrent(); });
+  document.getElementById("btn-journal").addEventListener("click", e=>{ e.stopPropagation(); poke(); openJournal(currentScene ? currentScene.id : null); });
+  updateFavIcon();
 
   ["pointermove","touchstart","keydown"].forEach(ev=> window.addEventListener(ev, ()=>{ if(currentScene) poke(); }, {passive:true}));
 
