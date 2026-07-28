@@ -911,6 +911,128 @@
   .mood-badge .mb-e{font-size:18px}
   .mood-badge .mb-t{color:var(--muted)}
 
+
+/* ============ 账户 / 多栈 / 新模块 (official-grade) ============ */
+:root{ --accent:#7fd1a0; }
+
+.account-gate{
+  position:fixed; inset:0; z-index:120; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:28px;
+  background:radial-gradient(120% 120% at 50% 0%, #0e1614 0%, #070b0a 70%);
+  color:var(--ui); text-align:center; overflow:auto;
+}
+.account-gate.hide{ display:none; }
+.ag-logo{ font-family:var(--serif); font-size:30px; letter-spacing:.04em; margin-bottom:6px;
+  background:linear-gradient(90deg,#9fe7c0,#e6b873,#b49cf0); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.ag-sub{ opacity:.6; font-size:13px; letter-spacing:.18em; margin-bottom:26px; text-transform:uppercase; }
+.ag-card{ width:min(440px,92vw); background:var(--glass); border:1px solid var(--glass-border); border-radius:22px;
+  padding:26px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:0 30px 80px rgba(0,0,0,.45); }
+.ag-step{ display:none; } .ag-step.on{ display:block; animation:fadeUp .5s ease; }
+.ag-h{ font-family:var(--serif); font-size:21px; margin-bottom:6px; }
+.ag-p{ opacity:.66; font-size:13px; line-height:1.7; margin-bottom:18px; }
+.ag-field{ text-align:left; margin-bottom:16px; }
+.ag-field label{ display:block; font-size:12px; opacity:.6; margin-bottom:7px; letter-spacing:.08em; }
+.ag-input{ width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid var(--glass-border);
+  color:var(--ui); border-radius:12px; padding:12px 14px; font-size:15px; font-family:inherit; outline:none; }
+.ag-input:focus{ border-color:var(--accent); }
+.ag-row{ display:flex; gap:10px; flex-wrap:wrap; }
+.avatar-pick{ display:flex; gap:8px; flex-wrap:wrap; }
+.avatar-pick .av{ width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:20px; cursor:pointer; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); transition:.2s; }
+.avatar-pick .av.on{ border-color:var(--accent); background:rgba(127,209,160,.18); transform:translateY(-2px); }
+.color-pick{ display:flex; gap:10px; flex-wrap:wrap; }
+.color-pick .cc{ width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.2s; }
+.color-pick .cc.on{ border-color:#fff; transform:scale(1.12); }
+.ag-btn{ width:100%; box-sizing:border-box; margin-top:8px; padding:13px; border-radius:14px; border:none; cursor:pointer;
+  font-family:inherit; font-size:15px; letter-spacing:.06em; background:linear-gradient(90deg,#7fd1a0,#5fbf95); color:#06140d; font-weight:600; }
+.ag-btn.ghost{ background:transparent; border:1px solid var(--glass-border); color:var(--ui); font-weight:400; }
+.ag-btn:active{ transform:scale(.98); }
+.ag-dots{ display:flex; gap:6px; justify-content:center; margin-top:16px; }
+.ag-dots i{ width:7px; height:7px; border-radius:50%; background:var(--glass-border); }
+.ag-dots i.on{ background:var(--accent); }
+.ag-link{ margin-top:14px; font-size:12px; opacity:.55; cursor:pointer; text-decoration:underline; }
+
+.login-grid{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
+.profile-card{ width:120px; background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:18px;
+  padding:16px 10px; cursor:pointer; transition:.22s; }
+.profile-card:hover{ transform:translateY(-3px); border-color:var(--accent); }
+.profile-card .pa{ font-size:34px; }
+.profile-card .pn{ font-size:13px; margin-top:8px; }
+.profile-card .pm{ font-size:10px; opacity:.5; margin-top:2px; }
+.profile-card .pdel{ font-size:10px; opacity:.4; margin-top:6px; }
+.lock-wrap{ margin-top:14px; display:none; } .lock-wrap.on{ display:block; }
+
+/* 设置面板 */
+.settings-panel{ position:fixed; inset:0; z-index:130; display:none; align-items:center; justify-content:center;
+  background:rgba(4,7,6,.7); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); padding:20px; }
+.settings-panel.open{ display:flex; }
+.settings-box{ width:min(460px,94vw); max-height:90vh; overflow:auto; background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:22px; padding:22px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+.settings-box h3{ font-family:var(--serif); font-size:19px; margin:0 0 14px; }
+.set-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.06); font-size:14px; }
+.set-row:last-child{ border-bottom:none; }
+.set-row .si{ opacity:.5; cursor:pointer; font-size:12px; }
+.set-row b{ font-weight:500; }
+
+/* 多栈首页 */
+.stacks-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:6px; }
+.stack-card{ position:relative; border-radius:20px; padding:18px 16px; cursor:pointer; overflow:hidden;
+  background:linear-gradient(150deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--glass-border); transition:.25s; }
+.stack-card:hover{ transform:translateY(-3px); border-color:var(--accent); box-shadow:0 16px 40px rgba(0,0,0,.35); }
+.stack-card .sc-ic{ font-size:30px; }
+.stack-card .sc-t{ font-family:var(--serif); font-size:18px; margin-top:10px; }
+.stack-card .sc-m{ font-size:10px; letter-spacing:.16em; text-transform:uppercase; opacity:.5; margin-top:2px; }
+.stack-card .sc-d{ font-size:12px; opacity:.62; line-height:1.6; margin-top:8px; }
+.stack-card .sc-mode{ position:absolute; top:12px; right:12px; font-size:10px; padding:3px 8px; border-radius:20px;
+  background:rgba(255,255,255,.08); border:1px solid var(--glass-border); }
+.stack-card .sc-accent{ position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--accent); }
+
+.sanct-back{ display:inline-flex; align-items:center; gap:6px; font-size:13px; opacity:.7; cursor:pointer; margin-bottom:12px; }
+.sanct-back:hover{ opacity:1; }
+.mod-list{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+.mod-card{ border-radius:16px; padding:16px; cursor:pointer; background:rgba(255,255,255,.04); border:1px solid var(--glass-border); transition:.2s; }
+.mod-card:hover{ transform:translateY(-2px); border-color:var(--accent); }
+.mod-card .mc-ic{ font-size:24px; }
+.mod-card .mc-t{ font-family:var(--serif); font-size:16px; margin-top:8px; }
+.mod-card .mc-d{ font-size:11px; opacity:.55; margin-top:3px; }
+
+/* 笔记 / 胶囊 / 折纸 / 仪式 */
+.note-card, .cap-card, .fold-card, .rit-card{ border-radius:16px; padding:14px 16px; margin-bottom:12px;
+  background:rgba(255,255,255,.04); border:1px solid var(--glass-border); }
+.note-card .nc-top, .cap-card .cc-top{ display:flex; justify-content:space-between; font-size:11px; opacity:.5; margin-bottom:6px; }
+.note-card .nc-t{ font-size:14px; line-height:1.7; }
+.cap-card .cc-t{ font-size:14px; line-height:1.7; }
+.cap-card .cc-open{ font-size:11px; opacity:.6; margin-top:8px; color:var(--accent); cursor:pointer; }
+.form-area{ width:100%; box-sizing:border-box; min-height:84px; background:rgba(255,255,255,.05); border:1px solid var(--glass-border);
+  color:var(--ui); border-radius:12px; padding:12px; font-size:14px; font-family:inherit; outline:none; resize:vertical; }
+.form-area:focus{ border-color:var(--accent); }
+.chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+.chip{ font-size:12px; padding:6px 12px; border-radius:20px; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); cursor:pointer; }
+.chip.on{ background:var(--accent); color:#06140d; border-color:transparent; }
+
+/* 折纸冥想动画 */
+.fold-stage{ position:relative; height:200px; display:flex; align-items:center; justify-content:center; margin:14px 0; }
+.origami{ width:120px; height:120px; position:relative; transition:transform 4s ease; transform-style:preserve-3d; }
+.origami .wing{ position:absolute; top:0; left:0; width:60px; height:120px; background:linear-gradient(180deg, var(--accent), rgba(255,255,255,.1));
+  transform-origin:right center; transition:transform 4s ease; border-radius:4px 14px 14px 4px; opacity:.85; }
+.origami .wing.r{ left:60px; transform-origin:left center; border-radius:14px 4px 4px 14px; transform:scaleX(-1); }
+.fold-stage.breath .origami .wing{ transform:rotateY(35deg); }
+.fold-stage.breath .origami .wing.r{ transform:rotateY(-35deg) scaleX(-1); }
+.fold-count{ text-align:center; font-size:34px; font-family:var(--serif); }
+.fold-tip{ text-align:center; font-size:13px; opacity:.6; margin-top:6px; }
+
+/* Giscus / 共笔 */
+.giscus-wrap{ margin-top:16px; border-top:1px solid rgba(255,255,255,.08); padding-top:14px; }
+.giscus-note{ font-size:12px; opacity:.55; line-height:1.7; margin-bottom:10px; }
+.giscus-loading{ font-size:12px; opacity:.5; padding:14px; text-align:center; }
+
+.skeleton{ background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.12), rgba(255,255,255,.04));
+  background-size:200% 100%; animation:sk 1.3s infinite; border-radius:12px; height:60px; margin-bottom:12px; }
+@keyframes sk{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.empty{ text-align:center; opacity:.5; font-size:13px; padding:30px 10px; line-height:1.8; }
+.accent-bar{ height:3px; width:100%; background:linear-gradient(90deg,var(--accent),transparent); }
+
+.bond-card{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px; }
 </style>
 
 </head>
@@ -1239,6 +1361,13 @@
 
 </div>
 
+
+
+<!-- ACCOUNT GATE (onboarding / login) -->
+<div class="account-gate" id="account-gate"></div>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-panel" id="settings-panel"></div>
 
 
 <script>
@@ -2207,13 +2336,59 @@ function cycleMood(){
 
 // ---------- SANCTUARY (自我圣所) · 纯本地 localStorage，不联网不公开 ----------
 
+const ACC = {
+
+  list:[],
+
+  active:null,
+
+  load(){
+
+    try{ this.list = JSON.parse(localStorage.getItem("quiet-nature-accounts")||"null")||[]; }catch(e){ this.list=[]; }
+
+    if(!Array.isArray(this.list)) this.list=[];
+
+    try{ this.active = localStorage.getItem("quiet-nature-active")||null; }catch(e){ this.active=null; }
+
+    if(this.active && !this.list.some(a=>a.pid===this.active)) this.active=null;
+
+    return this;
+
+  },
+
+  save(){
+
+    try{
+
+      localStorage.setItem("quiet-nature-accounts", JSON.stringify(this.list));
+
+      if(this.active) localStorage.setItem("quiet-nature-active", this.active); else localStorage.removeItem("quiet-nature-active");
+
+    }catch(e){}
+
+  },
+
+  get(){ return this.list.find(a=>a.pid===this.active)||null; }
+
+};
+
+
+
+function accountKey(){
+
+  return ACC.active ? ("quiet-nature-"+ACC.active) : "quiet-nature-guest";
+
+}
+
+
+
 const Sanctuary = {
 
   store:null,
 
   load(){
 
-    try{ this.store = JSON.parse(localStorage.getItem("quiet-nature-sanctuary")||"null"); }catch(e){ this.store=null; }
+    try{ this.store = JSON.parse(localStorage.getItem(accountKey())||"null"); }catch(e){ this.store=null; }
 
     if(!this.store || typeof this.store!=="object") this.store = {moods:{},journal:[],favorites:[],solar:{}};
 
@@ -2232,12 +2407,19 @@ const Sanctuary = {
     if(!this.store.wall) this.store.wall = [];
     if(!this.store.collages) this.store.collages = [];
     if(!this.store.playlists) this.store.playlists = [];
+    if(!this.store.notes) this.store.notes = [];
+    if(!this.store.capsules) this.store.capsules = [];
+    if(!this.store.folds) this.store.folds = [];
+    if(!this.store.rituals) this.store.rituals = [];
+    if(!this.store.bonds) this.store.bonds = [];
+    if(!this.store.readerNotes) this.store.readerNotes = {};
+    if(!this.store.settings) this.store.settings = {};
 
     return this.store;
 
   },
 
-  save(){ try{ localStorage.setItem("quiet-nature-sanctuary", JSON.stringify(this.store)); }catch(e){} },
+  save(){ try{ localStorage.setItem(accountKey(), JSON.stringify(this.store)); }catch(e){} },
 
   todayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 
@@ -2263,25 +2445,51 @@ const FEELINGS = [
 
 
 
-const MODULES = [
+const STACKS = [
 
-  {key:"mood",    icon:"🌗", title:"心境", en:"Daily Mood"},
+  {key:"nature", icon:"🌲", title:"自然栈", en:"Nature", accent:"#7fd1a0", mode:"自我", desc:"回到山林湖海，让世界的熵增慢下来。", modules:["immerse","fav","echo","flow","create","solar"]},
 
-  {key:"reader",  icon:"📜", title:"读者·每日一读", en:"Daily Reader"},
+  {key:"reader", icon:"📜", title:"读者栈", en:"Reader", accent:"#e6b873", mode:"自我", desc:"每日一句，与好文字安静相处——把《读者》装进口袋。", modules:["reader"]},
 
-  {key:"fav",     icon:"✦",  title:"个人收藏", en:"My Favorites"},
+  {key:"void",   icon:"🌑", title:"留白栈", en:"The Void", accent:"#b49cf0", mode:"自我", desc:"给心事留白，与时间为友。写给自己的，不必给别人看。", modules:["mood","notes","capsule"]},
 
-  {key:"solar",   icon:"🍃", title:"我的节气历", en:"Solar Terms"},
+  {key:"fold",   icon:"🦢", title:"折叠栈", en:"Fold", accent:"#8fb8e6", mode:"需求", desc:"折一枚纸，折一段静气——源自你最初的手作，神谷哲史式的复杂，也不过从一张方纸开始。", modules:["fold"]},
 
-  {key:"echo",    icon:"🔊", title:"回声·声景", en:"Echo Mixer"},
-
-  {key:"flow",    icon:"⏳", title:"心流·专注", en:"Focus Flow"},
-
-  {key:"create",  icon:"🎴", title:"拼帖·创作", en:"Collage"},
-
-  {key:"wall",    icon:"✍️", title:"共笔墙", en:"Shared Wall"}
+  {key:"module", icon:"🧩", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成你的日常仪式，再分享出去。延续你「自动精灵」的模块化思路。", modules:["ritual","wall"]}
 
 ];
+
+
+
+const MODULES = {
+
+  immerse:{icon:"🌿", title:"沉浸自然", en:"Immersive", d:"进入分类画廊，选一片景象"},
+
+  mood:{icon:"🌗", title:"心境", en:"Daily Mood", d:"签到今日心情 + 心情热力图"},
+
+  reader:{icon:"📜", title:"每日一读", en:"Daily Reader", d:"读者金句库 · 藏句 · 批注"},
+
+  fav:{icon:"✦", title:"收藏连播", en:"Favorites", d:"收藏场景 · 连播队列"},
+
+  solar:{icon:"🍃", title:"我的节气历", en:"Solar Terms", d:"今日节气与物候"},
+
+  echo:{icon:"🔊", title:"回声·声景", en:"Echo Mixer", d:"多轨环境音混音台"},
+
+  flow:{icon:"⏳", title:"心流·专注", en:"Focus Flow", d:"番茄钟 + 自然背景"},
+
+  create:{icon:"🎴", title:"拼帖·创作", en:"Collage", d:"语录 + 自然底图合成卡片"},
+
+  notes:{icon:"📝", title:"灵感手账", en:"Notes", d:"随手记下的念头"},
+
+  capsule:{icon:"🫧", title:"时间胶囊", en:"Time Capsule", d:"写给未来自己的信"},
+
+  fold:{icon:"🦢", title:"折纸冥想", en:"Origami", d:"跟着呼吸，折一只纸鹤"},
+
+  ritual:{icon:"🧩", title:"我的仪式", en:"Rituals", d:"组合场景·声景·计时"},
+
+  wall:{icon:"✍️", title:"共笔墙", en:"Shared Wall", d:"留言 · 互享 · 多人"}
+
+};
 
 
 
@@ -2405,35 +2613,63 @@ function renderSanctuary(){
 
   const body = document.getElementById("sanct-body");
 
-  if(!body.dataset.rendered){
+  let html = `<div class="sanct-intro"><h2 class="serif">空栈</h2><div class="en orbit">熵止 · Entropy at Rest</div><p>熵止，空栈。你心里的一座小岛——世界的熵增在这里停了下来。五个「栈」，对应你走过的路：在山林湖海里沉浸，在读者金句里沉静，在留白里安放心事，在折叠里回到最初的手作，在模块里把日常搭成仪式。一切都存在你自己的设备上，不外传、不公开。</p></div>`;
 
-    let html = `<div class="sanct-intro"><h2 class="serif">空栈</h2><div class="en orbit">熵止 · Entropy at Rest</div><p>熵止，空栈。这是你心里的一座小岛——在这里，世界的熵增停了下来，你只管安放自己。每天一句读者、一种心情、一处收藏的自然、一个当下的节气。一切都存在你自己的设备上，不外传、不公开。</p></div>`;
+  html += sanctTodayHTML();
 
-    html += sanctTodayHTML();
+  html += `<div class="stacks-grid" id="stacks-grid">`;
 
-    html += `<div class="sanct-grid">`;
+  STACKS.forEach(s=>{
 
-    MODULES.forEach(m=>{
+    html += `<div class="stack-card" data-stack="${s.key}" style="--accent:${s.accent}"><div class="sc-accent"></div><div class="sc-mode">${s.mode}型</div><div class="sc-ic">${s.icon}</div><div class="sc-t">${s.title}</div><div class="sc-m">${s.en}</div><div class="sc-d">${s.desc}</div></div>`;
 
-      html += `<div class="sanct-card" data-mod="${m.key}"><div class="sci">${m.icon}</div><div><h3>${m.title}</h3><div class="sc-en">${m.en}</div></div><div class="sc-status">—</div></div>`;
+  });
 
-    });
+  html += `</div>`;
 
-    html += `</div>`;
+  body.innerHTML = html;
 
-    body.innerHTML = html;
+  body.querySelector("#stacks-grid").addEventListener("click", e=>{
 
-    body.dataset.rendered = "1";
+    const card = e.target.closest(".stack-card"); if(!card) return;
 
-    body.querySelectorAll(".sanct-card").forEach(card=>{
+    openStack(card.dataset.stack);
 
-      card.addEventListener("click", ()=> openModule(card.dataset.mod));
-
-    });
-
-  }
+  });
 
   updateSanctStatus();
+
+}
+
+
+
+function openStack(key){
+
+  const s = STACKS.find(x=>x.key===key); if(!s) return;
+
+  const body = document.getElementById("sanct-body");
+
+  let html = `<div class="sanct-back" id="stack-back">← 返回空栈</div>`;
+
+  html += `<div class="sanct-intro" style="margin-bottom:6px"><h2 class="serif">${s.icon} ${s.title}</h2><div class="en orbit">${s.en} · ${s.mode}型</div><p>${s.desc}</p></div>`;
+
+  html += `<div class="mod-list">`;
+
+  s.modules.forEach(mk=>{
+
+    const m = MODULES[mk];
+
+    html += `<div class="mod-card" data-mod="${mk}" style="--accent:${s.accent}"><div class="mc-ic">${m.icon}</div><div class="mc-t">${m.title}</div><div class="mc-d">${m.en}</div></div>`;
+
+  });
+
+  html += `</div>`;
+
+  body.innerHTML = html;
+
+  body.querySelector("#stack-back").addEventListener("click", ()=> renderSanctuary());
+
+  body.querySelectorAll(".mod-card").forEach(c=> c.addEventListener("click", ()=> openModule(c.dataset.mod)));
 
 }
 
@@ -2487,26 +2723,6 @@ function setStatus(key, txt){
 
 function updateSanctStatus(){
 
-  if(!document.getElementById("sanct-body").dataset.rendered) return;
-
-  Sanctuary.load();
-
-  const today = Sanctuary.todayKey();
-
-  const moodRec = Sanctuary.store.moods[today];
-
-  const moodF = moodRec ? (FEELINGS.find(x=>x.key===moodRec.key)||FEELINGS[0]) : null;
-
-  setStatus("mood", moodF ? ("今日 · "+moodF.emoji+" "+moodF.label) : "今天还没签到");
-
-  setStatus("reader", READER_LIB.length ? ("每日一读 · "+READER_LIB.length+" 句") : "空");
-
-  setStatus("fav", Sanctuary.store.favorites.length ? (Sanctuary.store.favorites.length+" 个收藏") : "空空如也");
-
-  const cur = currentSolarTerm();
-
-  setStatus("solar", "当前 · "+cur.n);
-
   updateMoodBadge();
 
 }
@@ -2515,31 +2731,30 @@ function updateSanctStatus(){
 
 function openModule(key){
 
+  if(key==="immerse"){ document.getElementById("sanct-detail").classList.remove("open"); showView("gallery"); return; }
+
   EchoMixer.stopAll(); FlowTimer.stop();
 
-  const titles = {mood:"心境", reader:"读者·每日一读", fav:"个人收藏", solar:"我的节气历", echo:"回声·声景", flow:"心流·专注", create:"拼帖·创作", wall:"共笔墙"};
+  const titles = {mood:"心境", reader:"每日一读", fav:"收藏连播", solar:"我的节气历", echo:"回声·声景", flow:"心流·专注", create:"拼帖·创作", wall:"共笔墙", notes:"灵感手账", capsule:"时间胶囊", fold:"折纸冥想", ritual:"我的仪式"};
 
-  document.getElementById("sd-title").textContent = titles[key] || "";
+  document.getElementById("sd-title").textContent = titles[key] || (MODULES[key]?MODULES[key].title:"");
 
   const c = document.getElementById("sd-content");
 
   c.innerHTML = "";
 
   if(key==="mood") renderMood(c);
-
   else if(key==="reader") renderReader(c);
-
   else if(key==="fav") renderFav(c);
-
   else if(key==="solar") renderSolar(c);
-
   else if(key==="echo") renderEcho(c);
-
   else if(key==="flow") renderFlow(c);
-
   else if(key==="create") renderCreate(c);
-
   else if(key==="wall") renderWall(c);
+  else if(key==="notes") renderNotes(c);
+  else if(key==="capsule") renderCapsule(c);
+  else if(key==="fold") renderFold(c);
+  else if(key==="ritual") renderRitual(c);
 
   document.getElementById("sanct-detail").classList.add("open");
 
@@ -2718,7 +2933,114 @@ const READER_LIB = [
   {t:"人间烟火气，最抚凡人心。", a:"读者", tag:"治愈"},
   {t:"落红不是无情物，化作春泥更护花。", a:"龚自珍", tag:"自然"},
   {t:"不戚戚于贫贱，不汲汲于富贵。", a:"陶渊明", tag:"自我"},
-  {t:"当你穿过了暴风雨，你早已不再是原来那个人。", a:"村上春树", tag:"自我"}
+  {t:"当你穿过了暴风雨，你早已不再是原来那个人。", a:"村上春树", tag:"自我"},
+
+  {t:"我们曾如此渴望命运的波澜，到最后才发现：人生最曼妙的风景，竟是内心的淡定与从容。", a:"杨绛", tag:"自我"},
+  {t:"世态人情，比明月清风更饶有滋味，可作书读，可当戏看。", a:"杨绛", tag:"人生"},
+  {t:"我们曾如此期盼外界的认可，到最后才知道，世界是自己的，与他人毫无关系。", a:"杨绛", tag:"自我"},
+  {t:"如果你来访我，我不在，请和我门外的花坐一会儿。", a:"汪曾祺", tag:"自然"},
+  {t:"四方食事，不过一碗人间烟火。", a:"汪曾祺", tag:"治愈"},
+  {t:"家人闲坐，灯火可亲。", a:"汪曾祺", tag:"治愈"},
+  {t:"一定要爱着点什么，恰似草木对光阴的钟情。", a:"汪曾祺", tag:"自我"},
+  {t:"不乱于心，不困于情，不畏将来，不念过往。", a:"丰子恺", tag:"哲思"},
+  {t:"你若爱，生活哪里都可爱。", a:"丰子恺", tag:"自我"},
+  {t:"心小了，所有的小事就大了；心大了，所有的大事都小了。", a:"丰子恺", tag:"哲思"},
+  {t:"岁月极美，在于它必然的流逝。", a:"三毛", tag:"时光"},
+  {t:"给自己时间，不要焦急，一步一步来，一日一日过。", a:"三毛", tag:"自我"},
+  {t:"死是一件不必急于求成的事，死是一个必然会降临的节日。", a:"史铁生", tag:"哲思"},
+  {t:"生命的意义本不在向外的寻取，而在向内的建立。", a:"史铁生", tag:"自我"},
+  {t:"且视他人之疑目如盏盏鬼火，大胆地去走你的夜路。", a:"史铁生", tag:"自我"},
+  {t:"苦难既然把我推到了悬崖的边缘，那么就让我在这悬崖的边缘坐下来，顺便看看悬崖下的流岚雾霭，唱支歌给你听。", a:"史铁生", tag:"自我"},
+  {t:"我经由光阴，经由山水，经由乡村和城市，同样我也经由别人，经由一切他者以及引生的思绪和梦想而走成了我。", a:"史铁生", tag:"哲思"},
+  {t:"人是为了活着本身而活着，而不是为了活着之外的任何事物而活着。", a:"余华", tag:"人生"},
+  {t:"被命运碾压过，才懂时间的慈悲。", a:"余华", tag:"时光"},
+  {t:"生活是属于每个人自己的感受，不属于任何别人的看法。", a:"余华", tag:"自我"},
+  {t:"于浩歌狂热之际中寒，于天上看见深渊。", a:"鲁迅", tag:"哲思"},
+  {t:"有一分热，发一分光。", a:"鲁迅", tag:"自我"},
+  {t:"一个人只要知道自己为什么而活，就可以忍受任何一种生活。", a:"周国平", tag:"人生"},
+  {t:"人生最好的境界，是丰富的安静。", a:"周国平", tag:"自我"},
+  {t:"日头没有辜负我们，我们也切莫辜负日头。", a:"沈从文", tag:"自然"},
+  {t:"我行过许多地方的桥，看过许多次数的云，喝过许多种类的酒，却只爱过一个正当最好年龄的人。", a:"沈从文", tag:"人生"},
+  {t:"草在结它的种子，风在摇它的叶子。我们站着，不说话，就十分美好。", a:"顾城", tag:"自然"},
+  {t:"黑夜给了我黑色的眼睛，我却用它寻找光明。", a:"顾城", tag:"自我"},
+  {t:"远方除了遥远一无所有。", a:"海子", tag:"哲思"},
+  {t:"所谓深渊，下去，也是前程万里。", a:"木心", tag:"自我"},
+  {t:"生命是什么呢，生命是时时刻刻不知如何是好。", a:"木心", tag:"人生"},
+  {t:"凡事到了回忆的时候，真实得好像假的一样。", a:"木心", tag:"时光"},
+  {t:"从前的日色变得慢，车、马、邮件都慢，一生只够爱一个人。", a:"木心", tag:"时光"},
+  {t:"我追索人心的深度，却看到了人心的浅薄。", a:"木心", tag:"哲思"},
+  {t:"爱自己，是终身浪漫的开始。", a:"王尔德", tag:"自我"},
+  {t:"世界以痛吻我，要我报之以歌。", a:"泰戈尔", tag:"哲思"},
+  {t:"你今天受的苦，吃的亏，担的责，到最后都会变成光，照亮你的路。", a:"泰戈尔", tag:"治愈"},
+  {t:"每一个不曾起舞的日子，都是对生命的辜负。", a:"尼采", tag:"自我"},
+  {t:"对待生命不妨大胆一点，因为终要失去它。", a:"尼采", tag:"人生"},
+  {t:"世界上只有一种真正的英雄主义，那就是在认清生活的真相后依然热爱生活。", a:"罗曼·罗兰", tag:"人生"},
+  {t:"有何胜利可言，挺住意味着一切。", a:"里尔克", tag:"哲思"},
+  {t:"重要的不是治愈，而是带着病痛活下去。", a:"加缪", tag:"哲思"},
+  {t:"在隆冬，我终于知道，我身上有一个不可战胜的夏天。", a:"加缪", tag:"自我"},
+  {t:"过去都是假的，回忆是一条没有尽头的路。", a:"马尔克斯", tag:"时光"},
+  {t:"生命中曾经有过的所有灿烂，终究都需要用寂寞来偿还。", a:"马尔克斯", tag:"时光"},
+  {t:"真正重要的东西，用眼睛是看不见的。", a:"圣埃克苏佩里《小王子》", tag:"哲思"},
+  {t:"你要对你所驯服的一切负责。", a:"圣埃克苏佩里《小王子》", tag:"人生"},
+  {t:"也许世界上也有五千朵和你一模一样的花，但只有你是我独一无二的玫瑰。", a:"圣埃克苏佩里《小王子》", tag:"自我"},
+  {t:"所有大人都曾是小孩，只是他们忘了。", a:"圣埃克苏佩里《小王子》", tag:"自我"},
+  {t:"哪里会有人喜欢孤独，不过是不喜欢失望罢了。", a:"村上春树", tag:"自我"},
+  {t:"每个人都有属于自己的一片森林，也许我们从来不曾去过，但它一直在那里。", a:"村上春树", tag:"哲思"},
+  {t:"如果你掉进了黑暗里，你能做的，不过是静心等待，直到你的双眼适应黑暗。", a:"村上春树", tag:"自我"},
+  {t:"活着就意味必须要做点什么，请好好努力。", a:"村上春树", tag:"人生"},
+  {t:"不必太纠结于当下，也不必太忧虑未来，当你经历过一些事情，眼前的风景已经和从前不一样了。", a:"村上春树", tag:"时光"},
+  {t:"人生如逆旅，我亦是行人。", a:"苏轼", tag:"人生"},
+  {t:"回首向来萧瑟处，归去，也无风雨也无晴。", a:"苏轼", tag:"哲思"},
+  {t:"天生我材必有用，千金散尽还复来。", a:"李白", tag:"自我"},
+  {t:"采菊东篱下，悠然见南山。", a:"陶渊明", tag:"自然"},
+  {t:"行到水穷处，坐看云起时。", a:"王维", tag:"自然"},
+  {t:"所谓父女母子一场，只不过意味着，你和他的缘分就是今生今世不断地在目送他的背影渐行渐远。", a:"龙应台", tag:"人生"},
+  {t:"有些事，只能一个人做。有些关，只能一个人过。", a:"龙应台", tag:"人生"},
+  {t:"秋日薄暮，用菊花煮竹叶青，人与海棠俱醉。", a:"林清玄", tag:"自然"},
+  {t:"以清净心看世界，以欢喜心过生活。", a:"林清玄", tag:"自我"},
+  {t:"优等的心，不必华丽，但必须坚固。", a:"毕淑敏", tag:"自我"},
+  {t:"我不相信手掌的纹路，但我相信手掌加上手指的力量。", a:"毕淑敏", tag:"自我"},
+  {t:"我对岁月，始终心怀感激。", a:"迟子建", tag:"时光"},
+  {t:"有些笑容背后是紧咬牙关的灵魂。", a:"柴静", tag:"自我"},
+  {t:"怕什么真理无穷，进一寸有一寸的欢喜！", a:"胡适", tag:"哲思"},
+  {t:"不完满才是人生。", a:"季羡林", tag:"哲思"},
+  {t:"人生最好的状态，是清醒、自律、知趣、克制。", a:"季羡林", tag:"自我"},
+  {t:"洗一个澡，看一朵花，吃一顿饭，假使你觉得快活，主要因为你心上没有挂碍。", a:"钱钟书", tag:"自我"},
+  {t:"婚姻是一座围城，城外的人想进去，城里的人想出来。", a:"钱钟书", tag:"人生"},
+  {t:"吃得好一点，睡得好一点，多玩玩，不羡慕别人，不听管束。", a:"蔡澜", tag:"人生"},
+  {t:"人，即使活到八九十岁，有母亲便可以多少还有点孩子气。", a:"老舍", tag:"人生"},
+  {t:"愿你生命中有够多的云翳，来造成一个美丽的黄昏。", a:"冰心", tag:"时光"},
+  {t:"等他的背影混入来来往往的人里，再找不着了，我便进来坐下，我的眼泪又来了。", a:"朱自清", tag:"人生"},
+  {t:"一个人只拥有此生此世是不够的，他还应该拥有诗意的世界。", a:"王小波", tag:"哲思"},
+  {t:"人的一切痛苦，本质上都是对自己无能的愤怒。", a:"王小波", tag:"自我"},
+  {t:"一个能够升起月亮的身体，必然驮住了无数次日落。", a:"余秀华", tag:"自我"},
+  {t:"那时我们有梦，关于文学，关于爱情，关于穿越世界的旅行。", a:"北岛", tag:"时光"},
+  {t:"生活让我们遍体鳞伤，可伤口终将化作铠甲。", a:"海明威", tag:"自我"},
+  {t:"一个人成熟的标志，是允许一切事情发生。", a:"毛姆", tag:"哲思"},
+  {t:"阅读是一座随身携带的避难所。", a:"毛姆", tag:"治愈"},
+  {t:"为你，千千万万遍。", a:"卡勒德·胡赛尼《追风筝的人》", tag:"人生"},
+  {t:"我给你贫穷的街道、绝望的日落、破败郊区的月亮。", a:"博尔赫斯", tag:"哲思"},
+  {t:"人不应该是插在花瓶里供人观赏的静物，而是蔓延在草原上随风起舞的韵律。", a:"弗吉尼亚·伍尔芙", tag:"自我"},
+  {t:"要么庸俗，要么孤独。", a:"叔本华", tag:"哲思"},
+  {t:"每个人的生命都是通向自我的征途。", a:"赫尔曼·黑塞", tag:"自我"},
+  {t:"世界那么大，我想去看看。可钱包那么小，哪儿也去不了。那就先看看书里的世界吧。", a:"李娟", tag:"治愈"},
+  {t:"人处在一种默默奋斗的状态时，思想就会从生活的琐碎中得到升华。", a:"路遥《平凡的世界》", tag:"自我"},
+  {t:"你若要喜爱你自己的价值，你就得给世界创造价值。", a:"歌德", tag:"自我"},
+  {t:"思考是灵魂的自我谈话。", a:"柏拉图", tag:"哲思"},
+  {t:"读书不是为了雄辩和驳斥，而是为了思考和权衡。", a:"培根", tag:"治愈"},
+  {t:"书读得越多而不加思索，你会觉得你知道得很多；而当你读书思考越多，你会越清楚看到自己知道得很少。", a:"伏尔泰", tag:"哲思"},
+  {t:"一本好书，就是和许多高尚的人谈话。", a:"歌德", tag:"治愈"},
+  {t:"亦舒说：一个人要兴旺发达，得有那么一点野心。", a:"亦舒", tag:"自我"},
+  {t:"善良是一个人自我内心的坚守。", a:"读者", tag:"自我"},
+  {t:"怨恨就像自己服了毒，却妄想等着别人死亡。", a:"读者", tag:"哲思"},
+  {t:"有些好东西，比如清晨青草上的露珠，欣赏它只需心存一念。", a:"读者", tag:"自然"},
+  {t:"沉默并不能解决问题，但沉默起码不激化问题，并能缓解问题。", a:"读者", tag:"哲思"},
+  {t:"你来人间一趟，你要看看太阳。", a:"读者", tag:"自然"},
+  {t:"所谓富贵，是无须向别人折腰；所谓贫穷，是无需向别人伸手。", a:"读者", tag:"自我"},
+  {t:"笑，全世界便与你同声笑；哭，你便独自哭。", a:"读者", tag:"人生"},
+  {t:"我们都是赶路的人，偶尔也要停下来，等一等灵魂。", a:"读者", tag:"时光"},
+  {t:"愿你出走半生，归来仍是少年。", a:"读者", tag:"时光"},
+  {t:"世间所有的相遇，都是久别重逢。", a:"白落梅", tag:"人生"}
 ];
 
 
@@ -3272,6 +3594,629 @@ function downloadJSON(name, obj){
   }catch(e){ flashToast("导出失败"); }
 }
 
+function renderNotes(c){
+
+  Sanctuary.load();
+
+  let html = `<div class="q-hint">灵感手账 · 留白栈。随手记下冒出来的念头，不必成句，不必给别人看。</div>`;
+
+  html += `<textarea class="form-area" id="note-text" placeholder="此刻冒出一个什么念头…"></textarea>`;
+
+  html += `<div class="chip-row" id="note-tags"><span class="chip on" data-t="随想">随想</span><span class="chip" data-t="梦">梦</span><span class="chip" data-t="计划">计划</span><span class="chip" data-t="感谢">感谢</span><span class="chip" data-t="困惑">困惑</span></div>`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="note-save">收进手账</div></div>`;
+
+  html += `<div id="note-list"></div>`;
+
+  c.innerHTML = html;
+
+  let tag = "随想";
+
+  c.querySelectorAll("#note-tags .chip").forEach(ch=> ch.addEventListener("click", ()=>{ c.querySelectorAll("#note-tags .chip").forEach(x=>x.classList.remove("on")); ch.classList.add("on"); tag=ch.dataset.t; }));
+
+  c.querySelector("#note-save").addEventListener("click", ()=>{
+
+    const t = c.querySelector("#note-text").value.trim(); if(!t){ flashToast("写点什么再收吧"); return; }
+
+    Sanctuary.store.notes.unshift({id:"n"+Date.now(), text:t, tag, ts:Date.now()});
+
+    Sanctuary.save(); renderNotes(c); flashToast("已收进手账");
+
+  });
+
+  renderNoteList(c);
+
+}
+
+function renderNoteList(c){
+
+  const list = c.querySelector("#note-list"); if(!list) return;
+
+  if(!Sanctuary.store.notes.length){ list.innerHTML = `<div class="empty">手账还是空的。<br>第一个念头，往往最珍贵。</div>`; return; }
+
+  let h = "";
+
+  Sanctuary.store.notes.forEach(n=>{
+
+    const d = new Date(n.ts); const ds = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+
+    h += `<div class="note-card"><div class="nc-top"><span>#${escapeHtml(n.tag)}</span><span>${ds} · <b style="cursor:pointer" data-del="${n.id}">删除</b></span></div><div class="nc-t">${escapeHtml(n.text)}</div></div>`;
+
+  });
+
+  list.innerHTML = h;
+
+  list.querySelectorAll("[data-del]").forEach(b=> b.addEventListener("click", ()=>{ Sanctuary.store.notes = Sanctuary.store.notes.filter(x=>x.id!==b.dataset.del); Sanctuary.save(); renderNotes(c); }));
+
+}
+
+
+
+function renderCapsule(c){
+
+  Sanctuary.load();
+
+  let html = `<div class="q-hint">时间胶囊 · 写给未来的自己。设定一个开启日期，到时候再拆开。</div>`;
+
+  html += `<textarea class="form-area" id="cap-text" placeholder="写给半年后 / 一年后自己的话…"></textarea>`;
+
+  html += `<div class="q-hint">开启日期</div><input class="ag-input" id="cap-date" type="date">`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="cap-save">封存胶囊</div></div>`;
+
+  html += `<div id="cap-list"></div>`;
+
+  c.innerHTML = html;
+
+  c.querySelector("#cap-save").addEventListener("click", ()=>{
+
+    const t = c.querySelector("#cap-text").value.trim(); const dt = c.querySelector("#cap-date").value;
+
+    if(!t){ flashToast("写点什么再封存"); return; }
+
+    if(!dt){ flashToast("选一个开启日期"); return; }
+
+    Sanctuary.store.capsules.unshift({id:"c"+Date.now(), text:t, openDate:dt, ts:Date.now(), opened:false});
+
+    Sanctuary.save(); renderCapsule(c); flashToast("胶囊已封存 · "+dt);
+
+  });
+
+  renderCapList(c);
+
+}
+
+function renderCapList(c){
+
+  const list = c.querySelector("#cap-list"); if(!list) return;
+
+  if(!Sanctuary.store.capsules.length){ list.innerHTML = `<div class="empty">还没有时间胶囊。<br>把今天的自己，寄给未来的自己。</div>`; return; }
+
+  const today = new Date().toISOString().slice(0,10);
+
+  let h = "";
+
+  Sanctuary.store.capsules.forEach(cap=>{
+
+    const ready = cap.openDate <= today;
+
+    const d = new Date(cap.ts); const ds = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+
+    h += `<div class="cap-card"><div class="cc-top"><span>封存于 ${ds}</span><span>${ready?"🫧 可开启":"⏳ "+cap.openDate+" 开启"}</span></div>`;
+
+    if(ready && cap.opened){ h += `<div class="cc-t">${escapeHtml(cap.text)}</div>`; }
+
+    else if(ready){ h += `<div class="cc-open" data-open="${cap.id}">▸ 开启这枚胶囊</div>`; }
+
+    else { h += `<div class="cc-t" style="opacity:.55">${escapeHtml(cap.text.slice(0,12))}……（未到开启日）</div>`; }
+
+    h += `</div>`;
+
+  });
+
+  list.innerHTML = h;
+
+  list.querySelectorAll("[data-open]").forEach(b=> b.addEventListener("click", ()=>{
+
+    const cap = Sanctuary.store.capsules.find(x=>x.id===b.dataset.open); if(cap){ cap.opened=true; Sanctuary.save(); renderCapsule(c); flashToast("胶囊已开启 · 写给自己的话"); }
+
+  }));
+
+}
+
+
+
+function renderFold(c){
+
+  Sanctuary.load();
+
+  let html = `<div class="q-hint">折纸冥想 · 折叠栈。源自你最初的手作。跟着呼吸，把注意力折进一只纸鹤里。</div>`;
+
+  html += `<div class="fold-stage" id="fold-stage"><div class="origami"><div class="wing"></div><div class="wing r"></div></div></div>`;
+
+  html += `<div class="fold-count" id="fold-count">0</div>`;
+
+  html += `<div class="fold-tip" id="fold-tip">准备：吸气 4 秒 → 屏息 4 秒 → 呼气 4 秒</div>`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="fold-start">开始一次折叠呼吸</div></div>`;
+
+  html += `<div id="fold-list"></div>`;
+
+  c.innerHTML = html;
+
+  let cycles = 0, timer=null, started=false;
+
+  const startBtn = c.querySelector("#fold-start");
+
+  startBtn.addEventListener("click", ()=>{
+
+    if(!started){
+
+      started = true;
+
+      const stage = c.querySelector("#fold-stage"), tip = c.querySelector("#fold-tip"), cnt = c.querySelector("#fold-count");
+
+      let phase = 0; const steps = ["吸气 · 纸翼展开","屏息 · 静止如折","呼气 · 纸翼合拢"];
+
+      tip.textContent = steps[0]; stage.classList.add("breath");
+
+      timer = setInterval(()=>{
+
+        phase++;
+
+        if(phase%3===1){ stage.classList.add("breath"); tip.textContent = steps[0]; }
+
+        else if(phase%3===2){ tip.textContent = steps[1]; }
+
+        else { stage.classList.remove("breath"); tip.textContent = steps[2]; if(phase>0) cycles++; cnt.textContent = cycles; }
+
+      }, 4000);
+
+      startBtn.textContent = "进行中…（再点结束）";
+
+    } else {
+
+      clearInterval(timer); started=false;
+
+      c.querySelector("#fold-stage").classList.remove("breath");
+
+      c.querySelector("#fold-tip").textContent = "本次折叠 "+cycles+" 次 · 已记下";
+
+      Sanctuary.store.folds.unshift({id:"f"+Date.now(), cycles, ts:Date.now()}); Sanctuary.save(); renderFoldList(c);
+
+      startBtn.textContent = "再折一次";
+
+    }
+
+  });
+
+  renderFoldList(c);
+
+}
+
+function renderFoldList(c){
+
+  const list = c.querySelector("#fold-list"); if(!list) return;
+
+  if(!Sanctuary.store.folds.length){ list.innerHTML = `<div class="empty">还没有折过。<br>第一只纸鹤，最难得。</div>`; return; }
+
+  let h = "";
+
+  Sanctuary.store.folds.slice(0,10).forEach(f=>{ const d=new Date(f.ts); h += `<div class="fold-card">🦢 ${f.cycles} 次折叠呼吸 · ${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}</div>`; });
+
+  list.innerHTML = h;
+
+}
+
+
+
+function renderRitual(c){
+
+  Sanctuary.load();
+
+  let html = `<div class="q-hint">我的仪式 · 模块栈。像搭积木一样，把「场景 + 专注时长」组合成你的日常仪式。延续你「自动精灵」的模块化思路。</div>`;
+
+  html += `<div class="q-hint">仪式名称</div><input class="ag-input" id="rit-name" placeholder="例如：晨间清醒 / 深夜放空">`;
+
+  html += `<div class="q-hint">选一片场景</div><select class="ag-input" id="rit-scene">`;
+
+  (scenes||[]).forEach(s=> html += `<option value="${s.id}">${escapeHtml(s.title)}</option>`);
+
+  html += `</select>`;
+
+  html += `<div class="q-hint">专注时长（分钟）</div><input class="ag-input" id="rit-min" type="number" min="1" max="120" value="15">`;
+
+  html += `<div class="q-actions"><div class="q-btn primary" id="rit-save">存为我的仪式</div></div>`;
+
+  html += `<div id="rit-list"></div>`;
+
+  c.innerHTML = html;
+
+  c.querySelector("#rit-save").addEventListener("click", ()=>{
+
+    const name = c.querySelector("#rit-name").value.trim() || "未命名仪式";
+
+    const scene = c.querySelector("#rit-scene").value; const min = parseInt(c.querySelector("#rit-min").value)||15;
+
+    Sanctuary.store.rituals.unshift({id:"r"+Date.now(), name, scene, min, ts:Date.now()});
+
+    Sanctuary.save(); renderRitual(c); flashToast("仪式已存 · "+name);
+
+  });
+
+  renderRitList(c);
+
+}
+
+function renderRitList(c){
+
+  const list = c.querySelector("#rit-list"); if(!list) return;
+
+  if(!Sanctuary.store.rituals.length){ list.innerHTML = `<div class="empty">还没有仪式。<br>把日常搭成你自己的样子。</div>`; return; }
+
+  let h = "";
+
+  Sanctuary.store.rituals.forEach(r=>{
+
+    const sc = (scenes||[]).find(s=>s.id===r.scene);
+
+    h += `<div class="rit-card"><div><b>${escapeHtml(r.name)}</b> · ${r.min} 分钟 · ${sc?escapeHtml(sc.title):""}</div><div class="q-actions" style="margin-top:8px"><div class="q-btn" data-play="${r.id}">▶ 播放仪式</div><div class="q-btn" data-del="${r.id}">删除</div></div></div>`;
+
+  });
+
+  list.innerHTML = h;
+
+  list.querySelectorAll("[data-play]").forEach(b=> b.addEventListener("click", ()=>{
+
+    const r = Sanctuary.store.rituals.find(x=>x.id===b.dataset.play); if(!r) return;
+
+    document.getElementById("sanct-detail").classList.remove("open");
+
+    enterPlayer(r.scene); flashToast("仪式开始 · "+r.name+"（"+r.min+" 分钟，可在心流里计时）");
+
+  }));
+
+  list.querySelectorAll("[data-del]").forEach(b=> b.addEventListener("click", ()=>{ Sanctuary.store.rituals = Sanctuary.store.rituals.filter(x=>x.id!==b.dataset.del); Sanctuary.save(); renderRitual(c); }));
+
+}
+
+
+
+const AVATARS = ["🦊","🐱","🦉","🌿","🌊","🍃","🔥","🌙","🪐","🕊️","🐝","🍂"];
+
+const ACCENTS = ["#7fd1a0","#e6b873","#b49cf0","#8fb8e6","#e69b73","#f08fb0","#8fe6c9","#c9e68f"];
+
+const Accounts = {
+
+  draft:{ name:"", avatar:"🦊", color:"#7fd1a0", passcode:"", stack:"nature" },
+
+  pending:null,
+
+  renderGate(){
+
+    const gate = document.getElementById("account-gate");
+
+    ACC.load();
+
+    if(!ACC.list.length) this.renderOnboarding(); else this.renderLogin();
+
+    gate.classList.remove("hide");
+
+  },
+
+  renderOnboarding(){
+
+    const gate = document.getElementById("account-gate");
+
+    const d = this.draft;
+
+    const av = AVATARS.map(a=>`<div class="av${d.avatar===a?" on":""}" data-a="${a}">${a}</div>`).join("");
+
+    const cc = ACCENTS.map(c=>`<div class="cc${d.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
+
+    const st = STACKS.map(s=>`<div class="chip${d.stack===s.key?" on":""}" data-s="${s.key}">${s.icon} ${s.title}</div>`).join("");
+
+    gate.innerHTML = `
+
+      <div class="ag-logo">空栈 · 熵止</div><div class="ag-sub">Entropy at Rest</div>
+
+      <div class="ag-card">
+
+        <div class="ag-step on">
+
+          <div class="ag-h">欢迎来到空栈</div>
+
+          <div class="ag-p">这里是你心里的一座小岛。先建一个「栈主」身份——它只存在你自己的设备上，不外传、不公开、不需要实名。将来想换、想加、想删，都随你。</div>
+
+          <div class="ag-field"><label>给自己起个名</label><input class="ag-input" id="ob-name" value="${escapeHtml(d.name)}" placeholder="例如：ZeroEnt / 折纸的人 / 路过"></div>
+
+          <div class="ag-field"><label>选个头像</label><div class="avatar-pick" id="ob-av">${av}</div></div>
+
+          <div class="ag-field"><label>选个主题色</label><div class="color-pick" id="ob-cc">${cc}</div></div>
+
+          <div class="ag-field"><label>访问口令（可选，4 位以上）</label><input class="ag-input" id="ob-pass" type="password" value="${escapeHtml(d.passcode)}" placeholder="留空则直接进入"></div>
+
+          <div class="ag-field"><label>默认进入的栈</label><div class="chip-row" id="ob-st">${st}</div></div>
+
+          <button class="ag-btn" id="ob-go">建好，进入空栈</button>
+
+          <div class="ag-link" id="ob-skip">先随便逛逛（游客）</div>
+
+        </div>
+
+      </div>`;
+
+    const nameEl = gate.querySelector("#ob-name"); nameEl.addEventListener("input", ()=> d.name = nameEl.value);
+
+    gate.querySelector("#ob-av").querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ d.avatar=x.dataset.a; this.renderOnboarding(); }));
+
+    gate.querySelector("#ob-cc").querySelectorAll(".cc").forEach(x=> x.addEventListener("click", ()=>{ d.color=x.dataset.c; this.renderOnboarding(); }));
+
+    gate.querySelector("#ob-st").querySelectorAll(".chip").forEach(x=> x.addEventListener("click", ()=>{ d.stack=x.dataset.s; this.renderOnboarding(); }));
+
+    const passEl = gate.querySelector("#ob-pass"); passEl.addEventListener("input", ()=> d.passcode = passEl.value);
+
+    gate.querySelector("#ob-go").addEventListener("click", ()=>{
+
+      const nm = (gate.querySelector("#ob-name").value||"").trim();
+
+      if(!nm){ flashToast("先起个名吧"); return; }
+
+      if(d.passcode && d.passcode.length<4){ flashToast("口令至少 4 位，或留空"); return; }
+
+      this.create(nm, d.avatar, d.color, d.passcode, d.stack);
+
+    });
+
+    gate.querySelector("#ob-skip").addEventListener("click", ()=> this.enterGuest());
+
+  },
+
+  create(name, avatar, color, passcode, stack){
+
+    const pid = "u"+Date.now().toString(36)+Math.floor(Math.random()*999);
+
+    ACC.list.push({ pid, name, avatar, color, passcode: passcode||"", stack: stack||"nature", created: Date.now() });
+
+    ACC.active = pid; ACC.save(); Sanctuary.load();
+
+    // migrate legacy single-store (pre-account versions) into the first account
+    if(ACC.list.length===1){
+      let legacy=null; try{ legacy = JSON.parse(localStorage.getItem("quiet-nature-sanctuary")||"null"); }catch(e){}
+      if(legacy && typeof legacy==="object"){ Sanctuary.store = Object.assign(Sanctuary.store, legacy); Sanctuary.save(); flashToast("已迁入旧版记录"); }
+    }
+
+    flashToast("欢迎，「"+name+"」"); this.close(); this.afterLogin();
+
+  },
+
+  renderLogin(){
+
+    const gate = document.getElementById("account-gate");
+
+    const cards = ACC.list.map(p=>{
+
+      const stk = STACKS.find(s=>s.key===p.stack);
+
+      return `<div class="profile-card" data-pid="${p.pid}">
+
+        <div class="pa">${p.avatar||"🦊"}</div><div class="pn">${escapeHtml(p.name)}</div>
+
+        <div class="pm">${p.passcode?"🔒 已加口令":(stk?("默认 "+stk.title):"")}</div>
+
+        <div class="pdel" data-del="${p.pid}">删除</div></div>`;
+
+    }).join("");
+
+    gate.innerHTML = `
+
+      <div class="ag-logo">空栈 · 熵止</div><div class="ag-sub">选择身份进入</div>
+
+      <div class="ag-card">
+
+        <div class="login-grid">${cards}</div>
+
+        <div class="lock-wrap" id="lock-wrap"><input class="ag-input" id="lock-pass" type="password" placeholder="输入访问口令"><button class="ag-btn" id="lock-go" style="margin-top:10px">解锁</button><div class="ag-link" id="lock-cancel">取消</div></div>
+
+        <div class="ag-btn ghost" id="login-add" style="margin-top:14px">+ 添加新身份</div>
+
+        <div class="ag-link" id="login-guest">以游客身份进入</div>
+
+      </div>`;
+
+    gate.querySelectorAll(".profile-card").forEach(card=>{
+
+      card.addEventListener("click", (e)=>{
+
+        if(e.target.dataset.del) return;
+
+        const pid = card.dataset.pid, p = ACC.list.find(x=>x.pid===pid);
+
+        if(p && p.passcode){ this.pending = pid; gate.querySelector("#lock-wrap").classList.add("on"); gate.querySelector("#lock-pass").focus(); }
+
+        else this.login(pid);
+
+      });
+
+      const del = card.querySelector(".pdel");
+
+      if(del) del.addEventListener("click", (e)=>{ e.stopPropagation();
+
+        if(confirm("删除该身份及其所有本地记录？此操作不可恢复。")){ ACC.list=ACC.list.filter(x=>x.pid!==pid); if(ACC.active===pid) ACC.active=null; ACC.save(); this.renderLogin(); }
+
+      });
+
+    });
+
+    gate.querySelector("#lock-go").addEventListener("click", ()=>{
+
+      const p = ACC.list.find(x=>x.pid===this.pending), val = gate.querySelector("#lock-pass").value;
+
+      if(p && val===p.passcode) this.login(this.pending); else flashToast("口令不对");
+
+    });
+
+    gate.querySelector("#lock-cancel").addEventListener("click", ()=> gate.querySelector("#lock-wrap").classList.remove("on"));
+
+    gate.querySelector("#login-add").addEventListener("click", ()=>{ this.draft={name:"",avatar:"🦊",color:"#7fd1a0",passcode:"",stack:"nature"}; this.renderOnboarding(); });
+
+    gate.querySelector("#login-guest").addEventListener("click", ()=> this.enterGuest());
+
+  },
+
+  login(pid){ ACC.active = pid; ACC.save(); Sanctuary.load(); this.close(); this.afterLogin(); flashToast("回来了，「"+(ACC.get()?ACC.get().name:"")+"」"); },
+
+  enterGuest(){ ACC.active = null; ACC.save(); Sanctuary.load(); this.close(); this.afterLogin(); flashToast("游客模式 · 记录仅临时保存"); },
+
+  close(){ document.getElementById("account-gate").classList.add("hide"); },
+
+  afterLogin(){
+
+    const p = ACC.get(), ha = document.getElementById("header-avatar");
+
+    if(ha) ha.textContent = p? p.avatar : "👤";
+
+    document.documentElement.style.setProperty("--accent", p? p.color : "#7fd1a0");
+
+    updateMoodBadge();
+
+    if(document.getElementById("view-sanctuary").classList.contains("active")) renderSanctuary();
+
+  },
+
+  openSettings(){
+
+    const p = ACC.get(), box = document.getElementById("settings-panel");
+
+    const av = AVATARS.map(a=>`<div class="av${p&&p.avatar===a?" on":""}" data-a="${a}">${a}</div>`).join("");
+
+    const cc = ACCENTS.map(c=>`<div class="cc${p&&p.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
+
+    box.innerHTML = `<div class="settings-box">
+
+      <h3>设置 · ${p?escapeHtml(p.name):"游客"}</h3>
+
+      <div class="set-row"><span>身份名称</span><input class="ag-input" id="set-name" value="${p?escapeHtml(p.name):""}" style="width:150px"></div>
+
+      <div class="set-row"><span>头像</span><div class="avatar-pick" id="set-av" style="justify-content:flex-end">${av}</div></div>
+
+      <div class="set-row"><span>主题色</span><div class="color-pick" id="set-cc">${cc}</div></div>
+
+      <div class="set-row"><span>访问口令</span><input class="ag-input" id="set-pass" type="password" value="${p&&p.passcode?p.passcode:""}" placeholder="留空则无" style="width:150px"></div>
+
+      <div class="set-row"><span>导出全部数据</span><b class="si" id="set-export">下载 JSON</b></div>
+
+      <div class="set-row"><span>导入数据合并</span><b class="si" id="set-import">选择文件</b></div>
+
+      <input type="file" id="set-file" accept="application/json" style="display:none">
+
+      <div class="set-row"><span>羁绊（与另一身份互享）</span><b class="si" id="set-bond">管理</b></div>
+
+      <div class="set-row"><span>退出当前身份</span><b class="si" id="set-logout">退出</b></div>
+
+      ${p?'<div class="set-row"><span>删除此身份</span><b class="si" id="set-del">删除</b></div>':''}
+
+      <div class="ag-btn ghost" id="set-close" style="margin-top:8px">关闭</div>
+
+    </div>`;
+
+    box.classList.add("open");
+
+    const saveProfile = ()=>{ if(!p) return; p.name = box.querySelector("#set-name").value.trim()||p.name; p.passcode = box.querySelector("#set-pass").value; ACC.save(); flashToast("已保存"); };
+
+    box.querySelector("#set-av").querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ if(p){ p.avatar=x.dataset.a; saveProfile(); Accounts.openSettings(); } }));
+
+    box.querySelector("#set-cc").querySelectorAll(".cc").forEach(x=> x.addEventListener("click", ()=>{ if(p){ p.color=x.dataset.c; saveProfile(); Accounts.openSettings(); } }));
+
+    box.querySelector("#set-name").addEventListener("change", saveProfile);
+
+    box.querySelector("#set-pass").addEventListener("change", saveProfile);
+
+    box.querySelector("#set-export").addEventListener("click", ()=> exportAccount());
+
+    box.querySelector("#set-import").addEventListener("click", ()=> box.querySelector("#set-file").click());
+
+    box.querySelector("#set-file").addEventListener("change", (e)=> importAccount(e.target.files[0]));
+
+    box.querySelector("#set-bond").addEventListener("click", ()=> renderBonds(box));
+
+    box.querySelector("#set-logout").addEventListener("click", ()=>{ box.classList.remove("open"); Accounts.logout(); });
+
+    if(p) box.querySelector("#set-del").addEventListener("click", ()=>{ if(confirm("删除此身份及全部本地记录？不可恢复。")){ ACC.list=ACC.list.filter(x=>x.pid!==p.pid); ACC.active=null; ACC.save(); box.classList.remove("open"); Accounts.renderGate(); } });
+
+    box.querySelector("#set-close").addEventListener("click", ()=> box.classList.remove("open"));
+
+  },
+
+  logout(){ ACC.active = null; ACC.save(); Sanctuary.load(); this.renderGate(); }
+
+};
+
+
+
+function exportAccount(){
+
+  ACC.load(); const p = ACC.get(); if(!p){ flashToast("游客模式无数据可导出"); return; }
+
+  downloadJSON("calm-nature-"+p.name+".json", { app:"calm-nature-account", pid:p.pid, name:p.name, exportedAt:Date.now(), store: Sanctuary.store });
+
+  flashToast("已导出「"+p.name+"」的全部记录");
+
+}
+
+function importAccount(file){
+
+  if(!file) return;
+
+  const r = new FileReader();
+
+  r.onload = ()=>{
+
+    try{
+
+      const data = JSON.parse(r.result);
+
+      if(data.store){ Sanctuary.store = Object.assign(Sanctuary.store||{}, data.store); Sanctuary.save(); flashToast("已合并导入的数据"); updateMoodBadge(); }
+
+      else flashToast("文件里没有可合并的记录");
+
+    }catch(e){ flashToast("文件格式不对"); }
+
+  };
+
+  r.readAsText(file);
+
+}
+
+function renderBonds(box){
+
+  const old = box.querySelector("#bond-holder"); if(old) old.remove();
+
+  const h = document.createElement("div"); h.id="bond-holder"; h.style.marginTop="10px";
+
+  h.innerHTML = `<div class="ag-h">羁绊</div><div class="ag-p">羁绊是两个本地身份之间的互享：把你的共笔包（共笔墙里「导出共笔包」）发给对方，对方导入后，你们就在同一份记录里。这是没有服务器的「多人」。</div>`;
+
+  const btn = document.createElement("div"); btn.className="ag-btn ghost"; btn.textContent="导入一份共笔包，结为羁绊";
+
+  btn.addEventListener("click", ()=>{
+
+    const inp=document.createElement("input"); inp.type="file"; inp.accept="application/json"; inp.style.display="none"; document.body.appendChild(inp);
+
+    inp.addEventListener("change", ()=>{ const f=inp.files[0]; if(!f) return; const rd=new FileReader();
+
+      rd.onload=()=>{ try{ const d=JSON.parse(rd.result); const nm=d.name||"某人"; (Sanctuary.store.bonds=Sanctuary.store.bonds||[]).push({name:nm,at:Date.now()}); Sanctuary.save(); flashToast("已与「"+nm+"」结为羁绊"); renderBonds(box);}catch(e){flashToast("文件不对");} };
+
+      rd.readAsText(f); document.body.removeChild(inp); });
+
+    inp.click();
+
+  });
+
+  h.appendChild(btn); box.querySelector(".settings-box").appendChild(h);
+
+}
+
+
 function renderWall(c){
   Sanctuary.load();
   let html = `<div class="wall-compose">
@@ -3544,6 +4489,20 @@ function init(){
   },{threshold:.2});
 
   document.querySelectorAll(".gcard").forEach(el=>obs.observe(el));
+
+
+  // ---- account system wiring ----
+  const sh = document.querySelector("#view-sanctuary .gal-actions");
+  if(sh && !document.getElementById("btn-settings")){
+    const av = document.createElement("div"); av.id="header-avatar"; av.className="ic"; av.title="身份"; av.textContent="👤"; av.style.order="-1"; sh.insertBefore(av, sh.firstChild);
+    const g = document.createElement("div"); g.id="btn-settings"; g.className="ic"; g.title="设置"; g.textContent="⚙"; sh.appendChild(g);
+    g.addEventListener("click", ()=> Accounts.openSettings());
+    av.addEventListener("click", ()=> Accounts.openSettings());
+  }
+
+  // boot: show account gate (onboarding / login) over the splash
+  ACC.load();
+  Accounts.renderGate();
 
 }
 
