@@ -1,1003 +1,1979 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
+
 <head>
+
 <meta charset="UTF-8" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+
 <title>自然之境 · Quiet Nature</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
+
   :root{
+
     --bg:#030504;
+
     --glass:rgba(16,22,20,.42);
+
     --glass-strong:rgba(10,14,13,.68);
+
     --glass-border:rgba(255,255,255,.14);
+
     --ui:#f3f7f2;
+
     --muted:rgba(243,247,242,.62);
+
     --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+
     --safe-l:env(safe-area-inset-left,0px); --safe-r:env(safe-area-inset-right,0px);
+
     --accent:#b8e0c8; --accent-rgb:184,224,200;
+
     --accent2:#ffd6a5; --accent2-rgb:255,214,165;
+
     --tint:rgba(184,224,200,0); --dim:0;
+
     --radius:22px;
+
   }
+
   [data-mood="ember"]{--accent:#ffbd7a;--accent-rgb:255,189,122;--accent2:#ff8a5b;--accent2-rgb:255,138,91;--tint:rgba(255,189,122,0)}
+
   [data-mood="night"]{--accent:#9fb8ff;--accent-rgb:159,184,255;--accent2:#c9a8ff;--accent2-rgb:201,168,255;--tint:rgba(159,184,255,0)}
+
   *{box-sizing:border-box;margin:0;padding:0}
+
   html,body{height:100%;background:var(--bg);color:var(--ui);font-family:"Inter","PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-tap-highlight-color:transparent;overflow:hidden}
+
   .serif{font-family:"Cormorant Garamond","Songti SC",serif}
+
   .orbit{font-family:"Orbitron","PingFang SC",sans-serif;letter-spacing:.18em;text-transform:uppercase}
 
+
+
   #app-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
   .view{position:fixed;inset:0;z-index:1;display:none;opacity:0;transition:opacity .7s cubic-bezier(.2,.6,.2,1)}
+
   .view.active{display:flex;opacity:1}
 
+
+
   /* ---------- splash ---------- */
+
   #view-splash{flex-direction:column;align-items:center;justify-content:center;padding:max(24px,var(--safe-t)) 22px max(24px,var(--safe-b));text-align:center;overflow:hidden}
+
   .splash-ring{position:absolute;inset:8%;border:1px solid rgba(255,255,255,.06);border-radius:50%;animation:ringPulse 8s ease-in-out infinite}
+
   .splash-ring:nth-child(2){inset:14%;animation-delay:-2.6s}
+
   .splash-ring:nth-child(3){inset:20%;animation-delay:-5.2s}
+
   @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.25}50%{transform:scale(1.04);opacity:.6}}
+
   .splash-title{font-size:clamp(42px,10vw,92px);letter-spacing:.12em;font-weight:600;line-height:1.05;text-shadow:0 0 60px rgba(var(--accent-rgb),.35),0 2px 18px rgba(0,0,0,.6);animation:titleIn 1.4s cubic-bezier(.2,.6,.2,1) both}
+
   .splash-title .en{display:block;font-size:clamp(12px,2.4vw,16px);letter-spacing:.6em;color:var(--muted);margin-top:14px;font-family:"Orbitron",sans-serif}
+
   @keyframes titleIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+
   .splash-tag{max-width:520px;margin-top:28px;font-size:15px;line-height:1.9;color:var(--muted);letter-spacing:.04em;animation:fadeUp 1.2s .35s both}
+
   @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
   .splash-cta{margin-top:42px;position:relative;animation:fadeUp 1.2s .7s both}
+
   .splash-cta button{padding:16px 46px;border-radius:50px;border:1px solid var(--glass-border);background:linear-gradient(135deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.04));color:var(--ui);font-size:14px;letter-spacing:.28em;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.25),0 0 40px -8px rgba(var(--accent-rgb),.45);transition:transform .2s,box-shadow .3s}
+
   .splash-cta button:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.55),0 0 60px -6px rgba(var(--accent-rgb),.65)}
+
   .splash-cta button:active{transform:scale(.96)}
+
   .splash-hint{position:absolute;bottom:max(22px,var(--safe-b));font-size:11px;letter-spacing:.2em;color:var(--muted);opacity:.7;animation:bounce 2.2s infinite}
+
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
+
+
   /* ---------- guide ---------- */
+
   #view-guide{flex-direction:column;padding:max(22px,var(--safe-t)) 22px max(22px,var(--safe-b));overflow:auto}
+
   .guide-head{text-align:center;margin:6vh 0 4vh;animation:titleIn 1s both}
+
   .guide-head h2{font-size:clamp(28px,6vw,48px);letter-spacing:.1em}
+
   .guide-head .en{font-size:12px;letter-spacing:.42em;color:var(--muted);margin-top:8px}
+
   .guide-cards{display:grid;gap:18px;max-width:720px;width:100%;margin:0 auto;padding-bottom:30px}
+
   .gcard{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:26px 24px;display:flex;gap:18px;align-items:flex-start;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 46px -20px rgba(0,0,0,.55);opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+
   .gcard.visible{opacity:1;transform:translateY(0)}
+
   .gcard .num{flex:0 0 46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--accent-rgb),.45);color:var(--accent);font-family:"Orbitron",sans-serif;font-size:14px;box-shadow:0 0 22px -4px rgba(var(--accent-rgb),.4)}
+
   .gcard h3{font-size:17px;letter-spacing:.08em;margin-bottom:8px}
+
   .gcard p{font-size:13px;line-height:1.85;color:var(--muted)}
+
   .guide-foot{margin:5vh auto 3vh;text-align:center}
+
   .guide-foot button{padding:15px 40px;border-radius:50px;border:1px solid var(--glass-border);background:rgba(var(--accent-rgb),.12);color:var(--ui);font-size:14px;letter-spacing:.24em;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 0 30px -8px rgba(var(--accent-rgb),.4);transition:transform .2s,box-shadow .3s}
+
   .guide-foot button:hover{transform:translateY(-2px);box-shadow:0 0 40px -4px rgba(var(--accent-rgb),.6)}
 
+
+
   /* ---------- gallery ---------- */
+
   #view-gallery{flex-direction:column;padding:0;overflow-y:auto;overflow-x:hidden}
+
   .gal-header{position:sticky;top:0;z-index:5;padding:max(16px,var(--safe-t)) max(18px,var(--safe-l)) 14px max(18px,var(--safe-r));display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,var(--bg),rgba(3,5,4,.85) 70%,transparent);backdrop-filter:blur(8px)}
+
   .gal-title{font-size:22px;letter-spacing:.1em}
+
   .gal-title .en{display:block;font-size:9px;letter-spacing:.42em;color:var(--muted);margin-top:3px}
+
   .gal-actions{display:flex;gap:10px}
+
   .ic{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass);backdrop-filter:blur(14px);color:var(--ui);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 8px 24px -10px rgba(0,0,0,.55);transition:transform .15s,box-shadow .3s}
+
   .ic:active{transform:scale(.92)}
+
   .ic:hover{box-shadow:0 0 0 1px var(--accent),0 0 22px -2px rgba(var(--accent-rgb),.6)}
+
   .gal-body{padding:10px max(18px,var(--safe-l)) calc(26px + var(--safe-b)) max(18px,var(--safe-r))}
+
   .cat{margin-bottom:32px;opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+
   .cat.visible{opacity:1;transform:translateY(0)}
+
   .cat-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-left:6px}
+
   .cat-head h3{font-size:clamp(20px,4.5vw,32px);letter-spacing:.08em}
+
   .cat-head .en{font-size:11px;letter-spacing:.32em;color:var(--muted)}
+
   .cat-head .desc{font-size:12px;color:var(--muted);margin-left:auto;max-width:260px;text-align:right;display:none}
+
   @media(min-width:680px){.cat-head .desc{display:block}}
+
   .cards-row{display:flex;gap:14px;overflow-x:auto;padding:4px 6px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(var(--accent-rgb),.35) transparent}
+
   .cards-row::-webkit-scrollbar{height:5px}
+
   .cards-row::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.35);border-radius:3px}
+
   .scard{flex:0 0 clamp(150px,42vw,260px);aspect-ratio:3/4;border-radius:var(--radius);position:relative;overflow:hidden;background:#0a0e0c;border:1px solid var(--glass-border);box-shadow:0 14px 38px -16px rgba(0,0,0,.65);cursor:pointer;scroll-snap-align:start;transition:transform .35s,box-shadow .35s,border-color .35s}
+
   .scard:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 22px 50px -14px rgba(var(--accent-rgb),.25),0 0 0 1px rgba(var(--accent-rgb),.45);border-color:rgba(var(--accent-rgb),.5)}
+
   .scard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s}
+
   .scard:hover img{transform:scale(1.08)}
+
   .scard .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.25) 45%,transparent 70%);pointer-events:none}
+
   .scard .meta{position:absolute;left:0;right:0;bottom:0;padding:18px 16px 16px;pointer-events:none}
+
   .scard .tag{display:inline-block;font-size:9px;letter-spacing:.18em;padding:4px 10px;border-radius:20px;border:1px solid rgba(var(--accent-rgb),.4);color:var(--accent);margin-bottom:8px;background:rgba(0,0,0,.28)}
+
   .scard h4{font-size:17px;letter-spacing:.06em;margin-bottom:4px}
+
   .scard p{font-size:11px;color:var(--muted);letter-spacing:.04em}
+
   .scard .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:20px;opacity:0;transition:opacity .35s,transform .35s;backdrop-filter:blur(6px)}
+
   .scard:hover .play{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
+
+
   /* ---------- player ---------- */
+
   #view-player{flex-direction:column;overflow:hidden}
+
   #stage{position:absolute;inset:0;z-index:0;background:#000}
-  #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:contrast(1.12) saturate(1.18) brightness(1.03)}
-  #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:contain;background-position:center;animation:kenburns 60s linear infinite;transform:scale(1.03);filter:contrast(1.12) saturate(1.2) brightness(1.03)}
+
+  #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.12) saturate(1.18) brightness(1.03)}
+
+  #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;animation:kenburns 60s linear infinite;transform:scale(1.05);filter:contrast(1.12) saturate(1.2) brightness(1.03)}
+
   @keyframes kenburns{0%{transform:scale(1.05) translate(0,0)}25%{transform:scale(1.12) translate(-1.5%,-1%)}50%{transform:scale(1.08) translate(1%,.5%)}75%{transform:scale(1.14) translate(-.5%,1%)}100%{transform:scale(1.05) translate(0,0)}}
+
   #vignette{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 48%,rgba(0,0,0,.55) 100%)}
+
   #grain{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
   #tint{position:absolute;inset:0;z-index:4;pointer-events:none;background:var(--tint);transition:background 1.2s ease}
+
   #dim{position:absolute;inset:0;z-index:5;pointer-events:none;background:#000;opacity:var(--dim);transition:opacity 1.2s ease}
+
   #cg{position:fixed;top:0;left:0;width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;pointer-events:none;z-index:6;opacity:0;background:radial-gradient(circle,rgba(var(--accent-rgb),.12),transparent 70%);mix-blend-mode:screen;transition:opacity .4s ease}
+
   /* ambient nature overlays */
+
   #mist{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(130% 55% at 50% 112%,rgba(255,255,255,.12),transparent 62%);transition:opacity 1.2s ease}
+
   #view-player.mist #mist{opacity:1;animation:mistDrift 30s ease-in-out infinite}
+
   @keyframes mistDrift{0%,100%{transform:translateX(-5%)}50%{transform:translateX(5%)}}
+
   #rays{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.07) 50%,transparent 58%);transition:opacity 1.2s ease}
+
   #view-player.rays #rays{opacity:1;animation:raysShift 18s ease-in-out infinite}
+
   @keyframes raysShift{0%,100%{transform:translateX(-3%)}50%{transform:translateX(3%)}}
 
+
+
   /* ---- extra depth & life layers ---- */
+
   #mist2{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(95% 42% at 28% 120%,rgba(255,255,255,.10),transparent 60%);transition:opacity 1.4s ease}
+
   #view-player.mist #mist2{opacity:1;animation:mistDrift2 44s ease-in-out infinite}
+
   @keyframes mistDrift2{0%,100%{transform:translateX(4%)}50%{transform:translateX(-4%)}}
 
+
+
   #pollen{position:absolute;inset:-12%;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;
+
     background-image:
+
       radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.55),transparent),
+
       radial-gradient(1.6px 1.6px at 68% 58%,rgba(255,255,255,.45),transparent),
+
       radial-gradient(1.6px 1.6px at 44% 82%,rgba(255,255,255,.4),transparent),
+
       radial-gradient(2px 2px at 86% 24%,rgba(255,255,255,.45),transparent),
+
       radial-gradient(1.4px 1.4px at 32% 64%,rgba(255,255,255,.4),transparent);
+
     transition:opacity 1.6s ease}
+
   #view-player.pollen #pollen{opacity:.85;animation:pollenFloat 28s linear infinite}
+
   @keyframes pollenFloat{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(-9%) translateX(3%)}100%{transform:translateY(-16%) translateX(0)}}
 
+
+
   #stars{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;
+
     background-image:
+
       radial-gradient(1.5px 1.5px at 14% 18%,#fff,transparent),
+
       radial-gradient(1.2px 1.2px at 58% 32%,#fff,transparent),
+
       radial-gradient(1.7px 1.7px at 82% 14%,#fff,transparent),
+
       radial-gradient(1.2px 1.2px at 34% 68%,#fff,transparent),
+
       radial-gradient(1.5px 1.5px at 72% 74%,#fff,transparent),
+
       radial-gradient(1.3px 1.3px at 48% 48%,#fff,transparent),
+
       radial-gradient(1.4px 1.4px at 90% 56%,#fff,transparent),
+
       radial-gradient(1.1px 1.1px at 24% 88%,#fff,transparent);
+
     transition:opacity 1.6s ease}
+
   #view-player.stars #stars{opacity:.95;animation:twinkle 5s ease-in-out infinite}
+
   @keyframes twinkle{0%,100%{opacity:.45}50%{opacity:1}}
 
+
+
   /* richer, slower cinematic Ken Burns for still images */
-  #pimg{animation:kenburns 70s ease-in-out infinite}
-  @keyframes kenburns{0%{transform:scale(1.0) translate(0,0)}25%{transform:scale(1.04) translate(-.6%,-.4%)}50%{transform:scale(1.02) translate(.5%,.3%)}75%{transform:scale(1.05) translate(-.3%,.5%)}100%{transform:scale(1.0) translate(0,0)}}
+
+  #pimg{animation:kenburns 46s ease-in-out infinite}
+
+  @keyframes kenburns{0%{transform:scale(1.0) translate(0,0)}20%{transform:scale(1.12) translate(-1.6%,-1%)}40%{transform:scale(1.08) translate(1.4%,.8%)}60%{transform:scale(1.18) translate(-.8%,1.2%)}80%{transform:scale(1.1) translate(1%,-.6%)}100%{transform:scale(1.0) translate(0,0)}}
+
+
 
   /* refine premium vignette + grain */
+
   #vignette{background:radial-gradient(125% 125% at 50% 38%,transparent 42%,rgba(0,0,0,.62) 100%)}
+
   #grain{opacity:.05}
 
+
+
   #ptop{position:fixed;top:max(14px,var(--safe-t));left:max(16px,var(--safe-l));right:max(16px,var(--safe-r));z-index:7;display:flex;justify-content:space-between;align-items:flex-start;transition:opacity .55s ease}
+
   #ptitle{pointer-events:none;text-shadow:0 2px 18px rgba(0,0,0,.7)}
+
   #ptitle .t{font-size:26px;letter-spacing:.08em;font-weight:600;line-height:1.05}
+
   #ptitle .s{font-size:10px;letter-spacing:.34em;color:var(--muted);margin-top:4px;text-transform:uppercase}
+
   #ptitle .clock{font-size:13px;color:var(--accent);margin-top:8px;letter-spacing:.14em;font-variant-numeric:tabular-nums;text-shadow:0 1px 10px rgba(0,0,0,.85)}
 
+
+
   #dock{position:fixed;left:0;right:0;bottom:0;z-index:7;padding:12px max(16px,var(--safe-l)) calc(12px + var(--safe-b)) max(16px,var(--safe-r));display:flex;flex-direction:column;gap:10px;transition:opacity .55s ease}
-  #rotate-hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(104px + var(--safe-b));z-index:8;display:none;align-items:center;gap:8px;padding:10px 18px;border-radius:30px;background:rgba(18,26,22,.55);border:1px solid rgba(255,255,255,.2);color:#eaf3ee;font-size:12.5px;letter-spacing:.05em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;box-shadow:0 8px 26px -10px rgba(0,0,0,.7)}
-  #rotate-hint:active{background:rgba(255,255,255,.16)}
-  @media (orientation:portrait){#view-player #rotate-hint{display:flex}}
+
   #dock::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0));transition:opacity .6s ease}
+
   /* ---------- natural progress line (a glowing thread, not a bar) ---------- */
+
   .bar{position:relative;height:34px;border:0;background:transparent;overflow:visible;touch-action:none;cursor:pointer}
+
   .bar .bar-inner{position:absolute;left:0;right:0;top:50%;height:2px;transform:translateY(-50%);border-radius:2px;background:linear-gradient(90deg,rgba(var(--accent-rgb),.12),rgba(var(--accent2-rgb),.20),rgba(var(--accent-rgb),.12));box-shadow:0 0 14px -2px rgba(var(--accent-rgb),.45);transition:opacity .6s ease}
+
   .bar .fill{position:absolute;left:0;top:50%;height:2px;transform:translateY(-50%);width:0%;border-radius:2px;background:linear-gradient(90deg,rgba(var(--accent-rgb),.9),rgba(var(--accent2-rgb),.96));box-shadow:0 0 16px 1px rgba(var(--accent-rgb),.7);transition:width .05s linear,opacity .6s ease}
+
   .bar .thumb{position:absolute;top:50%;left:0;width:14px;height:14px;border-radius:50%;border:0;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 35%,#fff,rgba(var(--accent-rgb),.9) 55%,rgba(var(--accent-rgb),0) 75%);box-shadow:0 0 18px 3px rgba(var(--accent-rgb),.85),0 0 0 1px rgba(255,255,255,.5);pointer-events:none;z-index:3;transition:left .05s linear,opacity .6s ease}
+
   .bar .mk{position:absolute;top:50%;transform:translateY(-50%);font-size:13px;opacity:.55;pointer-events:none;text-shadow:0 0 10px rgba(var(--accent-rgb),.5);transition:opacity .6s ease}
+
   .bar .mk.start{left:2px}.bar .mk.end{right:2px}
+
   /* 24h = a horizon gradient thread (dawn → day → dusk → night) */
+
   #track .bar-inner{background:linear-gradient(90deg,#ffb07c 0%,#ffd6a5 16.67%,#eaf4ff 33%,#ffffff 58.34%,#ffaa33 75%,#ff7a4d 83.3%,#3a4f8a 100%);box-shadow:0 0 16px -2px rgba(255,170,90,.35)}
+
   #track .fill{background:linear-gradient(90deg,rgba(255,255,255,.85),rgba(255,214,165,.95));box-shadow:0 0 16px 1px rgba(255,255,255,.6)}
+
   #track .thumb{background:radial-gradient(circle at 35% 35%,#fff,rgba(255,230,180,.95) 55%,transparent 75%);box-shadow:0 0 22px 4px rgba(255,220,160,.85)}
+
   #tl-label{font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;display:flex;justify-content:space-between;margin-top:6px;transition:opacity .6s ease}
+
   /* stealth idle: chrome fades away, the natural thread stays as a faint glow */
+
   #view-player.idle #ptop{opacity:0}
+
   #view-player.idle #ctrl,#view-player.idle #tl-label,#view-player.idle #seek-label{opacity:0;pointer-events:none}
+
   #view-player.idle .bar .bar-inner,#view-player.idle .bar .fill{opacity:.16}
+
   #view-player.idle .bar .thumb,#view-player.idle .bar .mk{opacity:0}
+
   #view-player.idle #dock::before{opacity:0}
 
+
+
   #ctrl{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:opacity .6s ease}
+
   .demo{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:30px;border:1px solid var(--glass-border);background:var(--glass);color:var(--ui);font-size:12px;letter-spacing:.08em;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 6px 18px -10px rgba(0,0,0,.6);white-space:nowrap;transition:transform .15s,box-shadow .3s}
+
   .demo.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 22px -3px rgba(var(--accent-rgb),.7)}
+
   .demo:active{transform:scale(.96)}
+
   .vol{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:15px}
+
   .vol input[type=range]{width:100px;accent-color:var(--accent);height:22px}
+
   .ctrl-right{display:flex;align-items:center;gap:10px}
+
   .mini-time{font-size:12px;letter-spacing:.08em;color:var(--muted);min-width:90px;text-align:right;transition:opacity .6s ease}
 
+
+
   #gate{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(0,0,0,.32);backdrop-filter:blur(5px);transition:opacity .9s ease;text-align:center;padding:24px}
+
   #gate .card{max-width:400px;width:100%;background:var(--glass-strong);border:1px solid var(--glass-border);border-radius:26px;padding:34px 28px;text-align:center;box-shadow:0 24px 60px -20px rgba(0,0,0,.72);position:relative;overflow:hidden}
+
   #gate .card::before{content:"";position:absolute;inset:-2px;z-index:-1;border-radius:28px;background:linear-gradient(120deg,rgba(var(--accent-rgb),.5),rgba(var(--accent-rgb),.08));filter:blur(16px);opacity:.5;animation:pulse 4s ease-in-out infinite}
+
   #gate h1{font-size:34px;letter-spacing:.18em;font-weight:600}
+
   #gate .en{font-size:12px;letter-spacing:.42em;color:var(--muted);margin-top:8px;text-transform:uppercase}
+
   #gate p{font-size:13px;color:var(--muted);letter-spacing:.05em;line-height:1.9;margin-top:18px}
+
   #gate .go{margin-top:24px;display:inline-block;padding:13px 36px;border-radius:40px;border:1px solid var(--glass-border);background:rgba(255,255,255,.05);font-size:14px;letter-spacing:.24em;cursor:pointer;color:var(--ui);transition:transform .15s,box-shadow .3s}
+
   #gate .go:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--accent),0 0 30px -4px rgba(var(--accent-rgb),.8)}
+
   #gate .go:active{transform:scale(.96)}
 
+
+
   #credits{position:fixed;inset:0;z-index:30;background:rgba(6,8,7,.94);backdrop-filter:blur(14px);display:none;flex-direction:column;padding:max(30px,var(--safe-t)) 22px max(30px,var(--safe-b));overflow:auto}
+
   #credits.show{display:flex;animation:fade .3s ease}
+
   #credits h2{font-size:18px;letter-spacing:.16em;margin-bottom:20px}
+
   #credits .row{margin-bottom:16px;border-left:2px solid var(--accent);padding-left:13px}
+
   #credits .row b{font-size:14px;letter-spacing:.08em}
+
   #credits .row div{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.75}
+
   #credits .close{margin-top:auto;align-self:flex-end;padding:11px 28px;border-radius:30px;border:1px solid var(--glass-border);background:transparent;color:var(--ui);font-size:13px;cursor:pointer;letter-spacing:.16em}
 
+
+
   .hidden{opacity:0!important;pointer-events:none!important}
+
   @keyframes fade{from{opacity:0}to{opacity:1}}
+
   @keyframes pulse{0%,100%{opacity:.4}50%{opacity:.85}}
 
+
+
   /* ============ GLOBAL forest atmosphere ============ */
+
   /* soft global vignette so every screen feels enclosed by nature */
+
   #app-vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+
     background:radial-gradient(130% 130% at 50% 42%,transparent 52%,rgba(0,0,0,.5) 100%);mix-blend-mode:multiply}
 
+
+
   /* ---------- splash: a walk into the woods ---------- */
+
   .splash-bg{position:absolute;inset:0;z-index:0;
+
     background:
+
       radial-gradient(120% 80% at 50% -10%,rgba(180,230,200,.20),transparent 55%),
+
       radial-gradient(90% 70% at 50% 118%,rgba(40,80,55,.55),transparent 60%),
+
       linear-gradient(180deg,#0a1610 0%,#081410 38%,#06110c 100%);}
+
   .splash-rays{position:absolute;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.0;
+
     background:
+
       linear-gradient(105deg,transparent 40%,rgba(255,240,200,.10) 50%,transparent 60%),
+
       linear-gradient(80deg,transparent 46%,rgba(200,255,220,.08) 52%,transparent 60%);
+
     animation:raysShift 20s ease-in-out infinite;transition:opacity 1.5s ease}
+
   #view-splash.active .splash-rays{opacity:1}
+
   .splash-mist{position:absolute;left:-10%;right:-10%;bottom:0;height:46%;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.0;
+
     background:radial-gradient(120% 100% at 50% 120%,rgba(190,225,205,.22),rgba(190,225,205,.06) 45%,transparent 72%);
+
     animation:mistDrift 26s ease-in-out infinite;transition:opacity 2s ease}
+
   #view-splash.active .splash-mist{opacity:1}
+
   .splash-trees{position:absolute;left:0;right:0;bottom:0;width:100%;height:34vh;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
+
   #view-splash.active .splash-trees{opacity:.92}
+
   .splash-title,.splash-tag,.splash-cta,.splash-hint{position:relative;z-index:2}
+
   #view-splash{padding-top:max(22px,var(--safe-t))}
 
+
+
   /* ---------- gallery: alive, not a black void ---------- */
+
   #view-gallery{background:
+
       radial-gradient(80% 50% at 18% 8%,rgba(120,200,160,.10),transparent 60%),
+
       radial-gradient(70% 50% at 88% 22%,rgba(150,180,255,.08),transparent 60%),
+
       radial-gradient(90% 60% at 50% 100%,rgba(255,190,120,.06),transparent 60%),
+
       linear-gradient(180deg,#05100b,#030806);}
+
   .gal-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+
     background:radial-gradient(120% 120% at 50% 40%,transparent 50%,rgba(0,0,0,.55) 100%);}
+
   /* per-category accent tint on the section header */
+
   .cat[data-cat="oneday"]  .cat-head h3{color:#ffe2b0}
+
   .cat[data-cat="short"]   .cat-head h3{color:#bfe9d2}
+
   .cat[data-cat="majestic"] .cat-head h3{color:#ffd29a}
+
   .cat[data-cat="forest"]  .cat-head h3{color:#aee9c4}
+
   .cat[data-cat="water"]   .cat-head h3{color:#9fd8ff}
+
   .cat[data-cat="sky"]     .cat-head h3{color:#c3b6ff}
+
   .cat[data-cat="extreme"] .cat-head h3{color:#ffc9a0}
+
   .cat .cat-head .en{color:var(--muted)}
+
   .scard{border-color:rgba(255,255,255,.10)}
+
   .scard .tag{backdrop-filter:blur(4px)}
+
   /* faint glow that follows the category colour */
+
   .cat[data-cat] .cards-row::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.4)}
 
+
+
   /* ---------- player: canopy + light leak ---------- */
+
   #canopy{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:multiply;
+
     background:
+
       radial-gradient(120% 60% at 50% -30%,rgba(0,0,0,.55),transparent 60%),
+
       linear-gradient(180deg,rgba(8,16,10,.5),transparent 22%);
+
     transition:opacity 1.4s ease}
+
   #view-player.canopy #canopy{opacity:1}
+
   #leak{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;mix-blend-mode:screen;
+
     background:
+
       radial-gradient(40% 55% at 12% 8%,rgba(255,225,170,.16),transparent 60%),
+
       radial-gradient(36% 50% at 92% 92%,rgba(150,210,255,.10),transparent 62%);
+
     animation:leakDrift 24s ease-in-out infinite;transition:opacity 1.6s ease}
+
   #view-player.leak #leak{opacity:1}
+
   @keyframes leakDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(2%,-2%)}}
 
+
+
   /* make the natural particle layers read clearly */
+
   #view-player.pollen #pollen{opacity:1}
+
   #view-player.stars #stars{opacity:1;animation:twinkle 4s ease-in-out infinite}
+
   #view-player.mist #mist,#view-player.mist #mist2{opacity:1}
 
+
+
   /* ===== UI overhaul: hero splash + depth layers + selective Ken Burns ===== */
+
   /* splash hero: a deep, dramatic image made pale and hidden */
-  .splash-hero{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;background:url('./media/splash-hero.jpg?v=20260728g') center/cover no-repeat;filter:brightness(1.55) contrast(.78) saturate(.72) blur(1.2px);mix-blend-mode:screen;transition:opacity 2.2s ease}
+
+  .splash-hero{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;background:url('./media/splash-hero.jpg?v=20260728e') center/cover no-repeat;filter:brightness(1.55) contrast(.78) saturate(.72) blur(1.2px);mix-blend-mode:screen;transition:opacity 2.2s ease}
+
   #view-splash.active .splash-hero{opacity:.28;animation:heroBreath 34s ease-in-out infinite alternate}
+
   @keyframes heroBreath{0%{transform:scale(1)}100%{transform:scale(1.07)}}
+
   .splash-hero::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 50% 42%,transparent 40%,rgba(3,5,4,.72) 100%)}
 
+
+
   /* depth/layer transitions: each screen feels like a different plane */
+
   .view{transition:opacity .85s cubic-bezier(.2,.6,.2,1),transform .85s cubic-bezier(.2,.6,.2,1),filter .85s ease;transform:perspective(1200px) translateZ(-60px) scale(1.04);filter:blur(1.5px)}
+
   .view.active{transform:perspective(1200px) translateZ(0) scale(1);filter:blur(0)}
 
+
+
   /* player image motion: subtle only when it helps, static when the shot is already strong */
-  #pimg{animation:kenSubtle 60s ease-in-out infinite;transform:scale(1.05)}
-  #pimg.ken-subtle{animation:kenSubtle 60s ease-in-out infinite}
+
+  #pimg{animation:none;transform:scale(1.05)}
+
+  #pimg.ken-subtle{animation:kenSubtle 80s ease-in-out infinite}
+
   #pimg.ken-static{animation:none;transform:scale(1.05)}
-  @keyframes kenSubtle{0%{transform:scale(1.04) translate(0,0)}50%{transform:scale(1.12) translate(-1.4%,-.9%)}100%{transform:scale(1.04) translate(0,0)}}
+
+  @keyframes kenSubtle{0%{transform:scale(1.03) translate(0,0)}50%{transform:scale(1.08) translate(-1%,-.6%)}100%{transform:scale(1.03) translate(0,0)}}
+
+
 
   /* stronger gallery visuals */
+
   .scard img{filter:saturate(1.08) contrast(1.06) brightness(1.02)}
+
   .scard:hover img{transform:scale(1.1)}
+
   .cat-head h3{text-shadow:0 0 30px rgba(var(--accent-rgb),.25)}
+
   .cat[data-cat="oneday"]  .cat-head h3{text-shadow:0 0 28px rgba(255,226,176,.35)}
+
   .cat[data-cat="short"]   .cat-head h3{text-shadow:0 0 28px rgba(191,233,210,.35)}
+
   .cat[data-cat="majestic"] .cat-head h3{text-shadow:0 0 28px rgba(255,210,154,.35)}
+
   .cat[data-cat="forest"]  .cat-head h3{text-shadow:0 0 28px rgba(174,233,196,.35)}
+
   .cat[data-cat="water"]   .cat-head h3{text-shadow:0 0 28px rgba(159,216,255,.35)}
+
   .cat[data-cat="sky"]     .cat-head h3{text-shadow:0 0 28px rgba(195,182,255,.35)}
+
   .cat[data-cat="extreme"] .cat-head h3{text-shadow:0 0 28px rgba(255,201,160,.35)}
+
 </style>
+
 </head>
+
 <body data-mood="mist">
 
+
+
 <canvas id="app-bg"></canvas>
+
 <div id="app-vignette"></div>
 
+
+
 <!-- SPLASH -->
+
 <div id="view-splash" class="view active">
+
   <div class="splash-ring"></div>
+
   <div class="splash-ring"></div>
+
   <div class="splash-ring"></div>
+
   <div class="splash-bg"></div>
+
   <div class="splash-hero"></div>
+
   <div class="splash-rays"></div>
+
   <svg class="splash-trees" viewBox="0 0 1200 240" preserveAspectRatio="none">
+
     <path d="M0,240 L0,150 Q300,108 600,140 T1200,128 L1200,240 Z" fill="rgba(10,22,15,.85)"/>
+
     <g fill="#040a07">
+
       <polygon points="60,170 26,170 60,100"/>
+
       <polygon points="150,176 108,176 150,80"/>
+
       <polygon points="250,168 220,168 250,108"/>
+
       <polygon points="350,180 302,180 350,70"/>
+
       <polygon points="470,172 432,172 470,92"/>
+
       <polygon points="600,178 548,178 600,58"/>
+
       <polygon points="730,170 692,170 730,90"/>
+
       <polygon points="860,180 814,180 860,74"/>
+
       <polygon points="980,172 950,172 980,102"/>
+
       <polygon points="1100,178 1052,178 1100,78"/>
+
     </g>
+
   </svg>
+
   <div class="splash-mist"></div>
+
   <div class="splash-title serif">自然之境<span class="en orbit">Quiet Nature</span></div>
+
   <div class="splash-tag">一处只属于你的自然庇护所。<br>选一片景象，让时间慢下来。</div>
+
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
+
   <div class="splash-hint">轻触进入 · 开启声音体验更佳</div>
+
 </div>
+
+
 
 <!-- GUIDE -->
+
 <div id="view-guide" class="view">
+
   <div class="gal-header">
+
     <div class="gal-title serif">自然之境<span class="en orbit">How to use</span></div>
+
     <div class="gal-actions"><div class="ic" id="btn-gal-from-guide" title="跳过">→</div></div>
+
   </div>
+
   <div class="guide-head">
+
     <h2 class="serif">怎样沉浸</h2>
+
     <div class="en orbit">A few tips before you begin</div>
+
   </div>
+
   <div class="guide-cards">
+
     <div class="gcard"><div class="num">01</div><div><h3>选一片景象</h3><p>向下滑动浏览分类画廊：「一日流转」是同一场景的 24 小时光影；「静谧短憩」适合短暂放松；「苍茫雄伟」给你壮阔的自然力量。</p></div></div>
+
     <div class="gcard"><div class="num">02</div><div><h3>拖动时间</h3><p>在「一日流转」里，底部时间轴可自由拖动，从黎明跳到深夜；其他场景则拖动视频进度条，反复观看你最爱的片段。</p></div></div>
+
     <div class="gcard"><div class="num">03</div><div><h3>开启声音</h3><p>首次进入任意场景后轻触屏幕，即可解锁环境音。建议戴上耳机，风声、水声、篝火声会随画面自然起伏。</p></div></div>
+
     <div class="gcard"><div class="num">04</div><div><h3>让它自己流动</h3><p>点击「▶ 时光流转」，24 小时会被压缩成约 2 分钟循环播放；闲置时界面会自动隐藏，把画面留给你。</p></div></div>
+
   </div>
+
   <div class="guide-foot"><button id="btn-start">开始探索</button></div>
+
 </div>
+
+
 
 <!-- GALLERY -->
+
 <div id="view-gallery" class="view">
+
   <div class="gal-header">
+
     <div class="gal-title serif">自然之境<span class="en orbit">Gallery</span></div>
+
     <div class="gal-actions">
+
       <div class="ic" id="btn-mood" title="切换心境">🎨</div>
+
       <div class="ic" id="btn-info" title="素材来源">ⓘ</div>
+
     </div>
+
   </div>
+
   <div class="gal-body" id="gallery-body"></div>
+
 </div>
+
+
 
 <!-- PLAYER -->
+
 <div id="view-player" class="view">
+
   <div id="stage">
+
     <video id="pv" muted loop playsinline preload="auto" autoplay></video>
+
     <div id="pimg"></div>
+
   </div>
+
   <div id="vignette"></div>
+
   <div id="grain"></div>
+
   <div id="tint"></div>
+
   <div id="dim"></div>
+
   <div id="cg"></div>
+
   <div id="mist"></div>
+
   <div id="rays"></div>
+
   <div id="mist2"></div>
+
   <div id="pollen"></div>
+
   <div id="stars"></div>
+
   <div id="canopy"></div>
+
   <div id="leak"></div>
 
+
+
   <div id="ptop">
+
     <div id="ptitle">
+
       <div class="t serif" id="p-title">--</div>
+
       <div class="s" id="p-sub">--</div>
+
       <div class="clock" id="p-clock">--:-- · --</div>
+
     </div>
+
     <div class="btns">
+
       <div class="ic" id="btn-back" title="返回画廊">←</div>
+
       <div class="ic" id="btn-sound" title="声音">🔊</div>
+
       <div class="ic" id="btn-info2" title="素材来源">ⓘ</div>
-      <div class="ic" id="btn-rotate" title="横屏观看">↻</div>
+
     </div>
+
   </div>
 
-  <div id="rotate-hint">↻ 横屏观看，画面更完整</div>
+
 
   <div id="dock">
+
     <div id="timeline-wrap">
+
       <div id="track" class="bar">
+
         <div class="bar-inner"></div>
+
         <div class="fill" id="tl-fill"></div>
+
         <div class="thumb" id="tl-thumb"></div>
+
         <span class="mk start">🌅</span>
+
         <span class="mk end">🌙</span>
+
       </div>
+
       <div id="tl-label"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+
     </div>
+
     <div id="seek-wrap" style="display:none">
+
       <div id="seek" class="bar">
+
         <div class="bar-inner"></div>
+
         <div class="fill" id="seek-fill"></div>
+
         <div class="thumb" id="seek-thumb"></div>
+
         <span class="mk start">🌿</span>
+
         <span class="mk end">✦</span>
+
       </div>
+
       <div id="seek-label" class="mini-time">0:00 / 0:00</div>
+
     </div>
+
     <div id="ctrl">
+
       <div class="demo" id="btn-demo">▶ 时光流转</div>
+
       <div class="ctrl-right">
+
         <div class="vol"><span id="vol-icon">🔊</span><input id="vol" type="range" min="0" max="1" step="0.01" value="0.85"/></div>
+
       </div>
+
     </div>
+
   </div>
+
+
 
   <div id="gate">
+
     <div class="card">
+
       <h1 class="serif" id="gate-title">--</h1>
+
       <div class="en" id="gate-sub">--</div>
+
       <p id="gate-desc">轻触开启声音与沉浸体验</p>
+
       <div class="go" id="gate-go">轻触开启</div>
+
     </div>
+
   </div>
+
 </div>
+
+
 
 <div id="credits">
+
   <h2>素材来源 / 授权</h2>
+
   <div id="credits-body"></div>
+
   <button class="close" id="credits-close">关闭</button>
+
 </div>
 
+
+
 <script>
+
 "use strict";
+
 const SCENES_URL = "./scenes.json";
-const FALLBACK_SCENES = [{"id":"meadow","title":"晨雾草甸","subtitle":"Misty Meadow","category":"oneday","type":"24h","video":"./media/forest.mp4","poster":"./media/forest.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3","night":"./media/audio/music_night.mp3"},"credit":{"video":"Pixabay 森林/草甸晨雾视频","audio":"开源 beach-wallpaper（wind / music_day / music_night）"}},{"id":"rain","title":"雨落窗前","subtitle":"Rain on Window","category":"short","type":"loop","video":"./media/rain.mp4","poster":"./media/rain.jpg","audio":{"main":"./media/audio/rain.mp3"},"credit":{"video":"Pixabay 雨景视频","audio":"Pixabay nils_vega – rain"}},{"id":"campfire","title":"林间篝火","subtitle":"Campfire","category":"short","type":"loop","video":"./media/campfire.mp4","poster":"./media/campfire.jpg","audio":{"main":"./media/audio/campfire.mp3"},"credit":{"video":"Pixabay 篝火视频","audio":"开源 beach-wallpaper（campfire）"}},{"id":"stars","title":"星河低语","subtitle":"Starry Night","category":"short","type":"loop","video":"./media/stars.mp4","poster":"./media/stars.jpg","audio":{"night":"./media/audio/music_night.mp3","wind":"./media/audio/wind.mp3"},"credit":{"video":"Pixabay 星空延时视频","audio":"开源 beach-wallpaper（music_night / wind）"}},{"id":"mountain","title":"群山青翠","subtitle":"Alpine Valleys","category":"majestic","type":"loop","mediaType":"video","video":"./media/mountain.mp4","poster":"./media/mountain.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 山景延时摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"ocean","title":"悬崖怒海","subtitle":"Cliffs & Waves","category":"majestic","type":"loop","mediaType":"video","video":"./media/ocean.mp4","poster":"./media/ocean.jpg","audio":{"wind":"./media/audio/wind.mp3","main":"./media/audio/seagulls.mp3"},"credit":{"video":"Pixabay 海岸航拍摄影（Pixabay License）","audio":"开源 beach-wallpaper（seagulls / wind）"}},{"id":"waterfall","title":"热带飞瀑","subtitle":"Jungle Falls","category":"majestic","type":"loop","mediaType":"video","video":"./media/waterfall.mp4","poster":"./media/waterfall.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 瀑布摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"aurora","title":"极光之夜","subtitle":"Aurora Borealis","category":"majestic","type":"loop","mediaType":"video","video":"./media/aurora.mp4","poster":"./media/aurora.jpg","audio":{"night":"./media/audio/music_night.mp3","wind":"./media/audio/wind.mp3"},"credit":{"video":"Pixabay 极光摄影（Pixabay License）","audio":"开源 beach-wallpaper（music_night / wind）"}},{"id":"snow","title":"雪原日落","subtitle":"Snowy Sunset","category":"majestic","type":"loop","mediaType":"video","video":"./media/snow.mp4","poster":"./media/snow.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 雪原航拍摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"water-1","title":"水韵·静流 · 其一","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-1.jpg?v=20260728g","poster":"./media/water-1.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · calm water / lake / river"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"water-2","title":"水韵·静流 · 其二","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-2.jpg?v=20260728g","poster":"./media/water-2.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · calm water / lake / river"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"static"},{"id":"water-3","title":"水韵·静流 · 其三","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-3.jpg?v=20260728g","poster":"./media/water-3.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · calm water / lake / river"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"extreme-1","title":"苍茫·极境 · 其一","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-1.jpg?v=20260728g","poster":"./media/extreme-1.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · mountain / desert / glacier"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"extreme-2","title":"苍茫·极境 · 其二","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-2.jpg?v=20260728g","poster":"./media/extreme-2.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · mountain / desert / glacier"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"static"},{"id":"extreme-3","title":"苍茫·极境 · 其三","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-3.jpg?v=20260728g","poster":"./media/extreme-3.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · mountain / desert / glacier"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"forest-1","title":"幽林·秘境 · 其一","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-1.jpg?v=20260728g","poster":"./media/forest-1.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · misty / enchanted forest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"forest-2","title":"幽林·秘境 · 其二","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-2.jpg?v=20260728g","poster":"./media/forest-2.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · misty / enchanted forest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"forest-3","title":"幽林·秘境 · 其三","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-3.jpg?v=20260728g","poster":"./media/forest-3.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · misty / enchanted forest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"sky-1","title":"天垂·奇景 · 其一","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-1.jpg?v=20260728g","poster":"./media/sky-1.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · milky way / aurora / sky"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"},"motion":"static"},{"id":"sky-2","title":"天垂·奇景 · 其二","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-2.jpg?v=20260728g","poster":"./media/sky-2.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · milky way / aurora / sky"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"},"motion":"static"},{"id":"sky-3","title":"天垂·奇景 · 其三","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-3.jpg?v=20260728g","poster":"./media/sky-3.jpg?v=20260728g","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · milky way / aurora / sky"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"},"motion":"subtle"}];
+
+const FALLBACK_SCENES = [{"id":"meadow","title":"晨雾草甸","subtitle":"Misty Meadow","category":"oneday","type":"24h","video":"./media/forest.mp4","poster":"./media/forest.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3","night":"./media/audio/music_night.mp3"},"credit":{"video":"Pixabay 森林/草甸晨雾视频","audio":"开源 beach-wallpaper（wind / music_day / music_night）"}},{"id":"rain","title":"雨落窗前","subtitle":"Rain on Window","category":"short","type":"loop","video":"./media/rain.mp4","poster":"./media/rain.jpg","audio":{"main":"./media/audio/rain.mp3"},"credit":{"video":"Pixabay 雨景视频","audio":"Pixabay nils_vega – rain"}},{"id":"campfire","title":"林间篝火","subtitle":"Campfire","category":"short","type":"loop","video":"./media/campfire.mp4","poster":"./media/campfire.jpg","audio":{"main":"./media/audio/campfire.mp3"},"credit":{"video":"Pixabay 篝火视频","audio":"开源 beach-wallpaper（campfire）"}},{"id":"stars","title":"星河低语","subtitle":"Starry Night","category":"short","type":"loop","video":"./media/stars.mp4","poster":"./media/stars.jpg","audio":{"night":"./media/audio/music_night.mp3","wind":"./media/audio/wind.mp3"},"credit":{"video":"Pixabay 星空延时视频","audio":"开源 beach-wallpaper（music_night / wind）"}},{"id":"mountain","title":"群山青翠","subtitle":"Alpine Valleys","category":"majestic","type":"loop","mediaType":"video","video":"./media/mountain.mp4","poster":"./media/mountain.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 山景延时摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"ocean","title":"悬崖怒海","subtitle":"Cliffs & Waves","category":"majestic","type":"loop","mediaType":"video","video":"./media/ocean.mp4","poster":"./media/ocean.jpg","audio":{"wind":"./media/audio/wind.mp3","main":"./media/audio/seagulls.mp3"},"credit":{"video":"Pixabay 海岸航拍摄影（Pixabay License）","audio":"开源 beach-wallpaper（seagulls / wind）"}},{"id":"waterfall","title":"热带飞瀑","subtitle":"Jungle Falls","category":"majestic","type":"loop","mediaType":"video","video":"./media/waterfall.mp4","poster":"./media/waterfall.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 瀑布摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"aurora","title":"极光之夜","subtitle":"Aurora Borealis","category":"majestic","type":"loop","mediaType":"video","video":"./media/aurora.mp4","poster":"./media/aurora.jpg","audio":{"night":"./media/audio/music_night.mp3","wind":"./media/audio/wind.mp3"},"credit":{"video":"Pixabay 极光摄影（Pixabay License）","audio":"开源 beach-wallpaper（music_night / wind）"}},{"id":"snow","title":"雪原日落","subtitle":"Snowy Sunset","category":"majestic","type":"loop","mediaType":"video","video":"./media/snow.mp4","poster":"./media/snow.jpg","audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"credit":{"video":"Pixabay 雪原航拍摄影（Pixabay License）","audio":"开源 beach-wallpaper（wind / music_day）"}},{"id":"water-1","title":"水韵·静流 · 其一","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-1.jpg?v=20260728e","poster":"./media/water-1.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · calm water / lake / river"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"water-2","title":"水韵·静流 · 其二","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-2.jpg?v=20260728e","poster":"./media/water-2.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · calm water / lake / river"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"static"},{"id":"water-3","title":"水韵·静流 · 其三","subtitle":"Still Waters","category":"water","type":"loop","mediaType":"image","image":"./media/water-3.jpg?v=20260728e","poster":"./media/water-3.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · calm water / lake / river"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"extreme-1","title":"苍茫·极境 · 其一","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-1.jpg?v=20260728e","poster":"./media/extreme-1.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · mountain / desert / glacier"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"extreme-2","title":"苍茫·极境 · 其二","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-2.jpg?v=20260728e","poster":"./media/extreme-2.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · mountain / desert / glacier"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"static"},{"id":"extreme-3","title":"苍茫·极境 · 其三","subtitle":"Edge of Earth","category":"extreme","type":"loop","mediaType":"image","image":"./media/extreme-3.jpg?v=20260728e","poster":"./media/extreme-3.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · mountain / desert / glacier"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"forest-1","title":"幽林·秘境 · 其一","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-1.jpg?v=20260728e","poster":"./media/forest-1.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · misty / enchanted forest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"forest-2","title":"幽林·秘境 · 其二","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-2.jpg?v=20260728e","poster":"./media/forest-2.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · misty / enchanted forest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"forest-3","title":"幽林·秘境 · 其三","subtitle":"Enchanted Woods","category":"forest","type":"loop","mediaType":"image","image":"./media/forest-3.jpg?v=20260728e","poster":"./media/forest-3.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · misty / enchanted forest"},"audio":{"wind":"./media/audio/wind.mp3","day":"./media/audio/music_day.mp3"},"motion":"subtle"},{"id":"sky-1","title":"天垂·奇景 · 其一","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-1.jpg?v=20260728e","poster":"./media/sky-1.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · milky way / aurora / sky"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"},"motion":"static"},{"id":"sky-2","title":"天垂·奇景 · 其二","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-2.jpg?v=20260728e","poster":"./media/sky-2.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · milky way / aurora / sky"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"},"motion":"static"},{"id":"sky-3","title":"天垂·奇景 · 其三","subtitle":"Sky & Wonders","category":"sky","type":"loop","mediaType":"image","image":"./media/sky-3.jpg?v=20260728e","poster":"./media/sky-3.jpg?v=20260728e","credit":{"source":"Pexels","license":"Pexels License (free, no attribution required)","note":"Real 4K landscape photography · milky way / aurora / sky"},"audio":{"wind":"./media/audio/wind.mp3","night":"./media/audio/music_night.mp3"},"motion":"subtle"}];
+
 const DEMO_SECONDS = 120;
+
 let scenes = [], cats = [], currentScene = null;
+
 let vh = 0, mode = "real", lastT = performance.now();
+
 let unlocked = false, muted = false, uiTimer = null;
+
 let tlDragging = false, seekDragging = false, volume = 0.85;
+
 let imageProg = 0;
 
+
+
 const MOODS = ["mist","ember","night"];
+
 let moodIdx = 0;
 
+
+
 const CAT_META = {
+
   oneday:{title:"一日流转", en:"Day Cycle", desc:"同一片真实自然场景，随 24 小时光影与氛围音缓缓流动。"},
+
   short:{title:"静谧短憩", en:"Short Escape", desc:"5–15 分钟的短场景，适合课间、睡前或任何需要片刻宁静的时刻。"},
+
   majestic:{title:"苍茫雄伟", en:"Majestic Earth", desc:"壮阔的山海、飞瀑、极光与雪原，把大自然的力量铺展在眼前。"},
+
   forest:{title:"幽林·秘境", en:"Enchanted Woods", desc:"雾气缭绕的密林、竹海与林间小径，光从叶隙漏下，是离喧嚣最远的地方。"},
+
   water:{title:"水韵·静流", en:"Still Waters", desc:"湖面倒映山色、溪流穿石、河湾静泊——水是大地的镜子。"},
+
   sky:{title:"天垂·奇景", en:"Sky & Wonders", desc:"银河垂落、云海翻涌、雷光撕裂天幕——抬头便见宇宙的尺度。"},
+
   extreme:{title:"苍茫·极境", en:"Edge of Earth", desc:"沙丘如浪、峡谷深切、冰川亘古——地球最辽阔也最孤独的面貌。"},
+
   grand:{title:"苍茫·壮阔", en:"Grand Vistas", desc:"名山大川与奇绝地貌——来自维基共享资源的精选风光摄影。"},
+
   forest:{title:"幽林·秘境", en:"Enchanted Forests", desc:"晨雾里的密林、古木与穿叶的光，安静得能听见自己的呼吸。"},
+
   water:{title:"水韵·静流", en:"Still Waters", desc:"湖泊、河流与飞瀑，水光潋滟，映照天与山。"},
+
   sky:{title:"天垂·奇景", en:"Sky Wonders", desc:"极光、星夜与天象，把头顶的浩瀚收进眼底。"}
+
 };
+
+
 
 // ---------- particles ----------
+
 function initParticles(){
+
   const c = document.getElementById("app-bg");
+
   const ctx = c.getContext("2d");
+
   let w, h, pts = [];
+
   function resize(){ const dpr = Math.min(2, window.devicePixelRatio||1); w = innerWidth; h = innerHeight; c.width = w*dpr; c.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+
   function add(){
+
     pts = [];
+
     const n = Math.min(150, Math.floor((w*h)/11000));
+
     for(let i=0;i<n;i++){
+
       const spore = Math.random()<.12;
+
       pts.push({x:Math.random()*w, y:Math.random()*h,
+
         r:(spore?Math.random()*2.2+1.6:Math.random()*1.3+.4),
+
         vx:(Math.random()-.5)*.22, vy:-(Math.random()*.22+.05),
+
         a:Math.random()*.5+.18, pulse:Math.random()*Math.PI*2,
+
         sway:Math.random()*Math.PI*2});
+
     }
+
   }
+
   resize(); add();
+
   window.addEventListener("resize", ()=>{resize();add();});
+
   function draw(){
+
     ctx.clearRect(0,0,w,h);
+
     const mood = document.body.dataset.mood || "mist";
+
     const rgb = mood==="ember"?"255,200,150":(mood==="night"?"180,200,255":"190,235,205");
+
     ctx.globalCompositeOperation = "screen";
+
     pts.forEach(p=>{
+
       p.x += p.vx + Math.sin(p.sway)*.12; p.sway += .01; p.y += p.vy; p.pulse += .02;
+
       if(p.y < -12){ p.y = h+12; p.x = Math.random()*w; }
+
       if(p.x<0) p.x=w; if(p.x>w) p.x=0;
+
       const a = p.a * (.6 + .4*Math.sin(p.pulse));
+
       const R = p.r*4.6;
+
       const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,R);
+
       g.addColorStop(0, "rgba("+rgb+","+a+")");
+
       g.addColorStop(1, "rgba("+rgb+",0)");
+
       ctx.fillStyle = g;
+
       ctx.beginPath(); ctx.arc(p.x,p.y,R,0,Math.PI*2); ctx.fill();
+
     });
+
     ctx.globalCompositeOperation = "source-over";
+
     requestAnimationFrame(draw);
+
   }
+
   requestAnimationFrame(draw);
+
 }
+
+
 
 // ---------- 24h grade ----------
+
 const GRADE = [
+
   {h:0,  tint:[26,38,90],   op:.55, dim:.58},
+
   {h:4,  tint:[26,38,90],   op:.50, dim:.50},
+
   {h:5,  tint:[255,140,100],op:.38, dim:.32},
+
   {h:7,  tint:[255,200,130],op:.18, dim:.08},
+
   {h:9,  tint:[220,240,255],op:.08, dim:.00},
+
   {h:15, tint:[220,240,255],op:.05, dim:.00},
+
   {h:17, tint:[255,170,50], op:.28, dim:.08},
+
   {h:19, tint:[255,100,60], op:.35, dim:.22},
+
   {h:21, tint:[80,60,140],  op:.32, dim:.42},
+
   {h:23, tint:[26,38,90],   op:.48, dim:.55},
+
   {h:24, tint:[26,38,90],   op:.55, dim:.58}
+
 ];
+
 function lerp(a,b,t){return a+(b-a)*t;}
+
 function gradeAt(h){
+
   for(let i=0;i<GRADE.length-1;i++){
+
     const a=GRADE[i], b=GRADE[i+1];
+
     if(h>=a.h && h<=b.h){
+
       const t=(h-a.h)/(b.h-a.h);
+
       return {
+
         tint:"rgba("+Math.round(lerp(a.tint[0],b.tint[0],t))+","+Math.round(lerp(a.tint[1],b.tint[1],t))+","+Math.round(lerp(a.tint[2],b.tint[2],t))+","+lerp(a.op,b.op,t).toFixed(3)+")",
+
         dim:lerp(a.dim,b.dim,t).toFixed(3)
+
       };
+
     }
+
   }
+
   return {tint:"rgba(26,38,90,.55)",dim:".58"};
+
 }
+
 function setGrade(h){
+
   const g=gradeAt(h);
+
   document.documentElement.style.setProperty("--tint",g.tint);
+
   document.documentElement.style.setProperty("--dim",g.dim);
+
 }
+
+
 
 // ---------- audio engine ----------
+
 const Audio = {
+
   ctx:null, master:null, nodes:new Map(),
+
   ensure(){
+
     if(this.ctx) return;
+
     const AC = window.AudioContext||window.webkitAudioContext;
+
     this.ctx = new AC();
+
     this.master = this.ctx.createGain();
+
     this.master.gain.value = volume;
+
     this.master.connect(this.ctx.destination);
+
   },
+
   get(url){
+
     if(this.nodes.has(url)) return this.nodes.get(url);
+
     const el = document.createElement("audio");
+
     el.src = url; el.loop = true; el.preload = "auto";
+
     const src = this.ctx.createMediaElementSource(el);
+
     const g = this.ctx.createGain(); g.gain.value = 0;
+
     src.connect(g); g.connect(this.master);
+
     const node={el,gain:g}; this.nodes.set(url,node); return node;
+
   },
+
   clear(){
+
     this.nodes.forEach(n=>{
+
       try{ n.gain.gain.setTargetAtTime(0,this.ctx.currentTime,.4); n.el.pause(); n.el.currentTime=0; }catch(e){}
+
     });
+
   },
+
   targets24h(h){
+
     const wind=.22;
+
     let day=0, night=0;
+
     if(h>=5 && h<17) day = Math.min(1, Math.max(0, 1-Math.abs(h-11)/6));
+
     else if(h>=17 && h<19) day = Math.max(0,1-(h-17)/2);
+
     else if(h>=4 && h<5) day = h-4;
+
     if(h>=19 || h<5){ const c = h>=19?(h<=23?21:23.5):1; night = Math.max(0,1-Math.abs(h-c)/4); }
+
     if(h>=17 && h<19) night = (h-17)/2;
+
     return {wind, day:day*.55, night:night*.55};
+
   },
+
   apply24h(h){
+
     if(!this.ctx || !currentScene || currentScene.type !== "24h") return;
+
     const t = this.targets24h(h), map = currentScene.audio || {};
+
     if(map.wind) this.fade(map.wind, t.wind);
+
     if(map.day) this.fade(map.day, t.day);
+
     if(map.night) this.fade(map.night, t.night);
+
   },
+
   applyLoop(){
+
     if(!this.ctx || !currentScene || currentScene.type !== "loop") return;
+
     const map = currentScene.audio || {};
+
     let main = map.main || map.wind;
+
     if(main) this.fade(main, 1);
+
     if(map.day && !map.main) this.fade(map.day, .35);
+
     if(map.night && !map.main) this.fade(map.night, .35);
+
   },
+
   fade(url, to){
+
     const node = this.get(url);
+
     node.gain.gain.setTargetAtTime(muted?0:to, this.ctx.currentTime, .8);
+
     if(to>.01 && node.el.paused) node.el.play().catch(()=>{});
+
   },
+
   setMuted(m){ muted=m; if(this.ctx) this.master.gain.setTargetAtTime(m?0:volume, this.ctx.currentTime, .3); },
+
   setVolume(v){ volume=v; if(this.ctx && !muted) this.master.gain.setTargetAtTime(v, this.ctx.currentTime, .2); }
+
 };
 
+
+
 // ---------- helpers ----------
+
 function realHour(){ const d=new Date(); return d.getHours()+d.getMinutes()/60+d.getSeconds()/3600; }
+
 function periodLabel(h){
+
   if(h>=5 && h<7) return "黎明"; if(h>=7 && h<11) return "上午"; if(h>=11 && h<13) return "正午";
+
   if(h>=13 && h<17) return "午后"; if(h>=17 && h<19) return "黄昏"; if(h>=19 && h<21) return "傍晚";
+
   return "深夜";
+
 }
+
 function fmtClock(h){
+
   const hh=Math.floor(h)%24, mm=Math.floor((h-Math.floor(h))*60);
+
   return String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0")+" · "+periodLabel(h);
+
 }
+
 function fmtTime(s){ if(!isFinite(s)) return "0:00"; const m=Math.floor(s/60); const sec=Math.floor(s%60); return m+":"+String(sec).padStart(2,"0"); }
 
+
+
 // ---------- view router ----------
+
 function showView(name){
+
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+
   document.getElementById("view-"+name).classList.add("active");
+
   if(name==="gallery") renderGallery();
+
 }
+
+
 
 // ---------- gallery ----------
+
 function renderGallery(){
+
   const body = document.getElementById("gallery-body");
+
   if(body.dataset.rendered) return;
+
   body.innerHTML = "";
+
   cats.forEach(cat=>{
+
     const meta = CAT_META[cat.id] || {title:cat.id, en:cat.id, desc:""};
+
     const sec = document.createElement("section");
+
     sec.className = "cat";
+
     sec.dataset.cat = cat.id;
+
     sec.innerHTML = `
+
       <div class="cat-head"><h3 class="serif">${meta.title}</h3><span class="en orbit">${meta.en}</span><span class="desc">${meta.desc}</span></div>
+
       <div class="cards-row"></div>`;
+
     const row = sec.querySelector(".cards-row");
+
     cat.scenes.forEach(s=>{
+
       const card = document.createElement("div");
+
       card.className = "scard";
+
       card.innerHTML = `
+
         <img src="${s.poster||s.image||s.video}" alt="${s.title}" loading="lazy">
+
         <div class="shade"></div>
+
         <div class="meta">
+
           <span class="tag">${s.type==="24h"?"24H":"LOOP"}</span>
+
           <h4 class="serif">${s.title}</h4>
+
           <p>${s.subtitle}</p>
+
         </div>
+
         <div class="play">▶</div>`;
+
       card.addEventListener("click", ()=> enterPlayer(s.id));
+
       row.appendChild(card);
+
     });
+
     body.appendChild(sec);
+
   });
+
   body.dataset.rendered = "1";
+
   setTimeout(()=>{
+
     const obs = new IntersectionObserver((entries)=>{
+
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visible"); obs.unobserve(e.target); } });
+
     },{threshold:.15});
+
     document.querySelectorAll(".cat").forEach(el=>obs.observe(el));
+
   },50);
+
 }
+
+
 
 // ---------- player ----------
+
 let videoEl = null;
+
 const IMAGE_DURATION = 60;
+
 let imageStart = 0, imagePaused = false;
+
 function enterPlayer(id){
+
   currentScene = scenes.find(s=>s.id===id);
+
   if(!currentScene) return;
+
   showView("player");
+
   document.getElementById("p-title").textContent = currentScene.title;
+
   document.getElementById("p-sub").textContent = currentScene.subtitle;
+
   document.getElementById("gate-title").textContent = currentScene.title;
+
   document.getElementById("gate-sub").textContent = currentScene.subtitle;
+
   const gate = document.getElementById("gate");
+
   gate.classList.remove("hidden"); gate.style.display="flex";
+
   const vp = document.getElementById("view-player");
+
   vp.classList.remove("idle","mist","rays","pollen","stars","canopy","leak");
+
   if(currentScene.category==="forest"||currentScene.category==="water") vp.classList.add("mist");
+
   if(currentScene.category==="forest") vp.classList.add("pollen");
+
   if(currentScene.type==="24h") vp.classList.add("rays");
+
   if(currentScene.category==="sky"||currentScene.type==="24h") vp.classList.add("stars");
+
   if(currentScene.category==="forest"||currentScene.category==="water") vp.classList.add("canopy");
+
   vp.classList.add("leak");
 
+
+
   videoEl = document.getElementById("pv");
+
   const pimg = document.getElementById("pimg");
+
   Audio.clear();
+
   imageStart = performance.now(); imagePaused = false;
 
+
+
   if(currentScene.mediaType === "image"){
+
     videoEl.style.display = "none"; videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load();
+
     pimg.style.display = "block"; pimg.style.backgroundImage = "url("+currentScene.image+")";
+
     pimg.classList.remove("ken-static","ken-subtle");
-    pimg.classList.add("ken-subtle");
+
+    const motion = currentScene.motion || "subtle";
+
+    pimg.classList.add(motion === "static" ? "ken-static" : "ken-subtle");
+
     pimg.style.animationPlayState = "running"; pimg.style.animationDelay = "0s";
+
   } else {
+
     pimg.style.display = "none"; pimg.style.backgroundImage = "";
+
     videoEl.style.display = "block";
+
     videoEl.poster = currentScene.poster;
+
     videoEl.src = currentScene.video;
+
     videoEl.muted = true;
+
     startVideo();
+
   }
+
   unlocked = false;
 
+
+
   if(currentScene.type === "24h"){
+
     document.getElementById("timeline-wrap").style.display = "block";
+
     document.getElementById("seek-wrap").style.display = "none";
+
     document.getElementById("btn-demo").style.display = "flex";
+
     setHour(realHour()); setGrade(vh);
+
   } else {
+
     document.getElementById("timeline-wrap").style.display = "none";
+
     document.getElementById("seek-wrap").style.display = "block";
+
     document.getElementById("btn-demo").style.display = "none";
+
     document.documentElement.style.setProperty("--tint","rgba(184,224,200,0)");
+
     document.documentElement.style.setProperty("--dim","0");
+
   }
+
   buildCredits();
+
   poke();
+
 }
+
 function exitPlayer(){
+
   if(videoEl){ videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load(); videoEl.style.display="block"; }
+
   const pimg = document.getElementById("pimg"); pimg.style.display="none"; pimg.style.backgroundImage="";
+
   Audio.clear();
+
   currentScene = null;
+
   document.getElementById("view-player").classList.remove("mist","rays","idle","pollen","stars");
+
   showView("gallery");
+
 }
+
 function startVideo(){
+
   if(!videoEl) return;
+
   videoEl.muted = true;
+
   const p = videoEl.play();
+
   if(p && p.then){
+
     p.catch(()=>{
+
       const retry = ()=>{ if(videoEl) videoEl.play().catch(()=>{}); };
+
       window.addEventListener("pointerdown", retry, {once:true});
+
     });
+
   }
+
 }
+
 function setHour(h){
+
   vh = ((h%24)+24)%24;
+
   document.getElementById("p-clock").textContent = fmtClock(vh);
+
   document.getElementById("tl-thumb").style.left = (vh/24*100)+"%";
+
   document.getElementById("tl-fill").style.width = (vh/24*100)+"%";
+
   setGrade(vh);
+
   if(unlocked) Audio.apply24h(vh);
+
 }
+
+
 
 // ---------- timeline / seek drag ----------
+
 function xRatio(el, clientX){
+
   const r = el.getBoundingClientRect();
+
   return Math.max(0, Math.min(1, (clientX-r.left)/r.width));
+
 }
+
 function initBars(){
+
   const track = document.getElementById("track");
+
   track.addEventListener("pointerdown", e=>{
+
     if(!currentScene || currentScene.type !== "24h") return;
+
     tlDragging = true; mode = "manual"; updateDemoBtn();
+
     track.setPointerCapture(e.pointerId);
+
     setHour(xRatio(track,e.clientX)*24); poke();
+
   });
+
   track.addEventListener("pointermove", e=>{ if(tlDragging) setHour(xRatio(track,e.clientX)*24); });
+
   const endTl = ()=> tlDragging=false;
+
   track.addEventListener("pointerup", endTl); track.addEventListener("pointercancel", endTl);
 
+
+
   const seek = document.getElementById("seek");
+
   seek.addEventListener("pointerdown", e=>{
+
     if(!currentScene || currentScene.type !== "loop") return;
+
     seekDragging = true; seek.setPointerCapture(e.pointerId);
+
     const ratio = xRatio(seek,e.clientX);
+
     if(currentScene.mediaType === "image"){
+
       imagePaused = true; imageProg = ratio;
+
       const pimg = document.getElementById("pimg");
+
       pimg.style.animationPlayState = "paused";
+
       pimg.style.animationDelay = "-"+(ratio*IMAGE_DURATION)+"s";
+
     } else if(videoEl.duration){
+
       videoEl.pause(); videoEl.currentTime = ratio*videoEl.duration;
+
     }
+
     poke(); updateSeek();
+
   });
+
   seek.addEventListener("pointermove", e=>{
+
     if(!seekDragging) return;
+
     const ratio = xRatio(seek,e.clientX);
+
     if(currentScene.mediaType === "image"){
+
       imageProg = ratio;
+
       document.getElementById("pimg").style.animationDelay = "-"+(ratio*IMAGE_DURATION)+"s";
+
     } else if(videoEl.duration){
+
       videoEl.currentTime = ratio*videoEl.duration;
+
     }
+
   });
+
   const endSeek = ()=>{
+
     if(!seekDragging) return; seekDragging=false;
+
     if(currentScene.mediaType === "image"){
+
       imagePaused = false;
+
       imageStart = performance.now() - imageProg*IMAGE_DURATION*1000;
+
       document.getElementById("pimg").style.animationPlayState = "running";
+
     } else { videoEl.play().catch(()=>{}); }
+
   };
+
   seek.addEventListener("pointerup", endSeek); seek.addEventListener("pointercancel", endSeek);
+
 }
+
 function currentLoopProgress(){
+
   if(currentScene.mediaType === "image"){
+
     if(imagePaused) return imageProg;
+
     const t = ((performance.now()-imageStart)/1000) % IMAGE_DURATION;
+
     return t / IMAGE_DURATION;
+
   }
+
   if(videoEl && videoEl.duration) return videoEl.currentTime / videoEl.duration;
+
   return 0;
+
 }
+
 function updateSeek(){
+
   let pct = 0, cur = 0, dur = 0;
+
   if(currentScene.mediaType === "image"){
+
     cur = ((performance.now()-imageStart)/1000) % IMAGE_DURATION;
+
     dur = IMAGE_DURATION; pct = cur/dur;
+
   } else if(videoEl && videoEl.duration){
+
     cur = videoEl.currentTime; dur = videoEl.duration; pct = cur/dur;
+
   } else return;
+
   document.getElementById("seek-thumb").style.left = pct*100+"%";
+
   document.getElementById("seek-fill").style.width = pct*100+"%";
+
   document.getElementById("seek-label").textContent = fmtTime(cur)+" / "+fmtTime(dur);
+
 }
+
+
 
 // ---------- demo / loop ----------
+
 function updateDemoBtn(){
+
   const b = document.getElementById("btn-demo");
+
   b.classList.toggle("active", mode === "demo");
+
   b.textContent = mode === "demo" ? "⏸ 暂停流转" : "▶ 时光流转";
+
 }
+
 function toggleDemo(){
+
   mode = mode === "demo" ? "real" : "demo";
+
   if(mode === "real") setHour(realHour());
+
   updateDemoBtn(); poke();
+
 }
+
 function loop(now){
+
   const dt = (now-lastT)/1000; lastT = now;
+
   if(currentScene && currentScene.type === "24h" && !tlDragging){
+
     if(mode === "demo") setHour(vh + dt*(24/DEMO_SECONDS));
+
     else { const rh=realHour(); if(Math.abs(rh-vh)>.02) setHour(rh); }
+
   }
+
   if(currentScene && currentScene.type === "loop" && !seekDragging) updateSeek();
+
   requestAnimationFrame(loop);
+
 }
+
+
 
 // ---------- UI ----------
+
 function unlock(){
+
   if(unlocked) return;
+
   unlocked = true;
+
   try{
+
     Audio.ensure();
+
     if(Audio.ctx && Audio.ctx.state === "suspended") Audio.ctx.resume();
+
     if(currentScene.type === "24h") Audio.apply24h(vh);
+
     else Audio.applyLoop();
+
   }catch(e){ console.warn("audio unlock skipped:", e); }
+
   const gate = document.getElementById("gate");
+
   gate.classList.add("hidden");
+
   setTimeout(()=>{ try{ gate.style.display="none"; }catch(e){} }, 900);
+
   document.getElementById("view-player").classList.remove("idle");
+
   document.getElementById("btn-sound").textContent = "🔊";
+
   document.getElementById("btn-sound").classList.add("active");
+
 }
+
 function poke(){
+
   document.getElementById("view-player").classList.remove("idle");
+
   clearTimeout(uiTimer);
+
   uiTimer = setTimeout(()=>{
+
     if(!document.getElementById("credits").classList.contains("show")){
+
       document.getElementById("view-player").classList.add("idle");
+
     }
+
   }, 4200);
+
 }
+
 function buildCredits(specific){
+
   const s = specific || currentScene;
+
   if(s){
+
     const c = s.credit || {};
+
     const media = (s.mediaType === "image")
+
       ? ("图片：" + (c.source || "Pixabay"))
+
       : ("视频：" + (c.video || c.source || "Pixabay"));
+
     const audioTxt = (s.audio && (s.audio.wind || s.audio.day || s.audio.night || s.audio.main))
+
       ? "环境音：风声 / 氛围乐（开源素材）"
+
       : (c.audio || "环境音：风声 / 氛围乐（开源素材）");
+
     document.getElementById("credits-body").innerHTML = `
+
       <div class="row"><b>${s.title} · ${s.subtitle}</b><div>${media}</div><div>${audioTxt}</div></div>
+
       <div class="row"><b>授权说明</b><div>图片素材来自 Pexels，视频/音频来自 Pixabay 或开源音频项目（均为免费授权，可商用、无需署名）；本页仅做沉浸式播放，未改动原始素材。</div></div>`;
+
   } else if(scenes.length){
+
     let html = '<div class="row"><b>全部场景素材</b>';
+
     scenes.forEach(x=>{
+
       const c = x.credit || {};
+
       const m = (x.mediaType === "image") ? (c.source || "Pixabay") : (c.video || c.source || "Pixabay");
+
       html += `<div style="margin-top:8px"><b>${x.title}</b> · ${m}</div>`;
+
     });
+
     html += '</div><div class="row"><b>授权说明</b><div>图片素材来自 Pexels（Pexels License），视频与音频来自 Pixabay / 开源音频项目；可免费使用，无需署名。</div></div>';
+
     document.getElementById("credits-body").innerHTML = html;
+
   }
+
 }
+
 function initCursorGlow(){
+
   if(!matchMedia("(pointer:fine)").matches) return;
+
   const cg = document.getElementById("cg");
+
   window.addEventListener("pointermove", e=>{
+
     cg.style.transform = "translate("+e.clientX+"px,"+e.clientY+"px)";
+
     cg.style.opacity = 1;
+
   },{passive:true});
+
   window.addEventListener("pointerleave", ()=> cg.style.opacity=0 );
+
 }
+
 function cycleMood(){
+
   moodIdx = (moodIdx+1)%MOODS.length;
+
   document.body.dataset.mood = MOODS[moodIdx];
+
   const names = {mist:"晨雾", ember:"篝火", night:"星夜"};
+
   const btn = document.getElementById("btn-mood");
+
   btn.title = "心境："+names[MOODS[moodIdx]];
+
 }
+
+
 
 // ---------- startup ----------
+
 function init(){
+
   initParticles();
+
   initBars();
+
   initCursorGlow();
+
   requestAnimationFrame(loop);
 
+
+
   function applyScenes(data){
+
     scenes = data;
+
     const map = {};
+
     scenes.forEach(s=>{ (map[s.category]=map[s.category]||[]).push(s); });
+
     cats = Object.keys(map).map(k=>({id:k, scenes:map[k]}));
+
     renderGallery();
+
   }
-  fetch(SCENES_URL + "?v=20260728g").then(r=>r.json()).then(applyScenes).catch(e=>{
+
+  fetch(SCENES_URL + "?v=20260728e").then(r=>r.json()).then(applyScenes).catch(e=>{
+
     console.warn("scenes fetch failed, using inline fallback", e);
+
     if(FALLBACK_SCENES && FALLBACK_SCENES.length) applyScenes(FALLBACK_SCENES);
+
   });
+
+
 
   document.getElementById("btn-enter").addEventListener("click", ()=> showView("guide"));
+
   document.getElementById("btn-gal-from-guide").addEventListener("click", ()=> showView("gallery"));
+
   document.getElementById("btn-start").addEventListener("click", ()=> showView("gallery"));
+
   document.getElementById("btn-back").addEventListener("click", exitPlayer);
+
   document.getElementById("btn-mood").addEventListener("click", cycleMood);
+
   document.getElementById("btn-info").addEventListener("click", ()=>{
+
     buildCredits(); document.getElementById("credits").classList.add("show");
+
   });
+
   document.getElementById("btn-info2").addEventListener("click", e=>{
+
     e.stopPropagation(); poke(); buildCredits(); document.getElementById("credits").classList.add("show");
+
   });
+
   document.getElementById("credits-close").addEventListener("click", ()=> document.getElementById("credits").classList.remove("show"));
+
   document.getElementById("gate-go").addEventListener("click", unlock);
-  document.getElementById("gate").addEventListener("click", unlock);
+
   document.getElementById("stage").addEventListener("click", ()=>{ if(!unlocked) unlock(); else poke(); });
-  function goLandscape(){
-    const el=document.getElementById("stage");
-    const req=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
-    if(req){Promise.resolve(req.call(el)).then(()=>{ if(screen.orientation&&screen.orientation.lock){ screen.orientation.lock("landscape").catch(()=>{}); } }).catch(()=>{});}
-  }
-  document.getElementById("btn-rotate").addEventListener("click", e=>{ e.stopPropagation(); goLandscape(); });
-  const _rh=document.getElementById("rotate-hint"); if(_rh) _rh.addEventListener("click", e=>{ e.stopPropagation(); goLandscape(); });
+
   document.getElementById("btn-sound").addEventListener("click", e=>{
+
     e.stopPropagation(); poke();
+
     muted = !muted;
+
     const b = document.getElementById("btn-sound");
+
     b.textContent = muted ? "🔇" : "🔊";
+
     b.classList.toggle("active", !muted);
+
     Audio.setMuted(muted);
+
   });
+
   document.getElementById("btn-demo").addEventListener("click", e=>{ e.stopPropagation(); poke(); toggleDemo(); });
+
   document.getElementById("vol").addEventListener("input", e=>{
+
     poke(); const v=parseFloat(e.target.value); Audio.setVolume(v);
+
     document.getElementById("vol-icon").textContent = v===0?"🔇":(v<.45?"🔈":"🔊");
+
   });
+
   ["pointermove","touchstart","keydown"].forEach(ev=> window.addEventListener(ev, ()=>{ if(currentScene) poke(); }, {passive:true}));
+
   window.addEventListener("orientationchange", ()=> setTimeout(()=>window.scrollTo(0,0), 200));
+
   window.addEventListener("resize", ()=> window.scrollTo(0,0));
 
+
+
   // guide cards reveal
+
   const obs = new IntersectionObserver((entries)=>{
+
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visible"); obs.unobserve(e.target); } });
+
   },{threshold:.2});
+
   document.querySelectorAll(".gcard").forEach(el=>obs.observe(el));
+
 }
+
 init();
+
 </script>
+
 </body>
+
 </html>
