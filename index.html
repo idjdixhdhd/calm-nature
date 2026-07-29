@@ -977,6 +977,10 @@
 .ag-dots i{ width:7px; height:7px; border-radius:50%; background:var(--glass-border); }
 .ag-dots i.on{ background:var(--accent); }
 .ag-link{ margin-top:14px; font-size:12px; opacity:.55; cursor:pointer; text-decoration:underline; }
+.ag-foot{ margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08); }
+.ag-note{ font-size:11.5px; line-height:1.7; opacity:.6; }
+.ag-foot-acts{ display:flex; gap:18px; margin-top:10px; }
+.ag-foot-acts .ag-link{ margin-top:0; }
 
 .login-grid{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px; }
 .profile-card{ width:120px; background:rgba(255,255,255,.04); border:1px solid var(--glass-border); border-radius:18px;
@@ -4040,7 +4044,8 @@ const Accounts = {
 
     const d = this.draft;
 
-    const av = AVATARS.map(id=>`<div class="av${d.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("");
+    const isImg = d.avatar && (d.avatar.indexOf("data:")===0 || d.avatar.indexOf("http")===0);
+    const av = AVATARS.map(id=>`<div class="av${d.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("") + `<div class="av av-up${isImg?" on":""}" id="ob-av-up" title="上传图片">${isImg?`<img class="i-img" src="${d.avatar}">`:getIcon('pen')}<input type="file" id="ob-av-file" accept="image/*" style="display:none"></div>`;
 
     const cc = ACCENTS.map(c=>`<div class="cc${d.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
 
@@ -4074,11 +4079,20 @@ const Accounts = {
 
         </div>
 
+        <div class="ag-foot">
+          <div class="ag-note">空栈是本地优先的：数据只存在这台设备，不联网、不上传、不公开。换设备时，点「导出全部备份」下载，再到新设备的同一页面「导入备份」，即可带走全部身份与记录。</div>
+          <div class="ag-foot-acts"><span class="ag-link" id="gate-export">导出全部备份</span><span class="ag-link" id="gate-import">导入备份</span><input type="file" id="gate-file" accept="application/json" style="display:none"></div>
+        </div>
+
       </div>`;
 
     const nameEl = gate.querySelector("#ob-name"); nameEl.addEventListener("input", ()=> d.name = nameEl.value);
 
-    gate.querySelector("#ob-av").querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ d.avatar=x.dataset.a; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.toggle("on", o.dataset.a===d.avatar)); }));
+    gate.querySelector("#ob-av").querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ d.avatar=x.dataset.a; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.toggle("on", o.dataset.a===d.avatar)); if(gate.querySelector("#ob-av-up")){ gate.querySelector("#ob-av-up").classList.remove("on"); gate.querySelector("#ob-av-up").innerHTML=getIcon('pen'); } }));
+
+    const obUp = gate.querySelector("#ob-av-up");
+    if(obUp) obUp.addEventListener("click", ()=> gate.querySelector("#ob-av-file").click());
+    gate.querySelector("#ob-av-file").addEventListener("change", (e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; resizeImageToDataURL(f,256,(url)=>{ if(!url){ flashToast("图片读取失败"); return; } d.avatar=url; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.remove("on")); obUp.classList.add("on"); obUp.innerHTML=`<img class="i-img" src="${url}">`; flashToast("头像已选，建好身份后生效"); }); });
 
     gate.querySelector("#ob-cc").querySelectorAll(".cc").forEach(x=> x.addEventListener("click", ()=>{ d.color=x.dataset.c; gate.querySelectorAll("#ob-cc .cc").forEach(o=> o.classList.toggle("on", o.dataset.c===d.color)); }));
 
@@ -4099,6 +4113,10 @@ const Accounts = {
     });
 
     gate.querySelector("#ob-skip").addEventListener("click", ()=> this.enterGuest());
+
+    const ge = gate.querySelector("#gate-export"); if(ge) ge.addEventListener("click", ()=> exportAllData());
+    const gi = gate.querySelector("#gate-import"); if(gi) gi.addEventListener("click", ()=> gate.querySelector("#gate-file").click());
+    const gf = gate.querySelector("#gate-file"); if(gf) gf.addEventListener("change", (e)=> importAllData(e.target.files[0]));
 
   },
 
@@ -4152,6 +4170,11 @@ const Accounts = {
 
         <div class="ag-link" id="login-guest">以游客身份进入</div>
 
+        <div class="ag-foot">
+          <div class="ag-note">空栈是本地优先的：数据只存在这台设备，不联网、不上传、不公开。换设备时，点「导出全部备份」下载，再到新设备的同一页面「导入备份」，即可带走全部身份与记录。</div>
+          <div class="ag-foot-acts"><span class="ag-link" id="gate-export">导出全部备份</span><span class="ag-link" id="gate-import">导入备份</span><input type="file" id="gate-file" accept="application/json" style="display:none"></div>
+        </div>
+
       </div>`;
 
     gate.querySelectorAll(".profile-card").forEach(card=>{
@@ -4191,6 +4214,10 @@ const Accounts = {
     gate.querySelector("#login-add").addEventListener("click", ()=>{ this.draft={name:"",avatar:"fox",color:"#7fd1a0",passcode:"",stack:"nature"}; this.renderOnboarding(); });
 
     gate.querySelector("#login-guest").addEventListener("click", ()=> this.enterGuest());
+
+    const ge = gate.querySelector("#gate-export"); if(ge) ge.addEventListener("click", ()=> exportAllData());
+    const gi = gate.querySelector("#gate-import"); if(gi) gi.addEventListener("click", ()=> gate.querySelector("#gate-file").click());
+    const gf = gate.querySelector("#gate-file"); if(gf) gf.addEventListener("change", (e)=> importAllData(e.target.files[0]));
 
   },
 
@@ -4484,6 +4511,35 @@ function importAccount(file){
 
   r.readAsText(file);
 
+}
+
+function exportAllData(){
+  ACC.load();
+  const bundle = { app:"calm-nature-backup", version:1, exportedAt:Date.now(), accounts:ACC.list, active:ACC.active, stores:{} };
+  (ACC.list||[]).forEach(p=>{ try{ bundle.stores[p.pid] = JSON.parse(localStorage.getItem("quiet-nature-"+p.pid)||"null"); }catch(e){} });
+  try{ bundle.stores.__guest = JSON.parse(localStorage.getItem("quiet-nature-guest")||"null"); }catch(e){}
+  downloadJSON("calm-nature-backup-"+new Date().toISOString().slice(0,10)+".json", bundle);
+  flashToast("已导出全部身份与记录");
+}
+
+function importAllData(file){
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const d = JSON.parse(r.result);
+      if(!d || !d.accounts || !Array.isArray(d.accounts)){ flashToast("不是有效的备份文件"); return; }
+      ACC.load();
+      const have = {}; (ACC.list||[]).forEach(p=> have[p.pid]=1);
+      let added=0; d.accounts.forEach(p=>{ if(!have[p.pid]){ ACC.list.push(p); added++; } });
+      if(d.active && ACC.list.find(x=>x.pid===d.active)) ACC.active = d.active;
+      ACC.save();
+      if(d.stores){ Object.keys(d.stores).forEach(k=>{ const key = k==="__guest" ? "quiet-nature-guest" : "quiet-nature-"+k; try{ localStorage.setItem(key, JSON.stringify(d.stores[k])); }catch(e){} }); }
+      flashToast(added? ("已恢复 "+added+" 个身份与全部记录，即将刷新") : "已恢复全部记录，即将刷新");
+      setTimeout(()=> location.reload(), 700);
+    }catch(e){ flashToast("文件格式不对"); }
+  };
+  r.readAsText(file);
 }
 
 function renderBonds(box){
