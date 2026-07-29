@@ -2453,9 +2453,9 @@ const STACKS = [
 
   {key:"void",   icon:"🌑", title:"留白栈", en:"The Void", accent:"#b49cf0", mode:"自我", desc:"给心事留白，与时间为友。写给自己的，不必给别人看。", modules:["mood","notes","capsule"]},
 
-  {key:"fold",   icon:"🦢", title:"折叠栈", en:"Fold", accent:"#8fb8e6", mode:"需求", desc:"折一枚纸，折一段静气——源自你最初的手作，神谷哲史式的复杂，也不过从一张方纸开始。", modules:["fold"]},
+  {key:"fold",   icon:"🦢", title:"折叠栈", en:"Fold", accent:"#8fb8e6", mode:"需求", desc:"折一枚纸，折一段静气。从一张方纸开始，跟随呼吸折一只纸鹤——手的动作，会让心慢下来。", modules:["fold"]},
 
-  {key:"module", icon:"🧩", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成你的日常仪式，再分享出去。延续你「自动精灵」的模块化思路。", modules:["ritual","wall"]}
+  {key:"module", icon:"🧩", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成一套日常仪式，随时启用，也能导出分享。", modules:["ritual","wall"]}
 
 ];
 
@@ -2613,7 +2613,7 @@ function renderSanctuary(){
 
   const body = document.getElementById("sanct-body");
 
-  let html = `<div class="sanct-intro"><h2 class="serif">空栈</h2><div class="en orbit">熵止 · Entropy at Rest</div><p>熵止，空栈。你心里的一座小岛——世界的熵增在这里停了下来。五个「栈」，对应你走过的路：在山林湖海里沉浸，在读者金句里沉静，在留白里安放心事，在折叠里回到最初的手作，在模块里把日常搭成仪式。一切都存在你自己的设备上，不外传、不公开。</p></div>`;
+  let html = `<div class="sanct-intro"><h2 class="serif">空栈</h2><div class="en orbit">熵止 · Entropy at Rest</div><p>熵止，空栈。一座安放注意力的小岛——在这里，世界的熵增会慢下来。五个「栈」，是五种停留的方式：在山林湖海间沉浸，在读者金句里沉静，在留白里安放心事，在折叠中练习专注，在模块里搭起日常仪式。你写下的一切，都只存在这台设备上，不外传、不公开。</p></div>`;
 
   html += sanctTodayHTML();
 
@@ -3730,7 +3730,7 @@ function renderFold(c){
 
   Sanctuary.load();
 
-  let html = `<div class="q-hint">折纸冥想 · 折叠栈。源自你最初的手作。跟着呼吸，把注意力折进一只纸鹤里。</div>`;
+  let html = `<div class="q-hint">折纸冥想 · 折叠栈。跟着呼吸，把注意力折进一只纸鹤里。</div>`;
 
   html += `<div class="fold-stage" id="fold-stage"><div class="origami"><div class="wing"></div><div class="wing r"></div></div></div>`;
 
@@ -3814,7 +3814,7 @@ function renderRitual(c){
 
   Sanctuary.load();
 
-  let html = `<div class="q-hint">我的仪式 · 模块栈。像搭积木一样，把「场景 + 专注时长」组合成你的日常仪式。延续你「自动精灵」的模块化思路。</div>`;
+  let html = `<div class="q-hint">我的仪式 · 模块栈。像搭积木一样，把「场景 + 专注时长」组合成一套日常仪式，随时启用，也能导出分享。</div>`;
 
   html += `<div class="q-hint">仪式名称</div><input class="ag-input" id="rit-name" placeholder="例如：晨间清醒 / 深夜放空">`;
 
