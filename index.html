@@ -938,8 +938,14 @@
 .ag-row{ display:flex; gap:10px; flex-wrap:wrap; }
 .avatar-pick{ display:flex; gap:8px; flex-wrap:wrap; }
 .avatar-pick .av{ width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
-  font-size:20px; cursor:pointer; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); transition:.2s; }
-.avatar-pick .av.on{ border-color:var(--accent); background:rgba(127,209,160,.18); transform:translateY(-2px); }
+  color:var(--ui); cursor:pointer; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); transition:.2s; }
+.avatar-pick .av.on{ border-color:var(--accent); background:rgba(127,209,160,.18); color:var(--accent); transform:translateY(-2px); }
+.i-svg{ display:block; width:22px; height:22px; }
+.profile-card .pa svg{ width:40px; height:40px; }
+.chip svg{ width:14px; height:14px; margin-right:4px; vertical-align:middle; }
+.ic svg{ width:20px; height:20px; }
+.prof-av svg{ width:34px; height:34px; }
+.sanct-intro h2 svg{ width:30px; height:30px; }
 .color-pick{ display:flex; gap:10px; flex-wrap:wrap; }
 .color-pick .cc{ width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.2s; }
 .color-pick .cc.on{ border-color:#fff; transform:scale(1.12); }
@@ -989,7 +995,7 @@
 .stack-card{ position:relative; border-radius:20px; padding:18px 16px; cursor:pointer; overflow:hidden;
   background:linear-gradient(150deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--glass-border); transition:.25s; }
 .stack-card:hover{ transform:translateY(-3px); border-color:var(--accent); box-shadow:0 16px 40px rgba(0,0,0,.35); }
-.stack-card .sc-ic{ font-size:30px; }
+.stack-card .sc-ic{ font-size:30px; display:flex; align-items:center; } .stack-card .sc-ic svg{ width:34px; height:34px; }
 .stack-card .sc-t{ font-family:var(--serif); font-size:18px; margin-top:10px; }
 .stack-card .sc-m{ font-size:10px; letter-spacing:.16em; text-transform:uppercase; opacity:.5; margin-top:2px; }
 .stack-card .sc-d{ font-size:12px; opacity:.62; line-height:1.6; margin-top:8px; }
@@ -2458,17 +2464,19 @@ const FEELINGS = [
 
 const STACKS = [
 
-  {key:"nature", icon:"🌲", title:"自然栈", en:"Nature", accent:"#7fd1a0", mode:"自我", desc:"回到山林湖海，让世界的熵增慢下来。", modules:["immerse","fav","echo","flow","create","solar"]},
+  {key:"nature", icon:"🌲", svg:"nature", title:"自然栈", en:"Nature", accent:"#7fd1a0", mode:"自我", desc:"回到山林湖海，让世界的熵增慢下来。", modules:["immerse","fav","echo","flow","create","solar"]},
 
-  {key:"reader", icon:"📜", title:"读者栈", en:"Reader", accent:"#e6b873", mode:"自我", desc:"每日一句，与好文字安静相处——把《读者》装进口袋。", modules:["reader"]},
+  {key:"reader", icon:"📜", svg:"reader", title:"读者栈", en:"Reader", accent:"#e6b873", mode:"自我", desc:"每日一句，与好文字安静相处——把《读者》装进口袋。", modules:["reader"]},
 
-  {key:"void",   icon:"🌑", title:"留白栈", en:"The Void", accent:"#b49cf0", mode:"自我", desc:"给心事留白，与时间为友。写给自己的，不必给别人看。", modules:["mood","notes","capsule"]},
+  {key:"void",   icon:"🌑", svg:"void", title:"留白栈", en:"The Void", accent:"#b49cf0", mode:"自我", desc:"给心事留白，与时间为友。写给自己的，不必给别人看。", modules:["mood","notes","capsule"]},
 
-  {key:"fold",   icon:"🦢", title:"折叠栈", en:"Fold", accent:"#8fb8e6", mode:"需求", desc:"折一枚纸，折一段静气。从一张方纸开始，跟随呼吸折一只纸鹤——手的动作，会让心慢下来。", modules:["fold"]},
+  {key:"fold",   icon:"🦢", svg:"fold", title:"折叠栈", en:"Fold", accent:"#8fb8e6", mode:"需求", desc:"折一枚纸，折一段静气。从一张方纸开始，跟随呼吸折一只纸鹤——手的动作，会让心慢下来。", modules:["fold"]},
 
-  {key:"module", icon:"🧩", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成一套日常仪式，随时启用，也能导出分享。", modules:["ritual","wall"]}
+  {key:"module", icon:"🧩", svg:"module", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成一套日常仪式，随时启用，也能导出分享。", modules:["ritual","wall"]}
 
 ];
+
+function getStackSvg(key){ const s=STACKS.find(x=>x.key===key); return s && ICONS.stacks[s.svg] ? ICONS.stacks[s.svg] : (s?s.icon:""); }
 
 
 
@@ -2632,7 +2640,7 @@ function renderSanctuary(){
 
   STACKS.forEach(s=>{
 
-    html += `<div class="stack-card" data-stack="${s.key}" style="--accent:${s.accent}"><div class="sc-accent"></div><div class="sc-mode">${s.mode}型</div><div class="sc-ic">${s.icon}</div><div class="sc-t">${s.title}</div><div class="sc-m">${s.en}</div><div class="sc-d">${s.desc}</div></div>`;
+    html += `<div class="stack-card" data-stack="${s.key}" style="--accent:${s.accent}"><div class="sc-accent"></div><div class="sc-mode">${s.mode}型</div><div class="sc-ic">${getStackSvg(s.key)}</div><div class="sc-t">${s.title}</div><div class="sc-m">${s.en}</div><div class="sc-d">${s.desc}</div></div>`;
 
   });
 
@@ -2662,7 +2670,7 @@ function openStack(key){
 
   let html = `<div class="sanct-back" id="stack-back">← 返回空栈</div>`;
 
-  html += `<div class="sanct-intro" style="margin-bottom:6px"><h2 class="serif">${s.icon} ${s.title}</h2><div class="en orbit">${s.en} · ${s.mode}型</div><p>${s.desc}</p></div>`;
+  html += `<div class="sanct-intro" style="margin-bottom:6px"><h2 class="serif" style="display:flex;align-items:center;gap:10px">${getStackSvg(s.key)} ${s.title}</h2><div class="en orbit">${s.en} · ${s.mode}型</div><p>${s.desc}</p></div>`;
 
   html += `<div class="mod-list">`;
 
@@ -3893,13 +3901,39 @@ function renderRitList(c){
 
 
 
-const AVATARS = ["🦊","🐱","🦉","🌿","🌊","🍃","🔥","🌙","🪐","🕊️","🐝","🍂"];
+const ICONS = {
+  avatars:{
+    fox:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l-3 6 3 2"/><path d="M17 4l3 6-3 2"/><path d="M12 6c-4 0-7 4-7 9 0 4 3 7 7 7s7-3 7-7c0-5-3-9-7-9z"/><path d="M9 14c.3.2.7.2 1 0"/><path d="M14 14c.3.2.7.2 1 0"/></svg>`,
+    cat:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l-2 4h2l1-2 2 2h2l1-2 2 2h2l-2-4"/><circle cx="12" cy="14" r="7"/><path d="M9 14c.3.2.7.2 1 0"/><path d="M14 14c.3.2.7.2 1 0"/></svg>`,
+    owl:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6c0-2 2-3 4-2l3 3 3-3c2-1 4 0 4 2v8c0 4-3 7-7 7S5 18 5 14V6z"/><circle cx="9" cy="11" r="1.5" fill="currentColor"/><circle cx="15" cy="11" r="1.5" fill="currentColor"/><path d="M12 14v3"/></svg>`,
+    sprout:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-8"/><path d="M12 14c-3-3-7-2-7 2 0 3 3 4 7 2"/><path d="M12 14c3-3 7-2 7 2 0 3-3 4-7 2"/><path d="M12 10V7"/><circle cx="12" cy="5" r="2"/></svg>`,
+    wave:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0 4 2 6 0"/><path d="M2 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0 4 2 6 0"/></svg>`,
+    leaf:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-5 0-9-4-9-9 0-5 9-10 9-10s9 5 9 10c0 5-4 9-9 9z"/><path d="M12 21V3"/></svg>`,
+    flame:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4 0-7-3-7-7 0-3 2-6 4-8 1 2 3 3 3 3s2-3 2-6c3 2 5 6 5 9 0 4-3 9-7 9z"/></svg>`,
+    moon:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12c0 5-4 9-9 9-2 0-4-.7-5.5-2 3.5.3 7-2.5 7-7 0-4.5-3.5-7.3-7-7C7.3 3.7 9.4 3 12 3c5 0 9 4 9 9z"/></svg>`,
+    planet:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><ellipse cx="12" cy="12" rx="11" ry="4" transform="rotate(-20 12 12)"/></svg>`,
+    bird:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c3-3 7-4 10-2 3-2 7-1 10 2-3 1-7 1-10 3-3-2-7-2-10-3z"/><path d="M12 10V6"/></svg>`,
+    bee:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="13" rx="6" ry="5"/><path d="M9 8V6"/><path d="M15 8V6"/><path d="M7 13h10"/><path d="M7 16h10"/><path d="M12 8v10"/></svg>`,
+    fall:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21l-4-4 2-2-4-4 3-3-3-3 7 2 7-2-3 3 3 3-4 4 2 2-4 4z"/><path d="M12 21V11"/></svg>`
+  },
+  stacks:{
+    nature:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L5 14h5v3H5l7 7 7-7h-5v-3h5L12 3z"/></svg>`,
+    reader:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v14H4z"/><path d="M12 6v14"/><path d="M7 9h2"/><path d="M7 12h2"/><path d="M15 9h2"/><path d="M15 12h2"/></svg>`,
+    void:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12c0 5-4 9-9 9-2 0-4-.7-5.5-2 3.5.3 7-2.5 7-7 0-4.5-3.5-7.3-7-7C7.3 3.7 9.4 3 12 3c5 0 9 4 9 9z" fill="currentColor" fill-opacity=".15"/></svg>`,
+    fold:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l-7 5 3 13 4-7 4 7 3-13-7-5z"/><path d="M12 11V3"/></svg>`,
+    module:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`
+  }
+};
+
+const AVATARS = ["fox","cat","owl","sprout","wave","leaf","flame","moon","planet","bird","bee","fall"];
+
+function getAvatarSvg(id){ return ICONS.avatars[id] || ICONS.avatars.fox; }
 
 const ACCENTS = ["#7fd1a0","#e6b873","#b49cf0","#8fb8e6","#e69b73","#f08fb0","#8fe6c9","#c9e68f"];
 
 const Accounts = {
 
-  draft:{ name:"", avatar:"🦊", color:"#7fd1a0", passcode:"", stack:"nature" },
+  draft:{ name:"", avatar:"fox", color:"#7fd1a0", passcode:"", stack:"nature" },
 
   pending:null,
 
@@ -3921,11 +3955,11 @@ const Accounts = {
 
     const d = this.draft;
 
-    const av = AVATARS.map(a=>`<div class="av${d.avatar===a?" on":""}" data-a="${a}">${a}</div>`).join("");
+    const av = AVATARS.map(id=>`<div class="av${d.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("");
 
     const cc = ACCENTS.map(c=>`<div class="cc${d.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
 
-    const st = STACKS.map(s=>`<div class="chip${d.stack===s.key?" on":""}" data-s="${s.key}">${s.icon} ${s.title}</div>`).join("");
+    const st = STACKS.map(s=>`<div class="chip${d.stack===s.key?" on":""}" data-s="${s.key}">${getStackSvg(s.key)} ${s.title}</div>`).join("");
 
     gate.innerHTML = `
 
@@ -4011,7 +4045,7 @@ const Accounts = {
 
       return `<div class="profile-card" data-pid="${p.pid}">
 
-        <div class="pa">${p.avatar||"🦊"}</div><div class="pn">${escapeHtml(p.name)}</div>
+        <div class="pa">${getAvatarSvg(p.avatar)}</div><div class="pn">${escapeHtml(p.name)}</div>
 
         <div class="pm">${p.passcode?"🔒 已加口令":(stk?("默认 "+stk.title):"")}</div>
 
@@ -4069,7 +4103,7 @@ const Accounts = {
 
     gate.querySelector("#lock-cancel").addEventListener("click", ()=> gate.querySelector("#lock-wrap").classList.remove("on"));
 
-    gate.querySelector("#login-add").addEventListener("click", ()=>{ this.draft={name:"",avatar:"🦊",color:"#7fd1a0",passcode:"",stack:"nature"}; this.renderOnboarding(); });
+    gate.querySelector("#login-add").addEventListener("click", ()=>{ this.draft={name:"",avatar:"fox",color:"#7fd1a0",passcode:"",stack:"nature"}; this.renderOnboarding(); });
 
     gate.querySelector("#login-guest").addEventListener("click", ()=> this.enterGuest());
 
@@ -4085,7 +4119,7 @@ const Accounts = {
 
     const p = ACC.get(), ha = document.getElementById("header-avatar");
 
-    if(ha) ha.textContent = p? p.avatar : "👤";
+    if(ha) ha.innerHTML = p? getAvatarSvg(p.avatar) : getAvatarSvg("cat");
 
     document.documentElement.style.setProperty("--accent", p? p.color : "#7fd1a0");
 
@@ -4099,7 +4133,7 @@ const Accounts = {
 
     const p = ACC.get(), box = document.getElementById("settings-panel");
 
-    const av = AVATARS.map(a=>`<div class="av${p&&p.avatar===a?" on":""}" data-a="${a}">${a}</div>`).join("");
+    const av = AVATARS.map(id=>`<div class="av${p&&p.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("");
 
     const cc = ACCENTS.map(c=>`<div class="cc${p&&p.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
 
@@ -4213,7 +4247,7 @@ function renderProfile(){
 
     <h3>个人中心 · ${escapeHtml(p.name)}</h3>
 
-    <div class="prof-head"><div class="prof-av" style="background:${p.color}22;color:${p.color}">${p.avatar||"🦊"}</div>
+    <div class="prof-head"><div class="prof-av" style="background:${p.color}22;color:${p.color}">${getAvatarSvg(p.avatar)}</div>
 
       <div><div class="prof-name">${escapeHtml(p.name)}</div><div class="prof-sub">${stk?stk.title:""} · 本地身份</div></div></div>
 
@@ -4573,7 +4607,7 @@ function init(){
   // ---- account system wiring ----
   const sh = document.querySelector("#view-sanctuary .gal-actions");
   if(sh && !document.getElementById("btn-settings")){
-    const av = document.createElement("div"); av.id="header-avatar"; av.className="ic"; av.title="身份"; av.textContent="👤"; av.style.order="-1"; sh.insertBefore(av, sh.firstChild);
+    const av = document.createElement("div"); av.id="header-avatar"; av.className="ic"; av.title="身份"; av.innerHTML=getAvatarSvg("cat"); av.style.order="-1"; sh.insertBefore(av, sh.firstChild);
     const g = document.createElement("div"); g.id="btn-settings"; g.className="ic"; g.title="设置"; g.textContent="⚙"; sh.appendChild(g);
     g.addEventListener("click", ()=> Accounts.openSettings());
     av.addEventListener("click", ()=> Accounts.openSettings());
