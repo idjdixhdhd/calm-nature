@@ -903,6 +903,11 @@
   .wall-section{background:rgba(0,0,0,.18);border:1px solid var(--glass-border);border-radius:18px;padding:14px}
   .wall-sec-title{font-size:13px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
   .wall-post.public{border-left:3px solid rgba(var(--accent-rgb),.55)}
+  .wall-post .wp-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-bottom:7px}
+  .wall-post .wp-date{color:var(--muted)}
+  .wall-post .wp-body{font-size:15px;line-height:1.8;font-family:"Cormorant Garamond","Songti SC",serif;color:#eef3ee;white-space:pre-wrap;word-break:break-word}
+  .wall-post .wp-by{color:var(--accent);font-weight:600}
+  .wall-post .wp-colon{color:var(--muted);margin:0 1px}
   #btn-feedback{position:fixed;right:14px;bottom:14px;z-index:90;width:50px;height:50px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(0,0,0,.55);color:var(--ui);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.45);transition:.25s}
   #btn-feedback:active{transform:scale(.92)}
   .fb-box{width:min(92vw,420px);background:var(--panel);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
@@ -4684,6 +4689,15 @@ function fmtWallDate(iso){
   const d = new Date(iso);
   return (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 }
+function getWallMine(){
+  try{ return JSON.parse(localStorage.getItem("quiet-nature-wall-mine")||"[]"); }catch(e){ return []; }
+}
+function addWallMine(id){
+  try{ const a=getWallMine(); if(!a.includes(id)){ a.push(id); localStorage.setItem("quiet-nature-wall-mine", JSON.stringify(a)); } }catch(e){}
+}
+function removeWallMine(id){
+  try{ const a=getWallMine().filter(x=>x!==id); localStorage.setItem("quiet-nature-wall-mine", JSON.stringify(a)); }catch(e){}
+}
 async function loadPublicWall(listEl){
   listEl.innerHTML = `<div class="q-hint" style="text-align:center">${getIcon('leaf')} 正在连接共笔墙…</div>`;
   try{
@@ -4696,24 +4710,42 @@ async function loadPublicWall(listEl){
     }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId});
     const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]"));
     if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">全网共笔墙还空着。写下第一句吧。</div>`; return; }
+    const mine = getWallMine();
     listEl.innerHTML = posts.map(p=>{
-      const text = escapeHtml(p.bodyText || "");
-      const author = escapeHtml(p.author && p.author.login ? p.author.login : "过客");
-      return `<div class="wall-post public"><div class="wp-top"><span class="wp-name">${author}</span><span>${fmtWallDate(p.createdAt)}</span></div><div class="wp-text">${text}</div></div>`;
+      let n="过客", t=p.bodyText || "";
+      try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; n=o.n||"过客"; } }
+      catch(e){ n = (p.author&&p.author.login)?p.author.login:"过客"; }
+      const del = mine.includes(p.id) ? `<span class="wp-x" data-del="${p.id}">删除</span>` : "";
+      return `<div class="wall-post public"><div class="wp-head"><span class="wp-date">${fmtWallDate(p.createdAt)}</span>${del}</div><div class="wp-body"><span class="wp-by">${escapeHtml(n)}</span><span class="wp-colon">：</span>${escapeHtml(t)}</div></div>`;
     }).join("");
+    listEl.querySelectorAll('[data-del]').forEach(b=> b.addEventListener('click', ()=> deletePublicPost(b.dataset.del, listEl)));
   }catch(e){
     listEl.innerHTML = `<div class="q-hint" style="text-align:center;color:#ff9b9b">${getIcon('warn')} 共笔墙加载失败：${escapeHtml(e.message)}<br>可能是网络暂时连不上 GitHub。</div>`;
   }
 }
+async function deletePublicPost(id, listEl){
+  if(!confirm("确定删除这条共笔墙留言吗？删除后不可恢复。")) return;
+  const btn = listEl.querySelector('[data-del="'+id+'"]'); if(btn){ btn.textContent="删除中…"; btn.style.pointerEvents="none"; }
+  try{
+    await ghql(`mutation($id:ID!){deleteDiscussion(input:{id:$id}){clientMutationId}}`, {id});
+    removeWallMine(id);
+    flashToast("已删除");
+  }catch(e){ flashToast("删除失败："+e.message); }
+  await loadPublicWall(listEl);
+}
 async function postPublicWall(text, name, listEl){
   if(!text) return;
-  const title = (name && name!=="过客" ? name+"：" : "") + text.slice(0,28) + (text.length>28?"…":"");
-  const body = (name&&name!=="过客"?"**"+name+"** 留了一句：\n\n":"") + text;
-  await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
+  const cleanName = (name && name!=="过客") ? name : "";
+  const title = (cleanName? cleanName+"：" : "过客：") + text.slice(0,28) + (text.length>28?"…":"");
+  const body = JSON.stringify({n: cleanName, t: text});
+  const res = await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
     createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){
       discussion{ id title bodyText createdAt author{login} }
     }
   }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title, body});
+  if(res && res.createDiscussion && res.createDiscussion.discussion){
+    addWallMine(res.createDiscussion.discussion.id);
+  }
   await loadPublicWall(listEl);
 }
 
