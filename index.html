@@ -208,13 +208,13 @@
 
   #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.12) saturate(1.18) brightness(1.03)}
 
-  #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;animation:kenburns 60s linear infinite;transform:scale(1.05);filter:contrast(1.12) saturate(1.2) brightness(1.03)}
+  #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;background-repeat:no-repeat;animation:kenburns 60s linear infinite;transform:scale(1.05);filter:contrast(1.12) saturate(1.2) brightness(1.03)}
 
   /* adaptive media: portrait shows the whole (landscape) frame without cropping;
      landscape fills the screen edge-to-edge. No hard resizing / distortion. */
   @media (orientation: portrait){
-    #pv{ object-fit: contain; }
-    #pimg{ background-size: contain; }
+    #pv{ object-fit: contain; }   /* video: show full frame, no crop */
+    #pimg{ background-size: cover; } /* photo: fill the screen edge-to-edge like landscape */
   }
 
   /* Fullscreen: become a true landscape, edge-to-edge, immersive view.
