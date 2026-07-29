@@ -208,6 +208,25 @@
 
   #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;animation:kenburns 60s linear infinite;transform:scale(1.05);filter:contrast(1.12) saturate(1.2) brightness(1.03)}
 
+  /* adaptive media: portrait shows the whole (landscape) frame without cropping;
+     landscape fills the screen edge-to-edge. No hard resizing / distortion. */
+  @media (orientation: portrait){
+    #pv{ object-fit: contain; }
+    #pimg{ background-size: contain; }
+  }
+
+  /* subtle, non-intrusive rotate hint — sits in the top chrome, never over the media */
+  #rotate-hint{position:absolute;top:calc(12px + var(--safe-t));left:50%;transform:translateX(-50%);z-index:8;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.72);background:rgba(10,14,13,.5);border:1px solid var(--glass-border);padding:6px 14px;border-radius:20px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;transition:opacity .5s;display:none}
+  @media (orientation: portrait){ #rotate-hint{ display:block; } }
+  #view-player.idle #rotate-hint{opacity:0}
+
+  /* buffering / tap-to-play indicator (only for video scenes) */
+  #v-loading{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none}
+  #v-loading.show{display:flex}
+  .v-spin{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.22);border-top-color:#fff;animation:spin 1s linear infinite;box-shadow:0 0 18px -4px rgba(255,255,255,.5)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #v-loading .v-tip{font-size:13px;letter-spacing:.1em;color:rgba(255,255,255,.82);text-shadow:0 1px 8px rgba(0,0,0,.8)}
+
   @keyframes kenburns{0%{transform:scale(1.05) translate(0,0)}25%{transform:scale(1.12) translate(-1.5%,-1%)}50%{transform:scale(1.08) translate(1%,.5%)}75%{transform:scale(1.14) translate(-.5%,1%)}100%{transform:scale(1.05) translate(0,0)}}
 
   #vignette{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 48%,rgba(0,0,0,.55) 100%)}
@@ -1016,6 +1035,8 @@
 
 /* 多栈首页 */
 .stacks-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:6px; }
+.stack-card.full{ grid-column:1 / -1; }
+@media(max-width:540px){ .stacks-grid{ grid-template-columns:1fr; } }
 .stack-card{ position:relative; border-radius:20px; padding:18px 16px; cursor:pointer; overflow:hidden;
   background:linear-gradient(150deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--glass-border); transition:.25s; }
 .stack-card:hover{ transform:translateY(-3px); border-color:var(--accent); box-shadow:0 16px 40px rgba(0,0,0,.35); }
@@ -1223,7 +1244,11 @@
 
     <div id="pimg"></div>
 
+    <div id="v-loading"><div class="v-spin"></div><div class="v-tip">正在加载…轻触播放</div></div>
+
   </div>
+
+  <div id="rotate-hint">↻ 横屏 · 全屏更沉浸</div>
 
   <div id="vignette"></div>
 
@@ -1274,6 +1299,8 @@
         <div class="ic" id="btn-sound" title="声音" data-icon="sound"></div>
 
         <div class="ic" id="btn-info2" title="素材来源">ⓘ</div>
+
+        <div class="ic" id="btn-fs" title="全屏观看">⛶</div>
 
       </div>
 
@@ -1940,6 +1967,8 @@ function enterPlayer(id){
 
     pimg.style.animationPlayState = "running"; pimg.style.animationDelay = "0s";
 
+    showVLoading(false);
+
   } else {
 
     pimg.style.display = "none"; pimg.style.backgroundImage = "";
@@ -1953,6 +1982,10 @@ function enterPlayer(id){
     videoEl.muted = true;
 
     startVideo();
+
+    wireVideo();
+
+    showVLoading(true, "正在加载…轻触播放");
 
   }
 
@@ -2032,6 +2065,23 @@ function startVideo(){
 
   }
 
+}
+
+/* buffering / tap-to-play indicator (video scenes only) */
+function showVLoading(show, tip){
+  const el = document.getElementById("v-loading");
+  if(!el) return;
+  if(tip) el.querySelector(".v-tip").textContent = tip;
+  el.classList.toggle("show", !!show);
+}
+
+function wireVideo(){
+  if(!videoEl || videoEl._wired) return;
+  videoEl._wired = true;
+  videoEl.addEventListener("waiting", ()=> showVLoading(true, "正在加载…轻触播放"));
+  videoEl.addEventListener("playing", ()=> showVLoading(false));
+  videoEl.addEventListener("canplay", ()=> showVLoading(false));
+  videoEl.addEventListener("error", ()=> showVLoading(true, "视频加载失败，轻触重试"));
 }
 
 function setHour(h){
@@ -2273,6 +2323,13 @@ function unlock(){
   document.getElementById("btn-sound").innerHTML = getIcon("sound");
 
   document.getElementById("btn-sound").classList.add("active");
+
+  /* re-trigger playback inside this explicit user gesture (best for mobile autoplay) */
+  if(videoEl && currentScene && currentScene.mediaType !== "image"){
+    videoEl.muted = true;
+    const p = videoEl.play();
+    if(p && p.then) p.catch(()=>{});
+  }
 
 }
 
@@ -2663,9 +2720,11 @@ function renderSanctuary(){
 
   html += `<div class="stacks-grid" id="stacks-grid">`;
 
-  STACKS.forEach(s=>{
+  STACKS.forEach((s,idx)=>{
 
-    html += `<div class="stack-card" data-stack="${s.key}" style="--accent:${s.accent}"><div class="sc-accent"></div><div class="sc-mode">${s.mode}型</div><div class="sc-ic">${getStackSvg(s.key)}</div><div class="sc-t">${s.title}</div><div class="sc-m">${s.en}</div><div class="sc-d">${s.desc}</div></div>`;
+    const full = (idx===STACKS.length-1 && STACKS.length%2===1) ? " full" : "";
+
+    html += `<div class="stack-card${full}" data-stack="${s.key}" style="--accent:${s.accent}"><div class="sc-accent"></div><div class="sc-ic">${getStackSvg(s.key)}</div><div class="sc-t">${s.title}</div><div class="sc-m">${s.en}</div><div class="sc-d">${s.desc}</div></div>`;
 
   });
 
@@ -2695,7 +2754,7 @@ function openStack(key){
 
   let html = `<div class="sanct-back" id="stack-back">← 返回空栈</div>`;
 
-  html += `<div class="sanct-intro" style="margin-bottom:6px"><h2 class="serif" style="display:flex;align-items:center;gap:10px">${getStackSvg(s.key)} ${s.title}</h2><div class="en orbit">${s.en} · ${s.mode}型</div><p>${s.desc}</p></div>`;
+  html += `<div class="sanct-intro" style="margin-bottom:6px"><h2 class="serif" style="display:flex;align-items:center;gap:10px">${getStackSvg(s.key)} ${s.title}</h2><div class="en orbit">${s.en}</div><p>${s.desc}</p></div>`;
 
   html += `<div class="mod-list">`;
 
@@ -4775,7 +4834,27 @@ function init(){
 
   document.getElementById("gate-go").addEventListener("click", unlock);
 
-  document.getElementById("stage").addEventListener("click", ()=>{ if(!unlocked) unlock(); else poke(); });
+  document.getElementById("stage").addEventListener("click", ()=>{
+    if(!unlocked){ unlock(); return; }
+    poke();
+    if(videoEl && videoEl.paused && currentScene && currentScene.mediaType !== "image"){
+      videoEl.play().catch(()=>{});
+      showVLoading(true, "正在加载…轻触播放");
+    }
+  });
+
+  document.getElementById("btn-fs").addEventListener("click", e=>{
+    e.stopPropagation(); poke();
+    const st = document.getElementById("stage");
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if(!fsEl){
+      const req = st.requestFullscreen || st.webkitRequestFullscreen;
+      if(req) req.call(st);
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if(exit) exit.call(document);
+    }
+  });
 
   document.getElementById("btn-sound").addEventListener("click", e=>{
 
