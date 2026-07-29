@@ -168,13 +168,15 @@
 
   @media(min-width:680px){.cat-head .desc{display:block}}
 
-  .cards-row{display:flex;gap:14px;overflow-x:auto;padding:4px 6px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(var(--accent-rgb),.35) transparent}
+  .cards-row{display:flex;gap:14px;overflow-x:auto;padding:4px 6px 18px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(var(--accent-rgb),.35) transparent}
 
   .cards-row::-webkit-scrollbar{height:5px}
 
   .cards-row::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.35);border-radius:3px}
 
-  .scard{flex:0 0 clamp(150px,42vw,260px);aspect-ratio:3/4;border-radius:var(--radius);position:relative;overflow:hidden;background:#0a0e0c;border:1px solid var(--glass-border);box-shadow:0 14px 38px -16px rgba(0,0,0,.65);cursor:pointer;scroll-snap-align:start;transition:transform .35s,box-shadow .35s,border-color .35s}
+  .scard{flex:0 0 clamp(170px,78vw,320px);aspect-ratio:3/4;border-radius:var(--radius);position:relative;overflow:hidden;background:#0a0e0c;border:1px solid var(--glass-border);box-shadow:0 14px 38px -16px rgba(0,0,0,.65);cursor:pointer;scroll-snap-align:start;transition:transform .35s,box-shadow .35s,border-color .35s}
+
+  @media(min-width:680px){ .scard{flex:0 0 clamp(150px,30vw,260px);} }
 
   .scard:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 22px 50px -14px rgba(var(--accent-rgb),.25),0 0 0 1px rgba(var(--accent-rgb),.45);border-color:rgba(var(--accent-rgb),.5)}
 
@@ -898,6 +900,14 @@
   .wall-post .wp-x:active{color:#ff8a8a}
   .wall-acts{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
   .wall-note{font-size:11px;color:var(--muted);line-height:1.7;background:rgba(0,0,0,.2);border:1px solid var(--glass-border);border-radius:12px;padding:11px 13px}
+  .wall-section{background:rgba(0,0,0,.18);border:1px solid var(--glass-border);border-radius:18px;padding:14px}
+  .wall-sec-title{font-size:13px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .wall-post.public{border-left:3px solid rgba(var(--accent-rgb),.55)}
+  #btn-feedback{position:fixed;right:14px;bottom:14px;z-index:90;width:50px;height:50px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(0,0,0,.55);color:var(--ui);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.45);transition:.25s}
+  #btn-feedback:active{transform:scale(.92)}
+  .fb-box{width:min(92vw,420px);background:var(--panel);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
+  .fb-box h3{margin:0 0 14px;font-size:18px;letter-spacing:.1em}
+  .fb-box .q-area{min-height:110px}
 
   /* focus flow */
   .flow-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
@@ -1455,6 +1465,10 @@
 <div class="settings-panel" id="settings-panel"></div>
 <div class="settings-panel" id="profile-panel"></div>
 <div class="settings-panel" id="data-detail"></div>
+
+<!-- FEEDBACK PANEL -->
+<div class="settings-panel" id="feedback-panel"></div>
+<button id="btn-feedback" title="反馈 / 报 Bug">反馈</button>
 
 
 <script>
@@ -3456,13 +3470,17 @@ function openJournal(sceneId){
 
 // ---------- new sanctuary modules (echo / flow / create / wall / queue / badge) ----------
 
-const GISCUS = {
+// 共笔墙配置：token 是 GitHub 细粒度 PAT（只限本仓库 Discussions 读写）。
+// 朋友不需要登录 GitHub，站点用这把令牌代发留言。
+const WALL_CFG = {
   repo: "idjdixhdhd/calm-nature",
   repoId: "MDEwOlJlcG9zaXRvcnkxMzEzNDYzOTk2",
-  category: "Announcements",
   categoryId: "DIC_kwDOTknevM4DCORg",
+  token: "",
   enabled: true
 };
+// 微信推送令牌（PushPlus）。仅在部署到国内链接时注入；公开仓库版本保持空字符串。
+const PUSHPLUS_TOKEN = "";
 
 const EchoMixer = {
   els:{},
@@ -4061,7 +4079,10 @@ const ICONS = {
     gear:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>`,
     hourglass:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12M7 3c.5 6 9.5 6 10 9-1 3-9.5 3-10 9"/></svg>`,
     spark:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"/></svg>`,
-    heart:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2 4 4 0 017 2c0 5.5-7 10-7 10z"/></svg>`
+    heart:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2 4 4 0 017 2c0 5.5-7 10-7 10z"/></svg>`,
+    globe:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><ellipse cx="12" cy="12" rx="11" ry="4" transform="rotate(-20 12 12)"/><path d="M2 12h20"/></svg>`,
+    warn:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><path d="M12 9v5M12 17h.01"/></svg>`,
+    chat:`<svg class="i-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`
   }
 };
 
@@ -4648,39 +4669,94 @@ function renderBonds(box){
 }
 
 
+async function ghql(query, variables){
+  const r = await fetch("https://api.github.com/graphql", {
+    method:"POST",
+    headers:{"Authorization":"Bearer "+WALL_CFG.token,"Content-Type":"application/json"},
+    body: JSON.stringify({query, variables})
+  });
+  if(!r.ok) throw new Error("GitHub "+r.status);
+  const j = await r.json();
+  if(j.errors) throw new Error(j.errors.map(e=>e.message).join("; "));
+  return j.data;
+}
+function fmtWallDate(iso){
+  const d = new Date(iso);
+  return (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+async function loadPublicWall(listEl){
+  listEl.innerHTML = `<div class="q-hint" style="text-align:center">${getIcon('leaf')} 正在连接共笔墙…</div>`;
+  try{
+    const data = await ghql(`query($repoId:ID!, $catId:ID!){
+      node(id:$repoId){ ... on Repository{
+        discussions(first:50, categoryId:$catId, orderBy:{field:CREATED_AT, direction:DESC}){
+          nodes{ id title bodyText createdAt author{login} }
+        }
+      }}
+    }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId});
+    const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]"));
+    if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">全网共笔墙还空着。写下第一句吧。</div>`; return; }
+    listEl.innerHTML = posts.map(p=>{
+      const text = escapeHtml(p.bodyText || "");
+      const author = escapeHtml(p.author && p.author.login ? p.author.login : "过客");
+      return `<div class="wall-post public"><div class="wp-top"><span class="wp-name">${author}</span><span>${fmtWallDate(p.createdAt)}</span></div><div class="wp-text">${text}</div></div>`;
+    }).join("");
+  }catch(e){
+    listEl.innerHTML = `<div class="q-hint" style="text-align:center;color:#ff9b9b">${getIcon('warn')} 共笔墙加载失败：${escapeHtml(e.message)}<br>可能是网络暂时连不上 GitHub。</div>`;
+  }
+}
+async function postPublicWall(text, name, listEl){
+  if(!text) return;
+  const title = (name && name!=="过客" ? name+"：" : "") + text.slice(0,28) + (text.length>28?"…":"");
+  const body = (name&&name!=="过客"?"**"+name+"** 留了一句：\n\n":"") + text;
+  await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
+    createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){
+      discussion{ id title bodyText createdAt author{login} }
+    }
+  }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title, body});
+  await loadPublicWall(listEl);
+}
+
 function renderWall(c){
   Sanctuary.load();
-  let html = `<div class="wall-compose">
+  let html = `<div class="wall-section"><div class="wall-sec-title">${getIcon('pushpin')} 本地私密留言（仅本机可见）</div>`;
+  html += `<div class="wall-compose">
     <textarea class="q-area" id="wall-text" placeholder="在空栈留一句话——给未来的自己，或给偶然路过这里的人…"></textarea>
     <input class="echo-name-in" id="wall-name" placeholder="署名（可选，默认「过客」）" style="width:100%">
     <div class="wall-acts"><div class="q-btn primary" id="wall-post">张贴</div></div>
   </div>`;
-  html += `<div class="wall-acts" style="margin-top:14px"><div class="q-btn" id="wall-export">导出共笔包</div><div class="q-btn" id="wall-import">导入共笔包</div><input type="file" id="wall-file" accept="application/json" style="display:none"></div>`;
-  html += `<div class="q-hint" style="margin-top:14px">${getIcon('pushpin')} 这里的留言存在你自己的设备上。想和朋友互看？点「导出共笔包」发对方，对方「导入」即可合并。想做真正多人实时共笔墙，见下方说明。</div>`;
-  html += `<div class="wall-note" id="wall-giscus"></div>`;
-  html += `<div class="wall-list" id="wall-list"></div>`;
+  html += `<div class="wall-acts" style="margin-top:10px"><div class="q-btn" id="wall-export">导出共笔包</div><div class="q-btn" id="wall-import">导入共笔包</div><input type="file" id="wall-file" accept="application/json" style="display:none"></div>`;
+  html += `<div class="wall-list" id="wall-list"></div></div>`;
+
+  html += `<div class="wall-section" style="margin-top:22px"><div class="wall-sec-title">${getIcon('globe')} 全网共笔墙（任何人可见）</div>`;
+  html += `<div class="wall-compose">
+    <textarea class="q-area" id="pub-text" placeholder="写给所有路过空栈的人…"></textarea>
+    <input class="echo-name-in" id="pub-name" placeholder="署名（可选，默认「过客」）" style="width:100%">
+    <div class="wall-acts"><div class="q-btn primary" id="pub-post">发送到共笔墙</div></div>
+  </div>`;
+  html += `<div class="wall-list" id="pub-list"></div></div>`;
   c.innerHTML = html;
 
-  function paint(){
+  function paintLocal(){
     const list = c.querySelector("#wall-list");
     const posts = (Sanctuary.store.wall||[]).slice().sort((a,b)=>b.ts-a.ts);
-    if(!posts.length){ list.innerHTML = `<div class="q-hint" style="text-align:center">还没有留言。写下第一句吧。</div>`; return; }
+    if(!posts.length){ list.innerHTML = `<div class="q-hint" style="text-align:center">还没有本地留言。写下第一句吧。</div>`; return; }
     list.innerHTML = posts.map(p=>{
       const d = new Date(p.ts); const ds = (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
       return `<div class="wall-post"><div class="wp-top"><span class="wp-name">${escapeHtml(p.name||"过客")}</span><span>${ds}</span></div><div class="wp-text">${escapeHtml(p.text)}</div><div class="wp-top" style="margin-top:8px"><span></span><span class="wp-x" data-del="${p.id}">删除</span></div></div>`;
     }).join("");
     list.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
-      Sanctuary.store.wall = Sanctuary.store.wall.filter(x=>x.id!==el.dataset.del); Sanctuary.save(); paint();
+      Sanctuary.store.wall = Sanctuary.store.wall.filter(x=>x.id!==el.dataset.del); Sanctuary.save(); paintLocal();
     }));
   }
-  paint();
+  paintLocal();
 
   c.querySelector("#wall-post").addEventListener("click", ()=>{
     const text = c.querySelector("#wall-text").value.trim();
     if(!text){ flashToast("写点什么再张贴吧"); return; }
     const name = c.querySelector("#wall-name").value.trim() || "过客";
     Sanctuary.store.wall.push({id:"w"+Date.now()+Math.floor(Math.random()*999), text, name, ts:Date.now()});
-    Sanctuary.save(); c.querySelector("#wall-text").value=""; paint(); flashToast("已张贴");
+    Sanctuary.save(); c.querySelector("#wall-text").value=""; paintLocal(); flashToast("已张贴到本地");
   });
   c.querySelector("#wall-export").addEventListener("click", ()=>{
     downloadJSON("calm-nature-wall.json", {app:"calm-nature-wall", exportAt:Date.now(), posts:Sanctuary.store.wall||[]});
@@ -4699,32 +4775,87 @@ function renderWall(c){
         const ids = new Set(cur.map(p=>p.id));
         let added=0;
         incoming.forEach(p=>{ if(!ids.has(p.id)){ cur.push(p); ids.add(p.id); added++; } });
-        Sanctuary.store.wall = cur; Sanctuary.save(); paint();
+        Sanctuary.store.wall = cur; Sanctuary.save(); paintLocal();
         flashToast("已合并 "+added+" 条留言");
       }catch(e){ flashToast("文件格式不对"); }
     };
     r.readAsText(f); fileEl.value="";
   });
 
-  const gbox = c.querySelector("#wall-giscus");
-  if(GISCUS.enabled && GISCUS.repoId && GISCUS.categoryId){
-    gbox.innerHTML = `<b>多人实时共笔墙（已开启）</b><br>登录 GitHub 后即可与任何人互见留言。`;
-    const s = document.createElement("script");
-    s.src = "https://giscus.app/client.js";
-    s.setAttribute("data-repo", GISCUS.repo);
-    s.setAttribute("data-repo-id", GISCUS.repoId);
-    s.setAttribute("data-category", GISCUS.category);
-    s.setAttribute("data-category-id", GISCUS.categoryId);
-    s.setAttribute("data-mapping", "pathname");
-    s.setAttribute("data-reactions-enabled", "1");
-    s.setAttribute("data-emit-metadata", "0");
-    s.setAttribute("data-theme", "dark");
-    s.setAttribute("data-lang", "zh-CN");
-    s.crossOrigin = "anonymous"; s.async = true;
-    gbox.appendChild(s);
+  const pubList = c.querySelector("#pub-list");
+  const pubPost = c.querySelector("#pub-post");
+  const pubText = c.querySelector("#pub-text");
+  const pubName = c.querySelector("#pub-name");
+  if(WALL_CFG.enabled && WALL_CFG.token){
+    loadPublicWall(pubList);
+    pubPost.addEventListener("click", async ()=>{
+      const text = pubText.value.trim();
+      if(!text){ flashToast("写点什么再发送吧"); return; }
+      if(text.length>400){ flashToast("留言请控制在 400 字以内"); return; }
+      pubPost.textContent = "发送中…"; pubPost.style.pointerEvents = "none";
+      try{
+        await postPublicWall(text, pubName.value.trim() || "过客", pubList);
+        pubText.value = ""; pubName.value = "";
+        flashToast("已发送到共笔墙");
+      }catch(e){ flashToast("发送失败："+e.message); }
+      pubPost.textContent = "发送到共笔墙"; pubPost.style.pointerEvents = "";
+    });
   } else {
-    gbox.innerHTML = `<b>想要真正多人实时共笔墙？</b><br>① 打开 giscus.app，用 GitHub 登录，选仓库 <b>${GISCUS.repo}</b> 安装；<br>② 开启仓库的 Discussions；<br>③ 把安装后给的 repo-id / category-id 告诉我，我填进站点即可。之后任何人登录 GitHub 都能发、都能看到彼此的留言——这才是你说的"我加、别人加、互相看见"。`;
+    pubList.innerHTML = `<div class="wall-note"><b>共笔墙即将开启</b><br>朋友不需要注册 GitHub。只需你先去 GitHub 创建一把<strong>只限 calm-nature 仓库、只限 Discussions 读写</strong>的细粒度令牌（Fine-grained PAT），把令牌字符串发给我，我填进站点后即可生效。之后任何人打开网站都能直接发、直接看。</div>`;
+    pubPost.addEventListener("click", ()=> flashToast("共笔墙尚未配置令牌，请先按上方说明创建并发送给我"));
   }
+}
+
+function openFeedbackPanel(){
+  const panel = document.getElementById("feedback-panel");
+  panel.innerHTML = `
+    <div class="fb-box">
+      <h3>${getIcon('chat')} 反馈 / 报 Bug</h3>
+      <p class="q-hint" style="margin-bottom:12px">遇到问题、有建议，或发现 Bug，写在这里。提交后会直接推送到我的微信，同时会存入公开共笔墙（如已开启）。</p>
+      <input class="echo-name-in" id="fb-title" placeholder="标题（可选，例如：视频加载慢）" style="width:100%;margin-bottom:10px">
+      <textarea class="q-area" id="fb-body" placeholder="请尽量描述清楚：在哪个页面、做了什么、出现了什么…"></textarea>
+      <div class="wall-acts" style="margin-top:12px">
+        <div class="q-btn" id="fb-cancel">取消</div>
+        <div class="q-btn primary" id="fb-send">发送反馈</div>
+      </div>
+      <div class="q-hint" style="margin-top:12px">请勿填写真实姓名、手机号、学校等个人信息。</div>
+    </div>`;
+  panel.classList.add("open");
+  const close = ()=> panel.classList.remove("open");
+  panel.querySelector("#fb-cancel").addEventListener("click", close);
+  panel.addEventListener("click", e=>{ if(e.target===panel) close(); });
+  panel.querySelector("#fb-send").addEventListener("click", async ()=>{
+    const title = document.getElementById("fb-title").value.trim() || "空栈反馈";
+    const body = document.getElementById("fb-body").value.trim();
+    if(!body){ flashToast("请填写反馈内容"); return; }
+    const btn = panel.querySelector("#fb-send"); btn.textContent = "发送中…"; btn.style.pointerEvents = "none";
+    let ok = [];
+    // 1) PushPlus -> WeChat
+    if(PUSHPLUS_TOKEN){
+      try{
+        const r = await fetch("https://www.pushplus.plus/send", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({token:PUSHPLUS_TOKEN, title:title, content:body, template:"txt"})
+        });
+        const j = await r.json();
+        if(j && (j.code===200 || j.data==="发送成功" || j.success)) ok.push("微信");
+        else ok.push("微信失败:"+(j.msg||"未知"));
+      }catch(e){ ok.push("微信失败:"+e.message); }
+    }
+    // 2) 同时存到共笔墙/反馈区（如果令牌存在）
+    if(WALL_CFG.token){
+      try{
+        await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
+          createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){ discussion{ id } }
+        }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title:"[反馈] "+title, body:body});
+        ok.push("反馈墙");
+      }catch(e){ ok.push("反馈墙失败"); }
+    }
+    btn.textContent = "发送反馈"; btn.style.pointerEvents = "";
+    flashToast("已发送："+ok.join(" / "));
+    close();
+  });
 }
 
 function renderMoodHeatmap(c){
@@ -4849,6 +4980,9 @@ function init(){
   });
 
   document.getElementById("credits-close").addEventListener("click", ()=> document.getElementById("credits").classList.remove("show"));
+
+  const btnFeedback = document.getElementById("btn-feedback");
+  if(btnFeedback) btnFeedback.addEventListener("click", openFeedbackPanel);
 
   document.getElementById("gate-go").addEventListener("click", unlock);
 
