@@ -905,9 +905,19 @@
   .wall-post.public{border-left:3px solid rgba(var(--accent-rgb),.55)}
   .wall-post .wp-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-bottom:7px}
   .wall-post .wp-date{color:var(--muted)}
-  .wall-post .wp-body{font-size:15px;line-height:1.8;font-family:"Cormorant Garamond","Songti SC",serif;color:#eef3ee;white-space:pre-wrap;word-break:break-word}
+  .wall-post .wp-body{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.8;font-family:"Cormorant Garamond","Songti SC",serif;color:#eef3ee;white-space:pre-wrap;word-break:break-word}
+  .wall-post .wp-av{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--accent-rgb),.16);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.35);margin-top:2px}
+  .wall-post .wp-av .i-svg{width:20px;height:20px}
+  .wall-post .wp-textwrap{flex:1 1 auto;min-width:0}
   .wall-post .wp-by{color:var(--accent);font-weight:600}
   .wall-post .wp-colon{color:var(--muted);margin:0 1px}
+  .wall-av-row{display:flex;align-items:center;gap:12px}
+  .wall-av-label{font-size:12px;color:var(--muted);flex:0 0 auto}
+  .wall-av-pick{display:flex;gap:6px;flex-wrap:wrap}
+  .wall-av-pick .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.28);border:1px solid var(--glass-border);color:var(--muted);cursor:pointer;transition:.15s}
+  .wall-av-pick .av .i-svg{width:18px;height:18px}
+  .wall-av-pick .av.on{border-color:var(--accent);background:rgba(var(--accent-rgb),.18);color:var(--accent);transform:translateY(-2px)}
+  .wall-av-pick .av:hover{border-color:var(--accent)}
   #btn-feedback{position:fixed;right:14px;bottom:14px;z-index:90;width:50px;height:50px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(0,0,0,.55);color:var(--ui);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.45);transition:.25s}
   #btn-feedback:active{transform:scale(.92)}
   .fb-box{width:min(92vw,420px);background:var(--panel);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
@@ -4712,11 +4722,12 @@ async function loadPublicWall(listEl){
     if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">全网共笔墙还空着。写下第一句吧。</div>`; return; }
     const mine = getWallMine();
     listEl.innerHTML = posts.map(p=>{
-      let n="过客", t=p.bodyText || "";
-      try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; n=o.n||"过客"; } }
+      let n="过客", t=p.bodyText || "", a="";
+      try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; n=o.n||"过客"; a=o.a||""; } }
       catch(e){ n = (p.author&&p.author.login)?p.author.login:"过客"; }
+      const av = getAvatarSvg(a) || getAvatarSvg("cat");
       const del = mine.includes(p.id) ? `<span class="wp-x" data-del="${p.id}">删除</span>` : "";
-      return `<div class="wall-post public"><div class="wp-head"><span class="wp-date">${fmtWallDate(p.createdAt)}</span>${del}</div><div class="wp-body"><span class="wp-by">${escapeHtml(n)}</span><span class="wp-colon">：</span>${escapeHtml(t)}</div></div>`;
+      return `<div class="wall-post public"><div class="wp-head"><span class="wp-date">${fmtWallDate(p.createdAt)}</span>${del}</div><div class="wp-body"><span class="wp-av">${av}</span><span class="wp-textwrap"><span class="wp-by">${escapeHtml(n)}</span><span class="wp-colon">：</span>${escapeHtml(t)}</span></div></div>`;
     }).join("");
     listEl.querySelectorAll('[data-del]').forEach(b=> b.addEventListener('click', ()=> deletePublicPost(b.dataset.del, listEl)));
   }catch(e){
@@ -4733,11 +4744,12 @@ async function deletePublicPost(id, listEl){
   }catch(e){ flashToast("删除失败："+e.message); }
   await loadPublicWall(listEl);
 }
-async function postPublicWall(text, name, listEl){
+async function postPublicWall(text, name, avatar, listEl){
   if(!text) return;
   const cleanName = (name && name!=="过客") ? name : "";
+  const cleanAvatar = (avatar && AVATARS.indexOf(avatar)>=0) ? avatar : "";
   const title = (cleanName? cleanName+"：" : "过客：") + text.slice(0,28) + (text.length>28?"…":"");
-  const body = JSON.stringify({n: cleanName, t: text});
+  const body = JSON.stringify({n: cleanName, t: text, a: cleanAvatar});
   const res = await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
     createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){
       discussion{ id title bodyText createdAt author{login} }
@@ -4760,10 +4772,15 @@ function renderWall(c){
   html += `<div class="wall-acts" style="margin-top:10px"><div class="q-btn" id="wall-export">导出共笔包</div><div class="q-btn" id="wall-import">导入共笔包</div><input type="file" id="wall-file" accept="application/json" style="display:none"></div>`;
   html += `<div class="wall-list" id="wall-list"></div></div>`;
 
+  const ident = (typeof ACC!=="undefined" && ACC.get) ? ACC.get() : null;
+  const identAv = (ident && typeof ident.avatar==="string" && ident.avatar.indexOf("data:")!==0 && AVATARS.indexOf(ident.avatar)>=0) ? ident.avatar : AVATARS[Math.floor(Math.random()*AVATARS.length)];
+  const identName = ident ? ident.name : "";
+  let pubAvatar = identAv;
   html += `<div class="wall-section" style="margin-top:22px"><div class="wall-sec-title">${getIcon('globe')} 全网共笔墙（任何人可见）</div>`;
   html += `<div class="wall-compose">
+    <div class="wall-av-row"><span class="wall-av-label">选个头像</span><div class="wall-av-pick" id="pub-av">${AVATARS.map(id=>`<div class="av${id===identAv?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("")}</div></div>
     <textarea class="q-area" id="pub-text" placeholder="写给所有路过空栈的人…"></textarea>
-    <input class="echo-name-in" id="pub-name" placeholder="署名（可选，默认「过客」）" style="width:100%">
+    <input class="echo-name-in" id="pub-name" placeholder="署名（可选，默认「过客」）" style="width:100%" value="${escapeHtml(identName)}">
     <div class="wall-acts"><div class="q-btn primary" id="pub-post">发送到共笔墙</div></div>
   </div>`;
   html += `<div class="wall-list" id="pub-list"></div></div>`;
@@ -4818,6 +4835,8 @@ function renderWall(c){
   const pubPost = c.querySelector("#pub-post");
   const pubText = c.querySelector("#pub-text");
   const pubName = c.querySelector("#pub-name");
+  const pubAv = c.querySelector("#pub-av");
+  if(pubAv){ pubAv.querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ pubAvatar = x.dataset.a; pubAv.querySelectorAll(".av").forEach(o=> o.classList.toggle("on", o.dataset.a===pubAvatar)); })); }
   if(WALL_CFG.enabled && WALL_CFG.token){
     loadPublicWall(pubList);
     pubPost.addEventListener("click", async ()=>{
@@ -4826,8 +4845,8 @@ function renderWall(c){
       if(text.length>400){ flashToast("留言请控制在 400 字以内"); return; }
       pubPost.textContent = "发送中…"; pubPost.style.pointerEvents = "none";
       try{
-        await postPublicWall(text, pubName.value.trim() || "过客", pubList);
-        pubText.value = ""; pubName.value = "";
+        await postPublicWall(text, pubName.value.trim(), pubAvatar, pubList);
+        pubText.value = "";
         flashToast("已发送到共笔墙");
       }catch(e){ flashToast("发送失败："+e.message); }
       pubPost.textContent = "发送到共笔墙"; pubPost.style.pointerEvents = "";
