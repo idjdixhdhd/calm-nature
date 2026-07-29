@@ -841,6 +841,10 @@
   .rd-star{font-size:13px;color:var(--accent);cursor:pointer;letter-spacing:.05em}
   .rd-del{margin-left:auto;font-size:14px;color:var(--muted);cursor:pointer;opacity:.7;transition:.15s}
   .rd-del:hover{color:#ff9b9b;opacity:1}
+  .rd-pub{margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer;padding:3px 10px;border:1px solid rgba(var(--accent-rgb),.45);border-radius:20px;transition:.15s}
+  .rd-pub:hover{background:rgba(var(--accent-rgb),.14)}
+  .rd-pub.disabled{color:var(--muted);border-color:var(--glass-border);cursor:default;opacity:.7}
+  .rd-pub.disabled:hover{background:none}
   .rd-addbar{margin:10px 0 4px}
   .rd-add{display:inline-block;font-size:13px;color:var(--accent);cursor:pointer;padding:6px 10px;border:1px dashed rgba(var(--accent-rgb),.5);border-radius:10px;transition:.15s}
   .rd-add:hover{background:rgba(var(--accent-rgb),.12)}
@@ -3228,6 +3232,7 @@ function renderReader(c){
 
     if(tag==="藏句") items = (Sanctuary.store.quotes||[]).map(id=>lib[id]).filter(Boolean).map(q=>({t:q.t,a:q.a,_lib:true,_id:lib.indexOf(q)}));
     else if(tag==="我的文摘") items = (Sanctuary.store.myreader||[]).map(q=>({t:q.t,a:q.a,_mine:true,_ts:q.ts}));
+    else if(tag==="共读库") items = [];
     else if(tag!=="全部") items = lib.filter(q=>q.tag===tag).map(q=>({t:q.t,a:q.a,_lib:true,_id:lib.indexOf(q)}));
     else items = lib.map(q=>({t:q.t,a:q.a,_lib:true,_id:lib.indexOf(q)}));
 
@@ -3237,28 +3242,34 @@ function renderReader(c){
 
     html += `<div class="rd-feature"><div class="rd-tag">今日一读 · ${now.getMonth()+1}月${now.getDate()}日</div><div class="rd-text">${escapeHtml(f.t)}</div><div class="rd-auth">—— ${escapeHtml(f.a)}</div><div class="rd-acts"><span class="rd-star ${s.has(featured)?'on':''}" data-star="${featured}">${s.has(featured)?'★ 已藏':'☆ 藏此句'}</span><span class="rd-rand" id="rd-rand">换一篇</span></div></div>`;
 
-    const tags = ["全部","自然","人生","治愈","哲思","时光","自我","藏句","我的文摘"];
+    const tags = ["全部","自然","人生","治愈","哲思","时光","自我","藏句","我的文摘","共读库"];
 
     html += `<div class="q-pick" id="rd-chips">` + tags.map(t=>`<div class="qp${t===tag?' sel':''}" data-tag="${t}">${t}</div>`).join("") + `</div>`;
 
-    html += `<div class="rd-addbar"><span class="rd-add" id="rd-add">＋ 添加我的文摘</span></div>`;
-    html += `<div class="rd-addform" id="rd-addform" style="display:none"><textarea id="rd-new-t" class="q-area" placeholder="贴入或写下你喜欢的句子 / 文章段落…"></textarea><input id="rd-new-a" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="出处 / 作者（可选）"><div class="wall-acts" style="margin-top:8px"><span class="q-btn primary" id="rd-save">保存</span><span class="q-btn" id="rd-cancel">取消</span></div></div>`;
-
-    if(!items.length){
-
-      html += `<div class="q-hint" style="text-align:center;margin-top:14px">${tag==="我的文摘"?"还没有你自己的文摘。点上方「＋ 添加我的文摘」，把《读者》或任何你喜欢的话贴进来。":"这里还空着。去「全部」里藏几句你喜欢的吧。"}</div>`;
-
+    if(tag==="共读库"){
+      html += `<div class="rd-addform" style="display:block"><div class="wall-sec-title" style="margin-bottom:8px">${getIcon('globe')} 投稿到共读库（任何人可见）</div><textarea id="rd-pub-t" class="q-area" placeholder="投稿一句给所有人读到的句子 / 文章段落…"></textarea><input id="rd-pub-a" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="出处 / 作者（可选）"><input id="rd-pub-by" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="你的署名（可选）"><div class="wall-acts" style="margin-top:8px"><span class="q-btn primary" id="rd-submit">投稿到共读库</span></div><div class="q-hint" style="margin-top:6px;font-size:12px;opacity:.7">投稿经 GitHub 公开存储，任何人打开站点都能读到；无需登录。</div></div>`;
+      html += `<div id="rd-public" style="margin-top:14px"></div>`;
     } else {
+      html += `<div class="rd-addbar"><span class="rd-add" id="rd-add">＋ 添加我的文摘</span></div>`;
+      html += `<div class="rd-addform" id="rd-addform" style="display:none"><textarea id="rd-new-t" class="q-area" placeholder="贴入或写下你喜欢的句子 / 文章段落…"></textarea><input id="rd-new-a" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="出处 / 作者（可选）"><div class="wall-acts" style="margin-top:8px"><span class="q-btn primary" id="rd-save">保存</span><span class="q-btn" id="rd-cancel">取消</span></div></div>`;
 
-      items.forEach(q=>{
-        if(q._mine){
-          html += `<div class="rd-item"><div class="rd-text sm">${escapeHtml(q.t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(q.a||"佚名")}</span><span class="rd-del" data-delmy="${q._ts}">✕</span></div></div>`;
-        } else {
-          const id=q._id;
-          html += `<div class="rd-item"><div class="rd-text sm">${escapeHtml(q.t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(q.a)}</span><span class="rd-star ${s.has(id)?'on':''}" data-star="${id}">${s.has(id)?'★':'☆'}</span></div></div>`;
-        }
-      });
+      if(!items.length){
 
+        html += `<div class="q-hint" style="text-align:center;margin-top:14px">${tag==="我的文摘"?"还没有你自己的文摘。点上方「＋ 添加我的文摘」，把《读者》或任何你喜欢的话贴进来。":"这里还空着。去「全部」里藏几句你喜欢的吧。"}</div>`;
+
+      } else {
+
+        items.forEach(q=>{
+          if(q._mine){
+            const published = (Sanctuary.store.publishedReader||[]).indexOf(q._ts)>=0;
+            html += `<div class="rd-item"><div class="rd-text sm">${escapeHtml(q.t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(q.a||"佚名")}</span>${published?`<span class="rd-pub disabled">已公开</span>`:`<span class="rd-pub" data-pub="${q._ts}">公开</span><span class="rd-del" data-delmy="${q._ts}">✕</span>`}</div></div>`;
+          } else {
+            const id=q._id;
+            html += `<div class="rd-item"><div class="rd-text sm">${escapeHtml(q.t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(q.a)}</span><span class="rd-star ${s.has(id)?'on':''}" data-star="${id}">${s.has(id)?'★':'☆'}</span></div></div>`;
+          }
+        });
+
+      }
     }
 
     c.innerHTML = html;
@@ -3293,6 +3304,41 @@ function renderReader(c){
       Sanctuary.store.myreader = (Sanctuary.store.myreader||[]).filter(x=> x.ts !== +el.dataset.delmy);
       Sanctuary.save(); paint();
     }));
+
+    c.querySelectorAll("[data-pub]").forEach(el=> el.addEventListener("click", async ()=>{
+      const ts = +el.dataset.pub;
+      const q = (Sanctuary.store.myreader||[]).find(x=> x.ts===ts);
+      if(!q) return;
+      const ident = (typeof ACC!=="undefined" && ACC.get) ? ACC.get() : null;
+      const by = ident ? ident.name : "";
+      el.textContent = "公开中…"; el.style.pointerEvents = "none";
+      try{
+        await publishReader(q.t, q.a, by, null);
+        Sanctuary.store.publishedReader = Sanctuary.store.publishedReader||[];
+        if(Sanctuary.store.publishedReader.indexOf(ts)<0) Sanctuary.store.publishedReader.push(ts);
+        Sanctuary.save();
+        flashToast("已公开到共读库，所有人可见");
+        paint();
+      }catch(e){ flashToast("公开失败："+e.message); paint(); }
+    }));
+
+    if(tag==="共读库"){
+      const pub = c.querySelector("#rd-public");
+      if(pub) loadReaderPublic(pub);
+      const sub = c.querySelector("#rd-submit");
+      if(sub) sub.addEventListener("click", async ()=>{
+        const t = c.querySelector("#rd-pub-t").value.trim();
+        if(!t){ flashToast("写点什么再投稿"); return; }
+        const a = c.querySelector("#rd-pub-a").value.trim();
+        const by = c.querySelector("#rd-pub-by").value.trim();
+        sub.textContent = "投稿中…"; sub.style.pointerEvents = "none";
+        try{
+          await publishReader(t, a, by, c.querySelector("#rd-public"));
+          c.querySelector("#rd-pub-t").value=""; c.querySelector("#rd-pub-a").value=""; c.querySelector("#rd-pub-by").value="";
+          flashToast("已投稿到共读库，所有人可见");
+        }catch(e){ flashToast("投稿失败："+e.message); sub.textContent="投稿到共读库"; sub.style.pointerEvents=""; }
+      });
+    }
 
   }
 
@@ -4751,7 +4797,7 @@ async function loadPublicWall(listEl){
         }
       }}
     }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId});
-    const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]"));
+    const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]") && !d.title.startsWith("[读者]"));
     if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">全网共笔墙还空着。写下第一句吧。</div>`; return; }
     const mine = getWallMine();
     listEl.innerHTML = posts.map(p=>{
@@ -4792,6 +4838,39 @@ async function postPublicWall(text, name, avatar, listEl){
     addWallMine(res.createDiscussion.discussion.id);
   }
   await loadPublicWall(listEl);
+}
+async function loadReaderPublic(listEl){
+  listEl.innerHTML = `<div class="q-hint" style="text-align:center">${getIcon('leaf')} 正在连接共读库…</div>`;
+  try{
+    const data = await ghql(`query($repoId:ID!, $catId:ID!){
+      node(id:$repoId){ ... on Repository{
+        discussions(first:80, categoryId:$catId, orderBy:{field:CREATED_AT, direction:DESC}){
+          nodes{ id title bodyText createdAt author{login} }
+        }
+      }}
+    }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId});
+    const posts = data.node.discussions.nodes.filter(d => d.title.startsWith("[读者]"));
+    if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">共读库还空着。<br>在「我的文摘」里点「公开」，或下方直接投稿，让这句被所有人读到。</div>`; return; }
+    listEl.innerHTML = posts.map(p=>{
+      let t=p.bodyText||"", a="", by="";
+      try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; a=o.a||""; by=o.by||""; } }
+      catch(e){}
+      return `<div class="rd-item"><div class="rd-text sm">${escapeHtml(t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(a||"佚名")}${by?` · 投稿 ${escapeHtml(by)}`:""}</span></div></div>`;
+    }).join("");
+  }catch(e){
+    listEl.innerHTML = `<div class="q-hint" style="text-align:center;color:#ff9b9b">${getIcon('warn')} 共读库加载失败：${escapeHtml(e.message)}<br>可能是网络暂时连不上 GitHub。</div>`;
+  }
+}
+async function publishReader(text, author, by, listEl){
+  if(!text) return;
+  const title = "[读者] " + text.slice(0,24) + (text.length>24?"…":"");
+  const body = JSON.stringify({kind:"reader", t:text, a:author||"", by:by||""});
+  await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
+    createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){
+      discussion{ id title }
+    }
+  }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title, body});
+  if(listEl) await loadReaderPublic(listEl);
 }
 
 function renderWall(c){
