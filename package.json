@@ -1,0 +1,12 @@
+{
+  "name": "calm-nature",
+  "version": "1.0.0",
+  "private": true,
+  "description": "静谧自然 · 自然沉浸网站（含自托管访问统计）",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
