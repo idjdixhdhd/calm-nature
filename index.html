@@ -860,6 +860,8 @@
   .rd-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;position:relative}
   .rd-item .rd-x{position:absolute;top:10px;right:12px;font-size:11px;color:var(--muted);cursor:pointer}
   .rd-item .rd-x:active{color:#ff8a8a}
+  .rd-item.pending{opacity:.6;border-style:dashed}
+  .rd-sending{margin-left:auto;font-size:11px;color:var(--muted);font-style:italic}
 
   .rd-row2{display:flex;align-items:center;gap:10px}
 
@@ -3292,6 +3294,10 @@ function renderReader(c){
 
   let tag = "全部";
 
+  let pendingReader = [];   // 已乐观显示、待服务器确认的共读库投稿
+  let pubTimer = null;      // 共读库轮询计时器
+  let pubAttempts = 0;      // 轮询尝试次数（防止永久轮询）
+
   const savedSet = ()=> new Set(Sanctuary.store.quotes||[]);
 
   function paint(){
@@ -3383,18 +3389,23 @@ function renderReader(c){
       const by = ident ? ident.name : "";
       el.textContent = "公开中…"; el.style.pointerEvents = "none";
       try{
-        await publishReader(q.t, q.a, by, null);
+        await publishReader(q.t, q.a, by);
         Sanctuary.store.publishedReader = Sanctuary.store.publishedReader||[];
         if(Sanctuary.store.publishedReader.indexOf(ts)<0) Sanctuary.store.publishedReader.push(ts);
         Sanctuary.save();
-        flashToast("已公开到共读库，所有人可见");
+        pendingReader.unshift({t:q.t, a:q.a, by});
+        pubAttempts = 0;
         tag="共读库"; paint();
+        flashToast("已公开到共读库，所有人可见");
       }catch(e){ flashToast("公开失败："+e.message); paint(); }
     }));
 
     if(tag==="共读库"){
       const pub = c.querySelector("#rd-public");
-      if(pub){ loadReaderPublic(pub); setTimeout(()=> loadReaderPublic(pub), 1500); }
+      if(pub){
+        if(pubTimer){ clearTimeout(pubTimer); pubTimer=null; }
+        refreshPublic(pub);
+      }
       const sub = c.querySelector("#rd-submit");
       if(sub) sub.addEventListener("click", async ()=>{
         const t = c.querySelector("#rd-pub-t").value.trim();
@@ -3403,13 +3414,32 @@ function renderReader(c){
         const by = c.querySelector("#rd-pub-by").value.trim();
         sub.textContent = "投稿中…"; sub.style.pointerEvents = "none";
         try{
-          await publishReader(t, a, by, c.querySelector("#rd-public"));
+          await publishReader(t, a, by);
+          pendingReader.unshift({t, a, by});
+          pubAttempts = 0;
           c.querySelector("#rd-pub-t").value=""; c.querySelector("#rd-pub-a").value=""; c.querySelector("#rd-pub-by").value="";
+          if(pub) refreshPublic(pub);
           flashToast("已投稿到共读库，所有人可见");
-        }catch(e){ flashToast("投稿失败："+e.message); sub.textContent="投稿到共读库"; sub.style.pointerEvents=""; }
+        }catch(e){ flashToast("投稿失败："+e.message); }
+        finally{ sub.textContent="投稿到共读库"; sub.style.pointerEvents=""; }
       });
     }
 
+  }
+
+  function refreshPublic(pub){
+    loadReaderPublic(pub, pendingReader, (confirmed)=>{
+      if(confirmed && confirmed.length){
+        pendingReader = pendingReader.filter(p=> !confirmed.includes(p.t));
+      }
+    }).then(()=>{
+      pubAttempts = (pubAttempts||0)+1;
+      if(pendingReader.length && pubAttempts < 8){
+        pubTimer = setTimeout(()=> refreshPublic(pub), 2000);
+      } else {
+        pubTimer = null;
+      }
+    });
   }
 
   paint();
@@ -4859,16 +4889,24 @@ function renderBonds(box){
 }
 
 
-async function ghql(query, variables){
-  const r = await fetch("https://api.github.com/graphql", {
-    method:"POST",
-    headers:{"Authorization":"Bearer "+WALL_CFG.token,"Content-Type":"application/json"},
-    body: JSON.stringify({query, variables})
-  });
-  if(!r.ok) throw new Error("GitHub "+r.status);
-  const j = await r.json();
-  if(j.errors) throw new Error(j.errors.map(e=>e.message).join("; "));
-  return j.data;
+async function ghql(query, variables, timeoutMs=12000){
+  const ctrl = new AbortController();
+  const tid = setTimeout(()=> ctrl.abort(), timeoutMs);
+  try{
+    const r = await fetch("https://api.github.com/graphql", {
+      method:"POST",
+      headers:{"Authorization":"Bearer "+WALL_CFG.token,"Content-Type":"application/json"},
+      body: JSON.stringify({query, variables}),
+      signal: ctrl.signal
+    });
+    if(!r.ok) throw new Error("GitHub "+r.status);
+    const j = await r.json();
+    if(j.errors) throw new Error(j.errors.map(e=>e.message).join("; "));
+    return j.data;
+  }catch(err){
+    if(err && err.name==="AbortError") throw new Error("网络超时，请稍后重试");
+    throw err;
+  }finally{ clearTimeout(tid); }
 }
 function fmtWallDate(iso){
   const d = new Date(iso);
@@ -4944,7 +4982,7 @@ async function postPublicWall(text, name, avatar, listEl){
   }
   await loadPublicWall(listEl);
 }
-async function loadReaderPublic(listEl){
+async function loadReaderPublic(listEl, pending, onConfirmed){
   listEl.innerHTML = `<div class="q-hint" style="text-align:center">${getIcon('leaf')} 正在连接共读库…</div>`;
   try{
     const data = await ghql(`query($repoId:ID!, $catId:ID!){
@@ -4955,36 +4993,48 @@ async function loadReaderPublic(listEl){
       }}
     }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId});
     const posts = data.node.discussions.nodes.filter(d => d.title.startsWith("[读者]"));
-    if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">共读库还空着。<br>在「我的文摘」里点「公开」，或下方直接投稿，让这句被所有人读到。</div>`; return; }
-    listEl.innerHTML = posts.map(p=>{
+    const serverTexts = new Set(posts.map(p=>{
+      let t=p.bodyText||"";
+      try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string") t=o.t; }catch(e){}
+      return t;
+    }));
+    // 已出现在服务器上的 pending 视为确认，回调通知外层移除
+    if(onConfirmed) onConfirmed((pending||[]).filter(p=> serverTexts.has(p.t)).map(p=>p.t));
+    const pend = (pending||[]).filter(p=> !serverTexts.has(p.t));
+    if(!posts.length && !pend.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">共读库还空着。<br>在「我的文摘」里点「公开」，或下方直接投稿，让这句被所有人读到。</div>`; return; }
+    const serverHtml = posts.map(p=>{
       let t=p.bodyText||"", a="", by="";
       try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; a=o.a||""; by=o.by||""; } }
       catch(e){}
       const del = window.__wallAdmin ? `<span class="rd-x" data-rdel="${p.id}">删除</span>` : "";
       return `<div class="rd-item">${del}<div class="rd-text sm">${escapeHtml(t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(a||"佚名")}${by?` · 投稿 ${escapeHtml(by)}`:""}</span></div></div>`;
     }).join("");
+    const pendHtml = pend.map(p=>{
+      return `<div class="rd-item pending"><div class="rd-text sm">${escapeHtml(p.t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(p.a||"佚名")}${p.by?` · 投稿 ${escapeHtml(p.by)}`:""}</span><span class="rd-sending">发送中…</span></div></div>`;
+    }).join("");
+    listEl.innerHTML = pendHtml + serverHtml;
     if(window.__wallAdmin) listEl.querySelectorAll('[data-rdel]').forEach(b=> b.addEventListener('click', ()=> deleteReaderPost(b.dataset.rdel, listEl)));
   }catch(e){
     listEl.innerHTML = `<div class="q-hint" style="text-align:center;color:#ff9b9b">${getIcon('warn')} 共读库加载失败：${escapeHtml(e.message)}<br>可能是网络暂时连不上 GitHub。</div>`;
   }
 }
-async function publishReader(text, author, by, listEl){
+async function publishReader(text, author, by){
   if(!text) return;
   const title = "[读者] " + text.slice(0,24) + (text.length>24?"…":"");
   const body = JSON.stringify({kind:"reader", t:text, a:author||"", by:by||""});
-  await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
-    createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){
-      discussion{ id title }
-    }
-  }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title, body});
-  // 乐观更新：先把刚发的内容立即显示，避免 GitHub 复制延迟导致“发了却看不到”
-  if(listEl){
-    const node = document.createElement("div");
-    node.className = "rd-item";
-    node.innerHTML = `<div class="rd-text sm">${escapeHtml(text)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(author||"佚名")}${by?` · 投稿 ${escapeHtml(by)}`:""}</span></div>`;
-    const first = listEl.querySelector(".rd-item");
-    if(first) listEl.insertBefore(node, first); else listEl.innerHTML = node.outerHTML;
+  // 偶发网络抖动：失败自动重试一次，避免误报“公开失败”
+  let lastErr;
+  for(let i=0;i<2;i++){
+    try{
+      await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
+        createDiscussion(input:{repositoryId:$repoId, categoryId:$catId, title:$title, body:$body}){
+          discussion{ id title }
+        }
+      }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title, body});
+      return;
+    }catch(e){ lastErr=e; if(i===0) await new Promise(r=> setTimeout(r, 800)); }
   }
+  throw lastErr || new Error("未知错误");
 }
 
 function renderWall(c){
