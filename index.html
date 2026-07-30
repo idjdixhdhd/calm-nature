@@ -3366,9 +3366,9 @@ function renderReader(c){
 
     c.querySelectorAll("[data-tag]").forEach(el=> el.addEventListener("click", ()=>{ tag=el.dataset.tag; paint(); }));
 
-    c.querySelector("#rd-add").addEventListener("click", ()=>{ const f=c.querySelector("#rd-addform"); f.style.display = f.style.display==="none"?"block":"none"; });
-    c.querySelector("#rd-cancel").addEventListener("click", ()=>{ c.querySelector("#rd-addform").style.display="none"; });
-    c.querySelector("#rd-save").addEventListener("click", ()=>{
+    const _rdAdd=c.querySelector("#rd-add"); if(_rdAdd) _rdAdd.addEventListener("click", ()=>{ const f=c.querySelector("#rd-addform"); if(f) f.style.display = f.style.display==="none"?"block":"none"; });
+    const _rdCancel=c.querySelector("#rd-cancel"); if(_rdCancel) _rdCancel.addEventListener("click", ()=>{ const f=c.querySelector("#rd-addform"); if(f) f.style.display="none"; });
+    const _rdSave=c.querySelector("#rd-save"); if(_rdSave) _rdSave.addEventListener("click", ()=>{
       const t = c.querySelector("#rd-new-t").value.trim();
       if(!t){ flashToast("写点什么再保存"); return; }
       const a = c.querySelector("#rd-new-a").value.trim();
