@@ -4457,6 +4457,11 @@ const Accounts = {
     const gi = gate.querySelector("#gate-import"); if(gi) gi.addEventListener("click", ()=> gate.querySelector("#gate-file").click());
     const gf = gate.querySelector("#gate-file"); if(gf) gf.addEventListener("change", (e)=> importAllData(e.target.files[0]));
 
+    // 站长口令实时识别：进站页底部那个无标签框，输入即成为站长（无需点按钮）
+    gate.querySelectorAll("#gate-admin").forEach(ga=>{
+      ga.addEventListener("input", ()=>{ if(WALL_PASS.admin && ga.value.trim()===WALL_PASS.admin){ activateOwner(); flashToast("已进入站长模式"); } });
+    });
+
   },
 
   login(pid){ ACC.active = pid; ACC.save(); Sanctuary.load(); this.close(); this.afterLogin(); flashToast("回来了，「"+(ACC.get()?ACC.get().name:"")+"」"); },
@@ -5016,6 +5021,13 @@ function renderWall(c){
   const pubAvUp = c.querySelector("#pub-av-up");
   const pubAvFile = c.querySelector("#pub-av-file");
   const pubPassEl = c.querySelector("#pub-pass");
+  if(pubPassEl){
+    pubPassEl.addEventListener("input", ()=>{
+      if(WALL_PASS.admin && pubPassEl.value.trim()===WALL_PASS.admin){
+        activateOwner(); renderWall(c); flashToast("已进入站长模式"); pubPassEl.value="";
+      }
+    });
+  }
   if(pubAv){ pubAv.querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{
     pubAvatar = x.dataset.a;
     pubAv.querySelectorAll(".av").forEach(o=> o.classList.toggle("on", o.dataset.a===pubAvatar));
