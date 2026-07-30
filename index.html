@@ -3388,13 +3388,13 @@ function renderReader(c){
         if(Sanctuary.store.publishedReader.indexOf(ts)<0) Sanctuary.store.publishedReader.push(ts);
         Sanctuary.save();
         flashToast("已公开到共读库，所有人可见");
-        paint();
+        tag="共读库"; paint();
       }catch(e){ flashToast("公开失败："+e.message); paint(); }
     }));
 
     if(tag==="共读库"){
       const pub = c.querySelector("#rd-public");
-      if(pub) loadReaderPublic(pub);
+      if(pub){ loadReaderPublic(pub); setTimeout(()=> loadReaderPublic(pub), 1500); }
       const sub = c.querySelector("#rd-submit");
       if(sub) sub.addEventListener("click", async ()=>{
         const t = c.querySelector("#rd-pub-t").value.trim();
@@ -4977,7 +4977,14 @@ async function publishReader(text, author, by, listEl){
       discussion{ id title }
     }
   }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId, title, body});
-  if(listEl) await loadReaderPublic(listEl);
+  // 乐观更新：先把刚发的内容立即显示，避免 GitHub 复制延迟导致“发了却看不到”
+  if(listEl){
+    const node = document.createElement("div");
+    node.className = "rd-item";
+    node.innerHTML = `<div class="rd-text sm">${escapeHtml(text)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(author||"佚名")}${by?` · 投稿 ${escapeHtml(by)}`:""}</span></div>`;
+    const first = listEl.querySelector(".rd-item");
+    if(first) listEl.insertBefore(node, first); else listEl.innerHTML = node.outerHTML;
+  }
 }
 
 function renderWall(c){
