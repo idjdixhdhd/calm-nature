@@ -4826,7 +4826,7 @@ async function deletePublicPost(id, listEl){
 async function postPublicWall(text, name, avatar, listEl){
   if(!text) return;
   const cleanName = (name && name!=="过客") ? name : "";
-  const cleanAvatar = (avatar && AVATARS.indexOf(avatar)>=0) ? avatar : "";
+  const cleanAvatar = (avatar && (AVATARS.indexOf(avatar)>=0 || avatar.indexOf("data:")===0 || avatar.indexOf("http")===0)) ? avatar : "";
   const title = (cleanName? cleanName+"：" : "过客：") + text.slice(0,28) + (text.length>28?"…":"");
   const body = JSON.stringify({n: cleanName, t: text, a: cleanAvatar});
   const res = await ghql(`mutation($repoId:ID!, $catId:ID!, $title:String!, $body:String!){
@@ -4885,7 +4885,7 @@ function renderWall(c){
   html += `<div class="wall-list" id="wall-list"></div></div>`;
 
   const ident = (typeof ACC!=="undefined" && ACC.get) ? ACC.get() : null;
-  const identAv = (ident && typeof ident.avatar==="string" && ident.avatar.indexOf("data:")!==0 && AVATARS.indexOf(ident.avatar)>=0) ? ident.avatar : AVATARS[Math.floor(Math.random()*AVATARS.length)];
+  const identAv = (ident && typeof ident.avatar==="string" && ident.avatar.length>1) ? ident.avatar : AVATARS[Math.floor(Math.random()*AVATARS.length)];
   const identName = ident ? ident.name : "";
   let pubAvatar = identAv;
   html += `<div class="wall-section" style="margin-top:22px"><div class="wall-sec-title">${getIcon('globe')} 全网共笔墙（任何人可见）</div>`;
