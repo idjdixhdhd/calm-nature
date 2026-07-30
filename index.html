@@ -935,6 +935,14 @@
   .wall-av-pick .av.av-up .i-img{width:100%;height:100%;object-fit:cover;border-radius:8px}
   .wall-av-pick .av.av-up.on{background:rgba(var(--accent-rgb),.18)}
   .wall-av-hint{font-size:11px;color:var(--muted);margin-top:6px;opacity:.85}
+  .wall-admin-bar{margin-top:22px;display:flex;justify-content:center}
+  .wall-admin-form{display:flex;gap:8px;margin-top:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .wall-admin-form .echo-name-in{width:170px}
+  .wall-admin{margin-top:16px;background:rgba(0,0,0,.22);border:1px dashed rgba(var(--accent-rgb),.4);border-radius:18px;padding:14px}
+  .site-stat{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(var(--accent-rgb),.12);border:1px solid rgba(var(--accent-rgb),.3);border-radius:12px;padding:10px 13px;margin-bottom:12px;font-size:13px;color:#eef3ee}
+  .site-stat .ss-label{color:var(--accent);letter-spacing:.1em;font-size:12px}
+  .site-stat .ss-num{font-weight:600}
+  .site-stat .ss-sep{color:var(--muted)}
   #btn-feedback{position:fixed;right:14px;bottom:14px;z-index:90;width:50px;height:50px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(0,0,0,.55);color:var(--ui);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.45);transition:.25s}
   #btn-feedback:active{transform:scale(.92)}
   .fb-box{width:min(92vw,420px);background:var(--panel);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
@@ -1501,6 +1509,16 @@
 <!-- FEEDBACK PANEL -->
 <div class="settings-panel" id="feedback-panel"></div>
 <button id="btn-feedback" title="反馈 / 报 Bug">反馈</button>
+
+<!-- 访问统计（不蒜子）：常驻元素，仅站长模式内显示；脚本加载后即填充数字 -->
+<div id="site-stat" class="site-stat" style="display:none">
+  <span class="ss-label">站点访问</span>
+  <span class="ss-num"><span id="busuanzi_value_site_pv">–</span> 次</span>
+  <span class="ss-sep">·</span>
+  <span class="ss-num"><span id="busuanzi_value_site_uv">–</span> 人</span>
+  <span class="ss-sep">·</span>
+  <span class="ss-label" style="opacity:.7">（不蒜子即时数）</span>
+</div>
 
 
 <script>
@@ -3582,6 +3600,15 @@ const WALL_CFG = {
 // 微信推送令牌（PushPlus）。仅在部署到国内链接时注入；公开仓库版本保持空字符串。
 const PUSHPLUS_TOKEN = "";
 
+// 站长模式（轻量前端版）：口令写在源码里，仅挡路人和机器人；真正的管理权限靠你的 GitHub 仓库（去 Discussions 手动删）。
+// post  = 朋友发帖前需填的共享口令（本机记住一次）。设为空字符串 "" 表示不限制。
+// admin = 站长口令，输入后显示访问统计、并对所有共笔墙留言开放「删除」。
+// ⚠️ 这两个口令都在公开仓库源码里，懂技术的人能翻到——所以只当门槛，别当保险箱。建议发布前改成你自己的词。
+const WALL_PASS = {
+  post:  "空栈",
+  admin: "calm"
+};
+
 const EchoMixer = {
   els:{},
   tracks:[
@@ -4811,7 +4838,7 @@ async function loadPublicWall(listEl){
       try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; n=o.n||"过客"; a=o.a||""; } }
       catch(e){ n = (p.author&&p.author.login)?p.author.login:"过客"; }
       const av = getAvatar(a) || getAvatarSvg("cat");
-      const del = mine.includes(p.id) ? `<span class="wp-x" data-del="${p.id}">删除</span>` : "";
+      const del = (mine.includes(p.id) || window.__wallAdmin) ? `<span class="wp-x" data-del="${p.id}">删除</span>` : "";
       return `<div class="wall-post public"><div class="wp-head"><span class="wp-date">${fmtWallDate(p.createdAt)}</span>${del}</div><div class="wp-body"><span class="wp-av">${av}</span><span class="wp-textwrap"><span class="wp-by">${escapeHtml(n)}</span><span class="wp-colon">：</span>${escapeHtml(t)}</span></div></div>`;
     }).join("");
     listEl.querySelectorAll('[data-del]').forEach(b=> b.addEventListener('click', ()=> deletePublicPost(b.dataset.del, listEl)));
@@ -4881,6 +4908,7 @@ async function publishReader(text, author, by, listEl){
 
 function renderWall(c){
   Sanctuary.load();
+  const _statEl = document.getElementById("site-stat"); if(_statEl) document.body.appendChild(_statEl); // 重渲染前先救回，避免被 innerHTML 清掉
   let html = `<div class="wall-section"><div class="wall-sec-title">${getIcon('pushpin')} 本地私密留言（仅本机可见）</div>`;
   html += `<div class="wall-compose">
     <textarea class="q-area" id="wall-text" placeholder="在空栈留一句话——给未来的自己，或给偶然路过这里的人…"></textarea>
@@ -4899,9 +4927,18 @@ function renderWall(c){
     <div class="wall-av-row"><span class="wall-av-label">选个头像</span><div class="wall-av-pick" id="pub-av">${AVATARS.map(id=>`<div class="av${id===identAv?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("")}<div class="av av-up" id="pub-av-up" title="点这里上传你自己的图片头像"><img class="i-img" id="pub-av-prev" style="display:none"><span data-pen>${getIcon('pen')}</span><span class="av-up-label">上传图片</span><input type="file" id="pub-av-file" accept="image/*" style="display:none"></div></div></div><div class="wall-av-hint">最右边带 ✎ 的格子：点一下可上传你自己的图片当头像</div>
     <textarea class="q-area" id="pub-text" placeholder="写给所有路过空栈的人…"></textarea>
     <input class="echo-name-in" id="pub-name" placeholder="署名（可选，默认「过客」）" style="width:100%" value="${escapeHtml(identName)}">
+    ${WALL_PASS.post ? `<input class="echo-name-in" id="pub-pass" placeholder="发布口令（朋友发帖需填，首次填对后本机记住）" style="width:100%">` : ""}
     <div class="wall-acts"><div class="q-btn primary" id="pub-post">发送到共笔墙</div></div>
   </div>`;
   html += `<div class="wall-list" id="pub-list"></div></div>`;
+  html += `<div class="wall-admin-bar"><div class="q-btn" id="wall-admin-enter">${getIcon('gear')} 站长入口</div></div>`;
+  html += `<div class="wall-admin-form" id="wall-admin-form" style="display:none"><input class="echo-name-in" id="wall-admin-pass" type="password" placeholder="站长口令" autocomplete="off"><div class="q-btn primary" id="wall-admin-go">进入</div></div>`;
+  html += `<div class="wall-admin" id="wall-admin" style="display:none">
+    <div class="wall-sec-title">${getIcon('gear')} 站长模式 · 访问统计</div>
+    <div id="admin-stat-slot"></div>
+    <div class="wall-note">已进入站长模式：所有共笔墙留言都会显示「删除」按钮，可清理违规文字 / 头像。上方为站点访问量（不蒜子即时数字）；更详细的「发布后还有没有人回访」趋势，请登录 Cloudflare Web Analytics 免费后台查看（无需实名、隐私友好）。</div>
+    <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">退出站长模式</div></div>
+  </div>`;
   c.innerHTML = html;
 
   function paintLocal(){
@@ -4956,6 +4993,7 @@ function renderWall(c){
   const pubAv = c.querySelector("#pub-av");
   const pubAvUp = c.querySelector("#pub-av-up");
   const pubAvFile = c.querySelector("#pub-av-file");
+  const pubPassEl = c.querySelector("#pub-pass");
   if(pubAv){ pubAv.querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{
     pubAvatar = x.dataset.a;
     pubAv.querySelectorAll(".av").forEach(o=> o.classList.toggle("on", o.dataset.a===pubAvatar));
@@ -4979,6 +5017,12 @@ function renderWall(c){
   if(WALL_CFG.enabled && WALL_CFG.token){
     loadPublicWall(pubList);
     pubPost.addEventListener("click", async ()=>{
+      if(WALL_PASS.post){
+        let saved=null; try{ saved=localStorage.getItem("quiet-nature-wall-pass"); }catch(e){}
+        const entered = pubPassEl ? pubPassEl.value.trim() : "";
+        if(saved !== WALL_PASS.post && entered !== WALL_PASS.post){ flashToast("请先填写正确的发布口令"); return; }
+        if(entered === WALL_PASS.post){ try{ localStorage.setItem("quiet-nature-wall-pass", entered); }catch(e){} }
+      }
       const text = pubText.value.trim();
       if(!text){ flashToast("写点什么再发送吧"); return; }
       if(text.length>400){ flashToast("留言请控制在 400 字以内"); return; }
@@ -4990,9 +5034,48 @@ function renderWall(c){
       }catch(e){ flashToast("发送失败："+e.message); }
       pubPost.textContent = "发送到共笔墙"; pubPost.style.pointerEvents = "";
     });
+    // —— 站长模式：口令进入、显示访问统计、开放全部删除 ——
+    const adminEnter = c.querySelector("#wall-admin-enter");
+    const adminForm = c.querySelector("#wall-admin-form");
+    const adminBox = c.querySelector("#wall-admin");
+    const adminPass = c.querySelector("#wall-admin-pass");
+    const adminGo = c.querySelector("#wall-admin-go");
+    const adminExit = c.querySelector("#wall-admin-exit");
+    if(adminEnter) adminEnter.addEventListener("click", ()=>{
+      if(adminForm) adminForm.style.display = "flex";
+      adminEnter.style.display = "none";
+      if(adminPass) adminPass.focus();
+    });
+    if(adminGo) adminGo.addEventListener("click", ()=>{
+      if(adminPass && adminPass.value === WALL_PASS.admin){
+        window.__wallAdmin = true;
+        if(adminForm) adminForm.style.display = "none";
+        if(adminBox) adminBox.style.display = "block";
+        const stat = document.getElementById("site-stat");
+        const slot = c.querySelector("#admin-stat-slot");
+        if(stat && slot){ stat.style.display = "flex"; slot.appendChild(stat); }
+        loadPublicWall(pubList);
+        flashToast("已进入站长模式");
+      } else { flashToast("站长口令不正确"); }
+    });
+    if(adminExit) adminExit.addEventListener("click", ()=>{
+      window.__wallAdmin = false;
+      if(adminBox) adminBox.style.display = "none";
+      if(adminEnter) adminEnter.style.display = "";
+      loadPublicWall(pubList);
+    });
   } else {
     pubList.innerHTML = `<div class="wall-note"><b>共笔墙即将开启</b><br>朋友不需要注册 GitHub。只需你先去 GitHub 创建一把<strong>只限 calm-nature 仓库、只限 Discussions 读写</strong>的细粒度令牌（Fine-grained PAT），把令牌字符串发给我，我填进站点后即可生效。之后任何人打开网站都能直接发、直接看。</div>`;
     pubPost.addEventListener("click", ()=> flashToast("共笔墙尚未配置令牌，请先按上方说明创建并发送给我"));
+  }
+  // 重渲染后：若仍处于站长模式，恢复面板与访问统计显示
+  if(window.__wallAdmin && WALL_CFG.enabled && WALL_CFG.token){
+    const ab = c.querySelector("#wall-admin"); if(ab) ab.style.display = "block";
+    const ae = c.querySelector("#wall-admin-enter"); if(ae) ae.style.display = "none";
+    const af = c.querySelector("#wall-admin-form"); if(af) af.style.display = "none";
+    const stat = document.getElementById("site-stat");
+    const slot = c.querySelector("#admin-stat-slot");
+    if(stat && slot){ stat.style.display = "flex"; slot.appendChild(stat); }
   }
 }
 
@@ -5307,6 +5390,11 @@ init();
 
 </script>
 
+<!-- 访问统计 · 不蒜子（即时数字，零账号，加载即计数） -->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- 访问统计 · Cloudflare Web Analytics（真实回访趋势，免费、隐私友好、无需实名）。
+     站长注册免费 Cloudflare 账号 → Web Analytics → 添加本站 → 拿到 beacon token，把下面 CF_TOKEN_PLACEHOLDER 替换掉即可。 -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"CF_TOKEN_PLACEHOLDER"}'></script>
 </body>
 
 </html>
