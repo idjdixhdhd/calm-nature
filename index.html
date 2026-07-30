@@ -1032,6 +1032,11 @@
 /* 上传式头像（图片） */
 .i-img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
 .avatar-pick .av{ overflow:hidden; }
+.avatar-pick .av.av-up{ width:auto; min-width:46px; height:42px; border-radius:10px; border-style:dashed; border-color:var(--accent); color:var(--accent); flex-direction:column; gap:1px; padding:2px 8px; }
+.avatar-pick .av.av-up .i-svg{ width:14px; height:14px; }
+.avatar-pick .av.av-up .av-up-label{ font-size:9px; line-height:1; white-space:nowrap; }
+.avatar-pick .av.av-up.on{ background:rgba(var(--accent-rgb),.18); }
+.avatar-pick .av.av-up .i-img{ border-radius:8px; }
 .prof-av{ overflow:hidden; }
 .profile-card .pa{ overflow:hidden; border-radius:10px; }
 #header-avatar{ border-radius:50%; overflow:hidden; }
@@ -3608,7 +3613,7 @@ const PUSHPLUS_TOKEN = "";
 // ⚠️ 这两个口令都在公开仓库源码里，懂技术的人能翻到——所以只当门槛，别当保险箱。建议发布前改成你自己的词。
 const WALL_PASS = {
   post:  "空栈",                 // 朋友发帖共享口令（本机首次填对后记住）。留空 "" 表示不限制。
-  admin: "mX4pQ7kR9vW"          // 随机站长口令（已私信告知站长）。源码公开故仍可被读到，仅防"猜"。
+  admin: "628031"               // 站长口令（纯数字，已告知站长）。源码公开故仍可被读到，仅防"猜"。改这里即可换口令。
 };
 function activateOwner(){
   window.__wallAdmin = true;
@@ -4276,7 +4281,7 @@ const Accounts = {
     const d = this.draft;
 
     const isImg = d.avatar && (d.avatar.indexOf("data:")===0 || d.avatar.indexOf("http")===0);
-    const av = AVATARS.map(id=>`<div class="av${d.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("") + `<div class="av av-up${isImg?" on":""}" id="ob-av-up" title="上传图片">${isImg?`<img class="i-img" src="${d.avatar}">`:getIcon('pen')}<input type="file" id="ob-av-file" accept="image/*" style="display:none"></div>`;
+    const av = AVATARS.map(id=>`<div class="av${d.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("") + `<div class="av av-up${isImg?" on":""}" id="ob-av-up" title="点这里上传你自己的图片头像">${isImg ? '<img class="i-img" id="ob-av-prev" style="display:block" src="'+d.avatar+'">' : ''}<span data-pen style="${isImg?'display:none':''}">${getIcon('pen')}</span><span class="av-up-label" style="${isImg?'display:none':''}">上传图片</span><input type="file" id="ob-av-file" accept="image/*" style="display:none"></div>`;
 
     const cc = ACCENTS.map(c=>`<div class="cc${d.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
 
@@ -4320,11 +4325,12 @@ const Accounts = {
 
     const nameEl = gate.querySelector("#ob-name"); nameEl.addEventListener("input", ()=> d.name = nameEl.value);
 
-    gate.querySelector("#ob-av").querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ d.avatar=x.dataset.a; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.toggle("on", o.dataset.a===d.avatar)); if(gate.querySelector("#ob-av-up")){ gate.querySelector("#ob-av-up").classList.remove("on"); gate.querySelector("#ob-av-up").innerHTML=getIcon('pen'); } }));
+    gate.querySelector("#ob-av").querySelectorAll(".av").forEach(x=> x.addEventListener("click", ()=>{ d.avatar=x.dataset.a; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.toggle("on", o.dataset.a===d.avatar)); const u=gate.querySelector("#ob-av-up"); if(u){ u.classList.remove("on"); const pv=u.querySelector("#ob-av-prev"); if(pv){ pv.style.display="none"; pv.removeAttribute("src"); } const pn=u.querySelector("[data-pen]"); if(pn) pn.style.display=""; const lb=u.querySelector(".av-up-label"); if(lb) lb.style.display=""; } }));
 
     const obUp = gate.querySelector("#ob-av-up");
-    if(obUp) obUp.addEventListener("click", ()=> gate.querySelector("#ob-av-file").click());
-    gate.querySelector("#ob-av-file").addEventListener("change", (e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; resizeImageToDataURL(f,256,(url)=>{ if(!url){ flashToast("图片读取失败"); return; } d.avatar=url; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.remove("on")); obUp.classList.add("on"); obUp.innerHTML=`<img class="i-img" src="${url}">`; flashToast("头像已选，建好身份后生效"); }); });
+    const obFile = gate.querySelector("#ob-av-file");
+    if(obUp) obUp.addEventListener("click", ()=> obFile.click());
+    if(obFile) obFile.addEventListener("change", (e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; resizeImageToDataURL(f,256,(url)=>{ if(!url){ flashToast("图片读取失败"); return; } d.avatar=url; gate.querySelectorAll("#ob-av .av").forEach(o=> o.classList.remove("on")); if(obUp){ obUp.classList.add("on"); const pv=obUp.querySelector("#ob-av-prev"); if(pv){ pv.src=url; pv.style.display="block"; } const pn=obUp.querySelector("[data-pen]"); if(pn) pn.style.display="none"; const lb=obUp.querySelector(".av-up-label"); if(lb) lb.style.display="none"; } flashToast("头像已选，建好身份后生效"); }); });
 
     gate.querySelector("#ob-cc").querySelectorAll(".cc").forEach(x=> x.addEventListener("click", ()=>{ d.color=x.dataset.c; gate.querySelectorAll("#ob-cc .cc").forEach(o=> o.classList.toggle("on", o.dataset.c===d.color)); }));
 
@@ -4457,9 +4463,9 @@ const Accounts = {
     const gi = gate.querySelector("#gate-import"); if(gi) gi.addEventListener("click", ()=> gate.querySelector("#gate-file").click());
     const gf = gate.querySelector("#gate-file"); if(gf) gf.addEventListener("change", (e)=> importAllData(e.target.files[0]));
 
-    // 站长口令实时识别：进站页底部那个无标签框，输入即成为站长（无需点按钮）
+    // 站长口令实时识别：进站页底部那个无标签框，输对即成为站长并直接进入站内（无需点按钮）
     gate.querySelectorAll("#gate-admin").forEach(ga=>{
-      ga.addEventListener("input", ()=>{ if(WALL_PASS.admin && ga.value.trim()===WALL_PASS.admin){ activateOwner(); flashToast("已进入站长模式"); } });
+      ga.addEventListener("input", ()=>{ if(WALL_PASS.admin && ga.value.trim()===WALL_PASS.admin){ activateOwner(); ga.value=""; flashToast("已进入站长模式"); this.enterGuest(); } });
     });
 
   },
@@ -4489,7 +4495,7 @@ const Accounts = {
     const p = ACC.get(), box = document.getElementById("settings-panel");
 
     const isImg = p && p.avatar && (p.avatar.indexOf("data:")===0 || p.avatar.indexOf("http")===0);
-    const av = AVATARS.map(id=>`<div class="av${p&&p.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("") + `<div class="av av-up${isImg?" on":""}" id="set-av-up" title="上传图片头像">${isImg?`<img class="i-img" src="${p.avatar}">`:getIcon('pen')}<input type="file" id="set-av-file" accept="image/*" style="display:none"></div>`;
+    const av = AVATARS.map(id=>`<div class="av${p&&p.avatar===id?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("") + `<div class="av av-up${isImg?" on":""}" id="set-av-up" title="点这里上传你自己的图片头像">${isImg ? '<img class="i-img" id="set-av-prev" style="display:block" src="'+p.avatar+'">' : ''}<span data-pen style="${isImg?'display:none':''}">${getIcon('pen')}</span><span class="av-up-label" style="${isImg?'display:none':''}">上传图片</span><input type="file" id="set-av-file" accept="image/*" style="display:none"></div>`;
 
     const cc = ACCENTS.map(c=>`<div class="cc${p&&p.color===c?" on":""}" data-c="${c}" style="background:${c}"></div>`).join("");
 
