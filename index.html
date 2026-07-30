@@ -856,7 +856,9 @@
 
   .rd-rand:active{transform:scale(.96)}
 
-  .rd-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+  .rd-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;position:relative}
+  .rd-item .rd-x{position:absolute;top:10px;right:12px;font-size:11px;color:var(--muted);cursor:pointer}
+  .rd-item .rd-x:active{color:#ff8a8a}
 
   .rd-row2{display:flex;align-items:center;gap:10px}
 
@@ -3605,9 +3607,13 @@ const PUSHPLUS_TOKEN = "";
 // admin = 站长口令，输入后显示访问统计、并对所有共笔墙留言开放「删除」。
 // ⚠️ 这两个口令都在公开仓库源码里，懂技术的人能翻到——所以只当门槛，别当保险箱。建议发布前改成你自己的词。
 const WALL_PASS = {
-  post:  "空栈",
-  admin: "calm"
+  post:  "空栈",                 // 朋友发帖共享口令（本机首次填对后记住）。留空 "" 表示不限制。
+  admin: "mX4pQ7kR9vW"          // 随机站长口令（已私信告知站长）。源码公开故仍可被读到，仅防"猜"。
 };
+function activateOwner(){
+  window.__wallAdmin = true;
+  try{ localStorage.setItem("quiet-nature-owner","1"); }catch(e){}
+}
 
 const EchoMixer = {
   els:{},
@@ -4307,6 +4313,7 @@ const Accounts = {
         <div class="ag-foot">
           <div class="ag-note">空栈是本地优先的：数据只存在这台设备，不联网、不上传、不公开。换设备时，点「导出全部备份」下载，再到新设备的同一页面「导入备份」，即可带走全部身份与记录。</div>
           <div class="ag-foot-acts"><span class="ag-link" id="gate-export">导出全部备份</span><span class="ag-link" id="gate-import">导入备份</span><input type="file" id="gate-file" accept="application/json" style="display:none"></div>
+          <div class="ag-field" style="margin-top:12px;opacity:.78"><label>站长口令（站长专用 · 选填）</label><input class="ag-input" id="gate-admin" type="password" placeholder="输入即成为本站站长，可审核删除"></div>
         </div>
 
       </div>`;
@@ -4332,6 +4339,9 @@ const Accounts = {
       if(!nm){ flashToast("先起个名吧"); return; }
 
       if(d.passcode && d.passcode.length<4){ flashToast("口令至少 4 位，或留空"); return; }
+
+      const obAdmin = gate.querySelector("#gate-admin");
+      if(WALL_PASS.admin && obAdmin && obAdmin.value.trim()===WALL_PASS.admin){ activateOwner(); flashToast("已识别为站长"); }
 
       this.create(nm, d.avatar, d.color, d.passcode, d.stack);
 
@@ -4398,6 +4408,7 @@ const Accounts = {
         <div class="ag-foot">
           <div class="ag-note">空栈是本地优先的：数据只存在这台设备，不联网、不上传、不公开。换设备时，点「导出全部备份」下载，再到新设备的同一页面「导入备份」，即可带走全部身份与记录。</div>
           <div class="ag-foot-acts"><span class="ag-link" id="gate-export">导出全部备份</span><span class="ag-link" id="gate-import">导入备份</span><input type="file" id="gate-file" accept="application/json" style="display:none"></div>
+          <div class="ag-field" style="margin-top:12px;opacity:.78"><label>站长口令（站长专用 · 选填）</label><input class="ag-input" id="gate-admin" type="password" placeholder="输入即成为本站站长，可审核删除"></div>
         </div>
 
       </div>`;
@@ -4407,6 +4418,8 @@ const Accounts = {
       card.addEventListener("click", (e)=>{
 
         if(e.target.dataset.del) return;
+
+        const lgA = gate.querySelector("#gate-admin"); if(lgA && lgA.value.trim()===WALL_PASS.admin){ activateOwner(); }
 
         const pid = card.dataset.pid, p = ACC.list.find(x=>x.pid===pid);
 
@@ -4438,7 +4451,7 @@ const Accounts = {
 
     gate.querySelector("#login-add").addEventListener("click", ()=>{ this.draft={name:"",avatar:"fox",color:"#7fd1a0",passcode:"",stack:"nature"}; this.renderOnboarding(); });
 
-    gate.querySelector("#login-guest").addEventListener("click", ()=> this.enterGuest());
+    gate.querySelector("#login-guest").addEventListener("click", ()=>{ const lgA=gate.querySelector("#gate-admin"); if(lgA && lgA.value.trim()===WALL_PASS.admin) activateOwner(); this.enterGuest(); });
 
     const ge = gate.querySelector("#gate-export"); if(ge) ge.addEventListener("click", ()=> exportAllData());
     const gi = gate.querySelector("#gate-import"); if(gi) gi.addEventListener("click", ()=> gate.querySelector("#gate-file").click());
@@ -4856,6 +4869,15 @@ async function deletePublicPost(id, listEl){
   }catch(e){ flashToast("删除失败："+e.message); }
   await loadPublicWall(listEl);
 }
+async function deleteReaderPost(id, listEl){
+  if(!confirm("确定删除这条共读库内容吗？删除后不可恢复。")) return;
+  const btn = listEl.querySelector('[data-rdel="'+id+'"]'); if(btn){ btn.textContent="删除中…"; btn.style.pointerEvents="none"; }
+  try{
+    await ghql(`mutation($id:ID!){deleteDiscussion(input:{id:$id}){clientMutationId}}`, {id});
+    flashToast("已删除");
+  }catch(e){ flashToast("删除失败："+e.message); }
+  await loadReaderPublic(listEl);
+}
 async function postPublicWall(text, name, avatar, listEl){
   if(!text) return;
   const cleanName = (name && name!=="过客") ? name : "";
@@ -4888,8 +4910,10 @@ async function loadReaderPublic(listEl){
       let t=p.bodyText||"", a="", by="";
       try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; a=o.a||""; by=o.by||""; } }
       catch(e){}
-      return `<div class="rd-item"><div class="rd-text sm">${escapeHtml(t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(a||"佚名")}${by?` · 投稿 ${escapeHtml(by)}`:""}</span></div></div>`;
+      const del = window.__wallAdmin ? `<span class="rd-x" data-rdel="${p.id}">删除</span>` : "";
+      return `<div class="rd-item">${del}<div class="rd-text sm">${escapeHtml(t)}</div><div class="rd-row2"><span class="rd-auth sm">—— ${escapeHtml(a||"佚名")}${by?` · 投稿 ${escapeHtml(by)}`:""}</span></div></div>`;
     }).join("");
+    if(window.__wallAdmin) listEl.querySelectorAll('[data-rdel]').forEach(b=> b.addEventListener('click', ()=> deleteReaderPost(b.dataset.rdel, listEl)));
   }catch(e){
     listEl.innerHTML = `<div class="q-hint" style="text-align:center;color:#ff9b9b">${getIcon('warn')} 共读库加载失败：${escapeHtml(e.message)}<br>可能是网络暂时连不上 GitHub。</div>`;
   }
@@ -4908,7 +4932,7 @@ async function publishReader(text, author, by, listEl){
 
 function renderWall(c){
   Sanctuary.load();
-  const _statEl = document.getElementById("site-stat"); if(_statEl) document.body.appendChild(_statEl); // 重渲染前先救回，避免被 innerHTML 清掉
+  const _statEl = document.getElementById("site-stat"); if(_statEl){ _statEl.style.display="none"; document.body.appendChild(_statEl); } // 重渲染前先救回并隐藏，避免被 innerHTML 清掉
   let html = `<div class="wall-section"><div class="wall-sec-title">${getIcon('pushpin')} 本地私密留言（仅本机可见）</div>`;
   html += `<div class="wall-compose">
     <textarea class="q-area" id="wall-text" placeholder="在空栈留一句话——给未来的自己，或给偶然路过这里的人…"></textarea>
@@ -4927,18 +4951,16 @@ function renderWall(c){
     <div class="wall-av-row"><span class="wall-av-label">选个头像</span><div class="wall-av-pick" id="pub-av">${AVATARS.map(id=>`<div class="av${id===identAv?" on":""}" data-a="${id}">${getAvatarSvg(id)}</div>`).join("")}<div class="av av-up" id="pub-av-up" title="点这里上传你自己的图片头像"><img class="i-img" id="pub-av-prev" style="display:none"><span data-pen>${getIcon('pen')}</span><span class="av-up-label">上传图片</span><input type="file" id="pub-av-file" accept="image/*" style="display:none"></div></div></div><div class="wall-av-hint">最右边带 ✎ 的格子：点一下可上传你自己的图片当头像</div>
     <textarea class="q-area" id="pub-text" placeholder="写给所有路过空栈的人…"></textarea>
     <input class="echo-name-in" id="pub-name" placeholder="署名（可选，默认「过客」）" style="width:100%" value="${escapeHtml(identName)}">
-    ${WALL_PASS.post ? `<input class="echo-name-in" id="pub-pass" placeholder="发布口令（朋友发帖需填，首次填对后本机记住）" style="width:100%">` : ""}
+    ${WALL_PASS.post ? `<input class="echo-name-in" id="pub-pass" placeholder="发布口令" style="width:100%"><div class="wall-av-hint">首次填对后本机记住</div>` : ""}
     <div class="wall-acts"><div class="q-btn primary" id="pub-post">发送到共笔墙</div></div>
   </div>`;
   html += `<div class="wall-list" id="pub-list"></div></div>`;
-  html += `<div class="wall-admin-bar"><div class="q-btn" id="wall-admin-enter">${getIcon('gear')} 站长入口</div></div>`;
-  html += `<div class="wall-admin-form" id="wall-admin-form" style="display:none"><input class="echo-name-in" id="wall-admin-pass" type="password" placeholder="站长口令" autocomplete="off"><div class="q-btn primary" id="wall-admin-go">进入</div></div>`;
-  html += `<div class="wall-admin" id="wall-admin" style="display:none">
+  html += (window.__wallAdmin ? `<div class="wall-admin" id="wall-admin">
     <div class="wall-sec-title">${getIcon('gear')} 站长模式 · 访问统计</div>
     <div id="admin-stat-slot"></div>
-    <div class="wall-note">已进入站长模式：所有共笔墙留言都会显示「删除」按钮，可清理违规文字 / 头像。上方为站点访问量（不蒜子即时数字）；更详细的「发布后还有没有人回访」趋势，请登录 Cloudflare Web Analytics 免费后台查看（无需实名、隐私友好）。</div>
-    <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">退出站长模式</div></div>
-  </div>`;
+    <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。上方为站点访问量（不蒜子即时数字）；更详细的「发布后还有没有人回访」趋势，请登录 Cloudflare Web Analytics 免费后台查看（无需实名、隐私友好）。</div>
+    <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">隐藏站长面板</div></div>
+  </div>` : `<div class="wall-admin" id="wall-admin" style="display:none"></div>`);
   c.innerHTML = html;
 
   function paintLocal(){
@@ -5017,6 +5039,10 @@ function renderWall(c){
   if(WALL_CFG.enabled && WALL_CFG.token){
     loadPublicWall(pubList);
     pubPost.addEventListener("click", async ()=>{
+      const enteredPass = pubPassEl ? pubPassEl.value.trim() : "";
+      if(WALL_PASS.admin && enteredPass === WALL_PASS.admin){
+        activateOwner(); renderWall(c); flashToast("已进入站长模式"); return;
+      }
       if(WALL_PASS.post){
         let saved=null; try{ saved=localStorage.getItem("quiet-nature-wall-pass"); }catch(e){}
         const entered = pubPassEl ? pubPassEl.value.trim() : "";
@@ -5034,34 +5060,12 @@ function renderWall(c){
       }catch(e){ flashToast("发送失败："+e.message); }
       pubPost.textContent = "发送到共笔墙"; pubPost.style.pointerEvents = "";
     });
-    // —— 站长模式：口令进入、显示访问统计、开放全部删除 ——
-    const adminEnter = c.querySelector("#wall-admin-enter");
-    const adminForm = c.querySelector("#wall-admin-form");
-    const adminBox = c.querySelector("#wall-admin");
-    const adminPass = c.querySelector("#wall-admin-pass");
-    const adminGo = c.querySelector("#wall-admin-go");
+    // —— 站长模式：仅在已进入时绑定"隐藏面板"按钮 ——
     const adminExit = c.querySelector("#wall-admin-exit");
-    if(adminEnter) adminEnter.addEventListener("click", ()=>{
-      if(adminForm) adminForm.style.display = "flex";
-      adminEnter.style.display = "none";
-      if(adminPass) adminPass.focus();
-    });
-    if(adminGo) adminGo.addEventListener("click", ()=>{
-      if(adminPass && adminPass.value === WALL_PASS.admin){
-        window.__wallAdmin = true;
-        if(adminForm) adminForm.style.display = "none";
-        if(adminBox) adminBox.style.display = "block";
-        const stat = document.getElementById("site-stat");
-        const slot = c.querySelector("#admin-stat-slot");
-        if(stat && slot){ stat.style.display = "flex"; slot.appendChild(stat); }
-        loadPublicWall(pubList);
-        flashToast("已进入站长模式");
-      } else { flashToast("站长口令不正确"); }
-    });
     if(adminExit) adminExit.addEventListener("click", ()=>{
       window.__wallAdmin = false;
-      if(adminBox) adminBox.style.display = "none";
-      if(adminEnter) adminEnter.style.display = "";
+      const box = c.querySelector("#wall-admin"); if(box) box.style.display = "none";
+      const stat = document.getElementById("site-stat"); if(stat) stat.style.display = "none";
       loadPublicWall(pubList);
     });
   } else {
@@ -5382,6 +5386,7 @@ function init(){
 
   // boot: show account gate (onboarding / login) over the splash
   ACC.load();
+  try{ if(localStorage.getItem("quiet-nature-owner")==="1") window.__wallAdmin = true; }catch(e){}
   Accounts.renderGate();
 
 }
