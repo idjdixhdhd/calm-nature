@@ -1297,7 +1297,6 @@
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
 
   <div class="splash-sub">
-    <button id="btn-travel-splash" class="ghost">旅人</button>
     <button id="btn-sanctuary-splash" class="ghost">空栈</button>
   </div>
 
@@ -1357,7 +1356,6 @@
 
       <div class="board-switch">
         <span class="bs" id="bs-nature">自然</span>
-        <span class="bs" id="bs-travel">旅人</span>
       </div>
 
       <div class="ic" id="btn-sanct-gallery" title="空栈" data-icon="home"></div>
@@ -1658,11 +1656,10 @@ function setBoard(b){
   if(body){ body.dataset.rendered = ""; body.innerHTML = ""; }
   const nm = document.getElementById("gal-board-name");
   const en = document.getElementById("gal-board-en");
-  if(nm) nm.textContent = (b==="travel" ? "旅人·远方" : "自然之境");
-  if(en) en.textContent = (b==="travel" ? "The Wanderer" : "Gallery");
-  const bn = document.getElementById("bs-nature"), bt = document.getElementById("bs-travel");
-  if(bn) bn.classList.toggle("on", b!=="travel");
-  if(bt) bt.classList.toggle("on", b==="travel");
+  if(nm) nm.textContent = "自然之境";
+  if(en) en.textContent = "Gallery";
+  const bn = document.getElementById("bs-nature");
+  if(bn) bn.classList.add("on");
   renderGallery();
 }
 
@@ -1689,14 +1686,6 @@ const CAT_META = {
   water:{title:"水韵·静流", en:"Still Waters", desc:"湖泊、河流与飞瀑，水光潋滟，映照天与山。"},
 
   sky:{title:"天垂·奇景", en:"Sky Wonders", desc:"极光、星夜与天象，把头顶的浩瀚收进眼底。"},
-
-  "travel-far":{title:"远山·苍茫", en:"Distant Mountains", desc:"翻过一道山梁，前面还有更远的山。天地很大，人很小。"},
-
-  "travel-road":{title:"长路·林途", en:"The Long Road", desc:"一个人走在没有尽头的林间与雪径，水声领着路。"},
-
-  "travel-horizon":{title:"海阔·水路", en:"Sea & River", desc:"一直走到水天相接的地方，河往远方流，不回头。"},
-
-  "travel-night":{title:"夜泊", en:"Night Rest", desc:"夜里也有光在天上走；走累了，生一堆火。"}
 
 };
 
@@ -2130,7 +2119,7 @@ function renderGallery(){
   body.innerHTML = "";
 
   if(!cats || !cats.length){
-    body.innerHTML = `<div class="board-empty"><div class="be-ic">🌿</div><h3 class="serif">旅人 · 素材整理中</h3><p>沉浸式的旅途画廊正在筹备真实 4K 素材，敬请期待。届时这里会是公路、车窗、远山与车站等独处的风景。</p></div>`;
+    body.innerHTML = `<div class="board-empty"><div class="be-ic">🌿</div><h3 class="serif">自然之境 · 框架预览</h3><p>当前为框架版本：场景结构已就位，图片与视频素材将在后续填充。你可以先确认板块、分类与视觉样式是否符合预期。</p></div>`;
     return;
   }
 
@@ -2224,6 +2213,11 @@ function enterPlayer(id){
   currentScene = scenes.find(s=>s.id===id);
 
   if(!currentScene) return;
+
+  if(!currentScene.video && !currentScene.image){
+    flashToast("框架占位：该场景尚未配置图片 / 视频素材");
+    return;
+  }
 
   showView("player");
 
@@ -5597,15 +5591,11 @@ function init(){
 
   document.getElementById("btn-enter").addEventListener("click", ()=>{ setBoard("nature"); showView("guide"); });
 
-  document.getElementById("btn-travel-splash").addEventListener("click", ()=>{ setBoard("travel"); showView("gallery"); });
-
   document.getElementById("btn-gal-from-guide").addEventListener("click", ()=> showView("gallery"));
 
   document.getElementById("btn-start").addEventListener("click", ()=> showView("gallery"));
 
   document.getElementById("bs-nature").addEventListener("click", ()=> setBoard("nature"));
-
-  document.getElementById("bs-travel").addEventListener("click", ()=> setBoard("travel"));
 
   document.getElementById("btn-back").addEventListener("click", exitPlayer);
 
