@@ -1913,18 +1913,23 @@ function showView(name){
 
 }
 
-// 自托管访问统计：每次访问/切视图上报（仅在能跑 Node 后端的部署上生效；静态托管 404 自动忽略）
+// 自托管访问统计（后端：Cloudflare Workers，部署后把域名填到 STATS_API）
+// 国内/主站版 STATS_API 留空即显示“未启用”；国内部署版会注入 Workers 实际域名。
+const STATS_API = "";
 function trackView(name){
+  if(!STATS_API) return;
   try{
     const load = Math.round(performance.now());
-    fetch("/api/log", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ p: name||"", load }) });
+    fetch(STATS_API + "/api/log", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ p: name||"", load }) });
   }catch(e){}
 }
 // 站长面板拉取自托管统计
 function loadSelfStats(slot){
   if(!slot) return;
-  fetch("/api/stats").then(r=>r.ok?r.json():null).then(d=>{
-    if(!d){ slot.innerHTML = `<div class="wall-note">自托管统计未启用（当前为静态托管，无后端）。</div>`; return; }
+  if(!STATS_API){ slot.innerHTML = `<div class="wall-note">自托管统计未启用（尚未配置后端域名）。</div>`; return; }
+  fetch(STATS_API + "/api/stats").then(r=>r.ok?r.json():null).then(d=>{
+    if(!d){ slot.innerHTML = `<div class="wall-note">自托管统计未启用（后端无数据）。</div>`; return; }
+    const sources = Object.entries(d.channels||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} ${v}`).join(" · ") || "—";
     const topPages = Object.entries(d.pages||{}).sort((a,b)=>b[1]-a[1]).slice(0,6)
       .map(([k,v])=>`${k}：${v}`).join(" · ") || "—";
     const dev = Object.entries(d.devices||{}).map(([k,v])=>`${k} ${v}`).join(" · ") || "—";
@@ -1934,13 +1939,14 @@ function loadSelfStats(slot){
     slot.innerHTML = `
       <div class="self-stat">
         <div class="ss-row"><span>总访问</span><b>${d.total}</b><span>独立访客</span><b>${d.visitors}</b><span>平均加载</span><b>${d.avgLoadMs}ms</b></div>
+        <div class="ss-row"><span>来源</span><i>${sources}</i></div>
         <div class="ss-row"><span>设备</span><i>${dev}</i></div>
         <div class="ss-row"><span>系统</span><i>${os}</i></div>
         <div class="ss-row"><span>浏览器</span><i>${br}</i></div>
         <div class="ss-row"><span>热门页</span><i>${topPages}</i></div>
         <div class="ss-row"><span>近7天</span><i>${recent}</i></div>
       </div>`;
-  }).catch(()=>{ slot.innerHTML = `<div class="wall-note">自托管统计拉取失败。</div>`; });
+  }).catch(()=>{ slot.innerHTML = `<div class="wall-note">自托管统计拉取失败（后端地址不可达）。</div>`; });
 }
 
 
@@ -5066,7 +5072,7 @@ function renderWall(c){
     <div class="wall-sec-title">${getIcon('gear')} 站长模式 · 访问统计</div>
     <div id="admin-stat-slot"></div>
     <div id="self-stat-slot" class="self-stat-wrap"></div>
-    <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。不蒜子显示累计访问；下方「自托管统计」含设备 / 系统 / 浏览器 / 加载时长 / 按天趋势（需后端部署才生效）。</div>
+    <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。不蒜子显示累计访问；下方「自托管统计」含 来源 / 设备 / 系统 / 浏览器 / 加载时长 / 按天趋势（后端为 Cloudflare Workers，部署后自动生效）。</div>
     <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">隐藏站长面板</div></div>
   </div>` : `<div class="wall-admin" id="wall-admin" style="display:none"></div>`);
   c.innerHTML = html;
