@@ -63,9 +63,9 @@
 
   #app-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-  .view{position:fixed;inset:0;z-index:1;display:none;opacity:0;transition:opacity .7s cubic-bezier(.2,.6,.2,1)}
+  .view{position:fixed;inset:0;z-index:1;display:none;opacity:0;transform:scale(1.02);transition:opacity .6s var(--ease),transform .6s var(--ease)}
 
-  .view.active{display:flex;opacity:1}
+  .view.active{display:flex;opacity:1;transform:scale(1)}
 
 
 
@@ -175,11 +175,11 @@
 
   .cards-row::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.35);border-radius:3px}
 
-  .scard{flex:0 0 clamp(170px,78vw,320px);aspect-ratio:3/4;border-radius:var(--radius);position:relative;overflow:hidden;background:#0a0e0c;border:1px solid var(--glass-border);box-shadow:0 14px 38px -16px rgba(0,0,0,.65);cursor:pointer;scroll-snap-align:start;transition:transform .35s,box-shadow .35s,border-color .35s}
+  .scard{flex:0 0 clamp(170px,78vw,320px);aspect-ratio:3/4;border-radius:var(--radius);position:relative;overflow:hidden;background:#0a0e0c;border:1px solid var(--glass-border);box-shadow:var(--shadow-card),inset 0 1px 0 rgba(255,255,255,.10);cursor:pointer;scroll-snap-align:start;transition:transform .35s,box-shadow .35s,border-color .35s}
 
   @media(min-width:680px){ .scard{flex:0 0 clamp(150px,30vw,260px);} }
 
-  .scard:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 22px 50px -14px rgba(var(--accent-rgb),.25),0 0 0 1px rgba(var(--accent-rgb),.45);border-color:rgba(var(--accent-rgb),.5)}
+  .scard:hover{transform:translateY(-8px) scale(1.02);box-shadow:var(--shadow-card),0 0 0 1px rgba(var(--accent-rgb),.5),0 26px 64px -16px rgba(var(--accent-rgb),.3);border-color:rgba(var(--accent-rgb),.5)}
 
   .scard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s}
 
@@ -535,6 +535,59 @@
   .gal-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 
     background:radial-gradient(120% 120% at 50% 40%,transparent 50%,rgba(0,0,0,.55) 100%);}
+
+  /* ===== premium design tokens (cohesive visual system) ===== */
+  :root{
+    --radius-sm:14px; --radius-lg:28px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --dur:.5s;
+    --shadow-card:0 22px 60px -20px rgba(0,0,0,.7);
+    --glass-hi:rgba(255,255,255,.07);
+  }
+
+  /* ambient drifting glow so the gallery breathes (not a dead black void) */
+  #view-gallery::after{
+    content:""; position:absolute; inset:-25%; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(38% 38% at 22% 28%, rgba(var(--accent-rgb),.12), transparent 62%),
+      radial-gradient(34% 34% at 82% 18%, rgba(var(--accent2-rgb),.10), transparent 62%),
+      radial-gradient(42% 42% at 64% 82%, rgba(var(--accent-rgb),.08), transparent 62%);
+    filter:blur(26px);
+    animation:driftGlow 24s var(--ease) infinite alternate;
+  }
+  @keyframes driftGlow{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(-3%,2.5%,0) scale(1.1)}}
+  .gal-body{ position:relative; z-index:1; }
+
+  /* reader: calmer typography + layered cards */
+  .rd-text{ font-size:22px; line-height:1.95; letter-spacing:.01em; }
+  .rd-item{ border-radius:var(--radius-sm); box-shadow:0 14px 36px -22px rgba(0,0,0,.6); }
+  .rd-feature{ box-shadow:var(--shadow-card); }
+
+  /* excerpt sheet (player → 我的文摘 / 共读库) */
+  .excerpt-fab{position:absolute;right:max(16px,var(--safe-r));bottom:calc(132px + var(--safe-b));z-index:9;width:52px;height:52px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-strong);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);box-shadow:0 10px 30px -10px rgba(0,0,0,.6),0 0 0 1px rgba(var(--accent-rgb),.22);cursor:pointer;transition:transform .2s,box-shadow .3s}
+  .excerpt-fab:active{transform:scale(.9)}
+  .excerpt-fab:hover{box-shadow:0 0 0 1px var(--accent),0 0 26px -4px rgba(var(--accent-rgb),.6)}
+  .excerpt-sheet{position:absolute;inset:0;z-index:30;display:none}
+  .excerpt-sheet.show{display:block}
+  .es-bg{position:absolute;inset:0;background:rgba(2,5,4,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s}
+  .excerpt-sheet.show .es-bg{opacity:1}
+  .es-card{position:absolute;left:0;right:0;bottom:0;background:var(--glass-strong);border-top:1px solid var(--glass-border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:18px 20px calc(20px + var(--safe-b));transform:translateY(100%);transition:transform .4s var(--ease);box-shadow:0 -20px 60px -20px rgba(0,0,0,.75)}
+  .excerpt-sheet.show .es-card{transform:translateY(0)}
+  .es-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .es-head .serif{font-size:17px;letter-spacing:.06em}
+  .es-close{font-size:18px;color:var(--muted);padding:4px 8px;cursor:pointer}
+  .es-label{font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:.04em;line-height:1.6}
+  .es-acts{display:flex;gap:12px;margin-top:12px}
+  .es-acts .q-btn{flex:1;justify-content:center;text-align:center;padding:13px 0}
+  .es-hint{font-size:11px;color:var(--muted);opacity:.72;margin-top:10px;line-height:1.6}
+
+  /* wall: floor number + like */
+  .wall-post .wp-floor{color:var(--accent);font-weight:600;font-size:11px;opacity:.85;margin-right:8px}
+  .wall-post .wp-meta{font-size:11px;color:var(--muted)}
+  .wall-post .wp-foot{margin-top:9px;display:flex}
+  .wall-post .wp-like{cursor:pointer;font-size:12px;color:var(--muted);border:1px solid var(--glass-border);border-radius:20px;padding:4px 13px;transition:all .2s;user-select:none;background:rgba(255,255,255,.02)}
+  .wall-post .wp-like.on{color:#ff8fa3;border-color:rgba(255,143,163,.5);background:rgba(255,143,163,.08)}
+  .wall-post .wp-like:active{transform:scale(.94)}
 
   /* per-category accent tint on the section header */
 
@@ -1466,6 +1519,22 @@
 
   </div>
 
+  <div id="btn-excerpt" class="excerpt-fab" title="摘抄此景">❝</div>
+
+  <div id="excerpt-sheet" class="excerpt-sheet">
+    <div class="es-bg" id="es-bg"></div>
+    <div class="es-card">
+      <div class="es-head"><span id="es-scene" class="serif"></span><span class="es-close" id="es-close">✕</span></div>
+      <div class="es-label">看完这景，摘抄一句，存进你的文库，或投给所有人</div>
+      <textarea id="es-text" class="q-area" placeholder="写下你此刻想记下的话…"></textarea>
+      <div class="es-acts">
+        <span class="q-btn" id="es-mine">存入我的文摘</span>
+        <span class="q-btn primary" id="es-pub">投到共读库</span>
+      </div>
+      <div class="es-hint" id="es-hint">投到共读库会经 GitHub 公开存储，任何人可见；存入我的文摘仅保存在本机。</div>
+    </div>
+  </div>
+
 </div>
 
 
@@ -2277,6 +2346,62 @@ function wireVideo(){
   videoEl.addEventListener("playing", ()=> showVLoading(false));
   videoEl.addEventListener("canplay", ()=> showVLoading(false));
   videoEl.addEventListener("error", ()=> showVLoading(true, "视频加载失败，轻触重试"));
+}
+
+// ---------- excerpt (player → 我的文摘 / 共读库) ----------
+const SCENE_LINES = {
+  meadow:"晨雾里，万物还没醒来，世界是温柔的。",
+  rain:"雨落下来，把喧嚣都关在了窗外。",
+  campfire:"火光跳动，像有人在低声讲一个很久以前的故事。",
+  stars:"星星不说话，却把整片夜空都讲给了你。",
+  mountain:"山就在那里，不争不抢，却比谁都辽阔。",
+  ocean:"海浪一遍遍来，又一遍遍退，不肯把心事说完。",
+  waterfall:"水从高处落下，义无反顾，像一场盛大的奔赴。",
+  aurora:"极光在天边铺开，像大自然写给夜空的情书。",
+  snow:"雪落无声，却把整个世界轻轻盖住了。",
+  "water-1":"水静下来，心也跟着静了。","water-2":"静水流深，不必喧哗。","water-3":"一汪清水，照见山，也照见自己。",
+  "extreme-1":"极境之上，人是那么小，却又那么自由。","extreme-2":"风穿过荒原，把孤独吹成了辽阔。","extreme-3":"站在世界边缘，才懂渺小与伟大并存。",
+  "forest-1":"林深时见鹿，溪静时听风。","forest-2":"雾起密林，像走进了另一个温柔的星球。","forest-3":"树影婆娑，把光剪成了一地诗句。",
+  "sky-1":"银河垂落，像天穹裂开的一条光缝。","sky-2":"极光与星子，把夜空酿成了酒。","sky-3":"抬头看见整片天，忽然就不急了。"
+};
+function sceneLine(id){
+  if(SCENE_LINES[id]) return SCENE_LINES[id];
+  const cat = (scenes.find(s=>s.id===id)||{}).category;
+  return ({oneday:"一日流转，光阴自有它的章法。",short:"此刻很短，却足够安静。",majestic:"天地有大美而不言。",forest:"林间有风，也有答案。",water:"水知道，缓缓地走也能到远方。",extreme:"极境教人谦卑。",sky:"星空之下，万物平等。"})[cat] || "此刻，值得被记下来。";
+}
+function openExcerpt(){
+  if(!currentScene) return;
+  const sheet=document.getElementById("excerpt-sheet");
+  document.getElementById("es-scene").textContent = currentScene.title;
+  const ta=document.getElementById("es-text");
+  ta.value = sceneLine(currentScene.id);
+  sheet.classList.add("show");
+  setTimeout(()=>ta.focus(), 280);
+}
+function closeExcerpt(){ const s=document.getElementById("excerpt-sheet"); if(s) s.classList.remove("show"); }
+function bindExcerpt(){
+  const fab=document.getElementById("btn-excerpt"); if(fab) fab.addEventListener("click", ()=>{ poke(); openExcerpt(); });
+  const bg=document.getElementById("es-bg"); if(bg) bg.addEventListener("click", closeExcerpt);
+  const x=document.getElementById("es-close"); if(x) x.addEventListener("click", closeExcerpt);
+  const mine=document.getElementById("es-mine"); if(mine) mine.addEventListener("click", ()=>{
+    const t=document.getElementById("es-text").value.trim();
+    if(!t){ flashToast("写点什么再存"); return; }
+    Sanctuary.store.myreader = Sanctuary.store.myreader||[];
+    Sanctuary.store.myreader.unshift({t, a:currentScene?currentScene.title:"", ts:Date.now()});
+    Sanctuary.save(); flashToast("已存入我的文摘"); closeExcerpt();
+  });
+  const pub=document.getElementById("es-pub"); if(pub) pub.addEventListener("click", async ()=>{
+    const t=document.getElementById("es-text").value.trim();
+    if(!t){ flashToast("写点什么再投"); return; }
+    pub.textContent="投稿中…"; pub.style.pointerEvents="none";
+    try{
+      const ident=(typeof ACC!=="undefined"&&ACC.get)?ACC.get():null;
+      const by=ident?ident.name:"";
+      await publishReader(t, currentScene?currentScene.title:"", by);
+      flashToast("已投到共读库，所有人可见"); closeExcerpt();
+    }catch(e){ flashToast("投稿失败："+e.message); }
+    finally{ pub.textContent="投到共读库"; pub.style.pointerEvents=""; }
+  });
 }
 
 function setHour(h){
@@ -3396,7 +3521,7 @@ function renderReader(c){
 
       if(!items.length){
 
-        html += `<div class="q-hint" style="text-align:center;margin-top:14px">${tag==="我的文摘"?"还没有你自己的文摘。点上方「＋ 添加我的文摘」，把《读者》或任何你喜欢的话贴进来。":"这里还空着。去「全部」里藏几句你喜欢的吧。"}</div>`;
+        html += `<div class="q-hint" style="text-align:center;margin-top:14px">${tag==="我的文摘"?"还没有你自己的文摘。点上方「＋ 添加我的文摘」，把《读者》或任何你喜欢的话贴进来。（仅保存在本机）":"这里还空着。去「全部」里藏几句你喜欢的吧。"}</div>`;
 
       } else {
 
@@ -4986,6 +5111,15 @@ function addWallMine(id){
 function removeWallMine(id){
   try{ const a=getWallMine().filter(x=>x!==id); localStorage.setItem("quiet-nature-wall-mine", JSON.stringify(a)); }catch(e){}
 }
+function getWallLikes(){ try{ return JSON.parse(localStorage.getItem("quiet-nature-wall-likes")||"[]"); }catch(e){ return []; } }
+function toggleWallLike(id, el){
+  let a = getWallLikes();
+  const k = a.indexOf(id);
+  if(k>=0){ a.splice(k,1); } else { a.push(id); }
+  try{ localStorage.setItem("quiet-nature-wall-likes", JSON.stringify(a)); }catch(e){}
+  const on = a.indexOf(id)>=0;
+  if(el){ el.classList.toggle("on", on); el.textContent = on ? "♥ 已赞" : "♡ 赞"; }
+}
 async function loadPublicWall(listEl){
   listEl.innerHTML = `<div class="q-hint" style="text-align:center">${getIcon('leaf')} 正在连接共笔墙…</div>`;
   try{
@@ -4999,15 +5133,19 @@ async function loadPublicWall(listEl){
     const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]") && !d.title.startsWith("[读者]"));
     if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">全网共笔墙还空着。写下第一句吧。</div>`; return; }
     const mine = getWallMine();
-    listEl.innerHTML = posts.map(p=>{
+    const likes = getWallLikes();
+    listEl.innerHTML = posts.map((p,i)=>{
+      const floor = posts.length - i;
       let n="过客", t=p.bodyText || "", a="";
       try{ const o=JSON.parse(p.bodyText); if(o && typeof o.t==="string"){ t=o.t; n=o.n||"过客"; a=o.a||""; } }
       catch(e){ n = (p.author&&p.author.login)?p.author.login:"过客"; }
       const av = getAvatar(a) || getAvatarSvg("cat");
       const del = (mine.includes(p.id) || window.__wallAdmin) ? `<span class="wp-x" data-del="${p.id}">删除</span>` : "";
-      return `<div class="wall-post public"><div class="wp-head"><span class="wp-date">${fmtWallDate(p.createdAt)}</span>${del}</div><div class="wp-body"><span class="wp-av">${av}</span><span class="wp-textwrap"><span class="wp-by">${escapeHtml(n)}</span><span class="wp-colon">：</span>${escapeHtml(t)}</span></div></div>`;
+      const liked = likes.includes(p.id);
+      return `<div class="wall-post public"><div class="wp-head"><span class="wp-floor">#${floor}</span><span class="wp-date">${fmtWallDate(p.createdAt)}</span>${del}</div><div class="wp-body"><span class="wp-av">${av}</span><span class="wp-textwrap"><span class="wp-by">${escapeHtml(n)}</span><span class="wp-colon">：</span>${escapeHtml(t)}</span></div><div class="wp-foot"><span class="wp-like${liked?' on':''}" data-like="${p.id}">${liked?'♥ 已赞':'♡ 赞'}</span></div></div>`;
     }).join("");
     listEl.querySelectorAll('[data-del]').forEach(b=> b.addEventListener('click', ()=> deletePublicPost(b.dataset.del, listEl)));
+    listEl.querySelectorAll('[data-like]').forEach(b=> b.addEventListener('click', ()=> toggleWallLike(b.dataset.like, b)));
   }catch(e){
     listEl.innerHTML = `<div class="q-hint" style="text-align:center;color:#ff9b9b">${getIcon('warn')} 共笔墙加载失败：${escapeHtml(e.message)}<br>可能是网络暂时连不上 GitHub。</div>`;
   }
@@ -5140,9 +5278,10 @@ function renderWall(c){
     const list = c.querySelector("#wall-list");
     const posts = (Sanctuary.store.wall||[]).slice().sort((a,b)=>b.ts-a.ts);
     if(!posts.length){ list.innerHTML = `<div class="q-hint" style="text-align:center">还没有本地留言。写下第一句吧。</div>`; return; }
-    list.innerHTML = posts.map(p=>{
+    list.innerHTML = posts.map((p,i)=>{
+      const floor = posts.length - i;
       const d = new Date(p.ts); const ds = (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
-      return `<div class="wall-post"><div class="wp-top"><span class="wp-name">${escapeHtml(p.name||"过客")}</span><span>${ds}</span></div><div class="wp-text">${escapeHtml(p.text)}</div><div class="wp-top" style="margin-top:8px"><span></span><span class="wp-x" data-del="${p.id}">删除</span></div></div>`;
+      return `<div class="wall-post"><div class="wp-top"><span class="wp-name">${escapeHtml(p.name||"过客")}</span><span class="wp-meta">#${floor} · ${ds}</span></div><div class="wp-text">${escapeHtml(p.text)}</div><div class="wp-top" style="margin-top:8px"><span></span><span class="wp-x" data-del="${p.id}">删除</span></div></div>`;
     }).join("");
     list.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
       Sanctuary.store.wall = Sanctuary.store.wall.filter(x=>x.id!==el.dataset.del); Sanctuary.save(); paintLocal();
@@ -5536,6 +5675,7 @@ function init(){
   updateMoodBadge(); updateQueueUI();
   document.getElementById("btn-fav").addEventListener("click", e=>{ e.stopPropagation(); poke(); toggleFavCurrent(); });
   document.getElementById("btn-journal").addEventListener("click", e=>{ e.stopPropagation(); poke(); openJournal(currentScene ? currentScene.id : null); });
+  if(typeof bindExcerpt==="function") bindExcerpt();
   updateFavIcon();
 
   ["pointermove","touchstart","keydown"].forEach(ev=> window.addEventListener(ev, ()=>{ if(currentScene) poke(); }, {passive:true}));
