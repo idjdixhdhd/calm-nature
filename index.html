@@ -3079,6 +3079,50 @@ function applyMoodToApp(mood){
 
 }
 
+function hexToRgb(hex){
+  hex = (hex||"").replace("#","");
+  if(hex.length===3) hex = hex.split("").map(c=>c+c).join("");
+  const n = parseInt(hex,16);
+  if(isNaN(n)) return null;
+  return [(n>>16)&255,(n>>8)&255,n&255];
+}
+
+/* 让设置里选的「主题色 / 自定义色调」真正生效（修复此前只显示选择器、未应用到全局的坑） */
+function applyAccountColor(){
+  try{
+    const p = ACC.get();
+    const col = (p && (p.customColor || p.color)) || null;
+    const r = document.documentElement;
+    if(col){
+      const rgb = hexToRgb(col);
+      if(rgb){ r.style.setProperty("--accent", col); r.style.setProperty("--accent-rgb", rgb.join(",")); }
+    } else {
+      r.style.removeProperty("--accent"); r.style.removeProperty("--accent-rgb");
+    }
+  }catch(e){}
+}
+
+function timeGreeting(){
+  const h = new Date().getHours();
+  if(h<5) return "夜深了";
+  if(h<11) return "早安";
+  if(h<14) return "午安";
+  if(h<18) return "下午好";
+  if(h<23) return "晚安";
+  return "夜深了";
+}
+
+/* 开屏按账号开场白 + 当前时段问候 个性化 */
+function applySplashPersonal(){
+  try{
+    const el = document.querySelector(".splash-tag"); if(!el) return;
+    const greet = timeGreeting();
+    const p = ACC.get();
+    const tag = (p && p.tagline) ? p.tagline : "一处只属于你的自然庇护所。选一片景象，让时间慢下来。";
+    el.innerHTML = `<span style="color:var(--accent)">${greet}</span> · ${escapeHtml(tag)}`;
+  }catch(e){}
+}
+
 
 
 function renderSanctuary(){
@@ -4849,9 +4893,13 @@ const Accounts = {
 
       <div class="set-row"><span>身份名称</span><input class="ag-input" id="set-name" value="${p?escapeHtml(p.name):""}" style="width:150px"></div>
 
+      <div class="set-row"><span>开场白</span><input class="ag-input" id="set-tagline" value="${p&&p.tagline?escapeHtml(p.tagline):""}" placeholder="例如：这是我的安静角落" style="width:200px"></div>
+
       <div class="set-row"><span>头像</span><div class="avatar-pick" id="set-av" style="justify-content:flex-end">${av}</div></div>
 
       <div class="set-row"><span>主题色</span><div class="color-pick" id="set-cc">${cc}</div></div>
+
+      <div class="set-row"><span>自定义色调</span><input class="ag-input" id="set-custom" type="color" value="${p&&p.customColor?p.customColor:(p&&p.color?p.color:'#b8e0c8')}" style="width:60px;height:32px;padding:2px;border:1px solid var(--glass-border);border-radius:8px;background:rgba(0,0,0,.28)"><b class="si" id="set-custom-reset">重置</b></div>
 
       <div class="set-row"><span>访问口令</span><input class="ag-input" id="set-pass" type="password" value="${p&&p.passcode?p.passcode:""}" placeholder="留空则无" style="width:150px"></div>
 
@@ -4884,7 +4932,14 @@ const Accounts = {
       resizeImageToDataURL(f, 256, (url)=>{ if(!url){ flashToast("图片读取失败"); return; } if(p){ p.avatar = url; ACC.save(); flashToast("头像已更新"); Accounts.afterLogin(); openSettings(); } });
     });
 
-    box.querySelector("#set-cc").querySelectorAll(".cc").forEach(x=> x.addEventListener("click", ()=>{ if(p){ p.color=x.dataset.c; saveProfile(); box.querySelectorAll("#set-cc .cc").forEach(o=> o.classList.toggle("on", o.dataset.c===p.color)); } }));
+    box.querySelector("#set-cc").querySelectorAll(".cc").forEach(x=> x.addEventListener("click", ()=>{ if(p){ p.color=x.dataset.c; p.customColor=null; saveProfile(); applyAccountColor(); box.querySelectorAll("#set-cc .cc").forEach(o=> o.classList.toggle("on", o.dataset.c===p.color)); const ce=box.querySelector("#set-custom"); if(ce) ce.value=p.color; } }));
+
+    const customEl = box.querySelector("#set-custom");
+    if(customEl) customEl.addEventListener("input", ()=>{ if(p){ p.customColor = customEl.value; ACC.save(); applyAccountColor(); } });
+    const resetEl = box.querySelector("#set-custom-reset");
+    if(resetEl) resetEl.addEventListener("click", ()=>{ if(p){ p.customColor = null; ACC.save(); applyAccountColor(); if(customEl) customEl.value = p.color||'#b8e0c8'; } });
+    const tagEl = box.querySelector("#set-tagline");
+    if(tagEl) tagEl.addEventListener("change", ()=>{ if(p){ p.tagline = tagEl.value.trim(); ACC.save(); applySplashPersonal(); } });
 
     box.querySelector("#set-name").addEventListener("change", saveProfile);
 
@@ -5635,6 +5690,9 @@ function init(){
   renderSplashDaily();
   const sdEl = document.getElementById("splash-daily");
   if(sdEl) sdEl.addEventListener("click", ()=>{ showView("sanctuary"); openModule("reader"); });
+
+  applyAccountColor();
+  applySplashPersonal();
 
 
 
