@@ -1015,9 +1015,9 @@
 
 .account-gate{
   position:fixed; inset:0; z-index:120; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; padding:28px;
+  align-items:center; justify-content:flex-start; padding:max(28px, env(safe-area-inset-top)) 28px max(28px, env(safe-area-inset-bottom));
   background:radial-gradient(120% 120% at 50% 0%, #0e1614 0%, #070b0a 70%);
-  color:var(--ui); text-align:center; overflow:auto;
+  color:var(--ui); text-align:center; overflow:auto; -webkit-overflow-scrolling:touch;
 }
 .account-gate.hide{ display:none; }
 .ag-logo{ font-family:var(--serif); font-size:30px; letter-spacing:.04em; margin-bottom:6px;
