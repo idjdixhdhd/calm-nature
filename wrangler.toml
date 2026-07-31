@@ -2,7 +2,6 @@ name = "quiet-nature-stats"
 main = "worker.js"
 compatibility_date = "2024-09-23"
 
-# 在 Cloudflare 控制台创建 KV 命名空间后，把它的 ID 填到下面 id 处
-[[kv_namespaces]]
-binding = "ANALYTICS"
-id = "在此填入你的KV命名空间ID"
+# KV 存储绑定 ANALYTICS 不写死在这里（避免空 ID 导致部署报错）。
+# 请到 Cloudflare 控制台 → 该 Worker → Settings → Variables → KV 绑定，
+# 添加变量名 ANALYTICS，选择你创建的 KV 命名空间，保存即可。
