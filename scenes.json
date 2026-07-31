@@ -406,87 +406,260 @@
     "motion": "subtle"
   },
   {
-    "id": "human-night-1",
-    "title": "雨窗流光",
-    "subtitle": "Rainy Window Lights",
-    "board": "human",
-    "category": "human-night",
+    "id": "travel-far-1",
+    "title": "远山",
+    "subtitle": "Distant Mountains",
+    "board": "travel",
+    "category": "travel-far",
     "type": "loop",
-    "mediaType": "image",
-    "image": "https://images.pexels.com/photos/28993172/pexels-photo-28993172.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "poster": "https://images.pexels.com/photos/28993172/pexels-photo-28993172.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "audio": { "night": "./media/audio/music_night.mp3", "wind": "./media/audio/wind.mp3" },
-    "credit": { "source": "Pexels · dp singh Bhullar", "license": "Pexels License (free)", "note": "Real 4K · 直链加载" },
+    "mediaType": "video",
+    "video": "./media/mountain.mp4",
+    "image": "./media/mountain.jpg",
+    "poster": "./media/mountain.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 山峦摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
     "motion": "subtle"
   },
   {
-    "id": "human-night-2",
-    "title": "夜行伞影",
-    "subtitle": "Umbrella at Night",
-    "board": "human",
-    "category": "human-night",
+    "id": "travel-far-2",
+    "title": "苍茫",
+    "subtitle": "Vast Land",
+    "board": "travel",
+    "category": "travel-far",
     "type": "loop",
     "mediaType": "image",
-    "image": "https://images.pexels.com/photos/36569990/pexels-photo-36569990.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "poster": "https://images.pexels.com/photos/36569990/pexels-photo-36569990.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "audio": { "night": "./media/audio/music_night.mp3", "rain": "./media/audio/rain.mp3" },
-    "credit": { "source": "Pexels · FURKAN GÜNEŞ", "license": "Pexels License (free)", "note": "Real 4K · 直链加载" },
-    "motion": "subtle"
-  },
-  {
-    "id": "human-warm-1",
-    "title": "暖窗茶室",
-    "subtitle": "Sunlit Cafe",
-    "board": "human",
-    "category": "human-warm",
-    "type": "loop",
-    "mediaType": "image",
-    "image": "https://images.pexels.com/photos/18405036/pexels-photo-18405036.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "poster": "https://images.pexels.com/photos/18405036/pexels-photo-18405036.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "audio": { "day": "./media/audio/music_day.mp3" },
-    "credit": { "source": "Pexels · Dũng Phạm", "license": "Pexels License (free)", "note": "Real 4K · 直链加载" },
-    "motion": "subtle"
-  },
-  {
-    "id": "human-warm-2",
-    "title": "夕照咖啡",
-    "subtitle": "Sunset Cafe",
-    "board": "human",
-    "category": "human-warm",
-    "type": "loop",
-    "mediaType": "image",
-    "image": "https://images.pexels.com/photos/34206672/pexels-photo-34206672.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "poster": "https://images.pexels.com/photos/34206672/pexels-photo-34206672.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "audio": { "day": "./media/audio/music_day.mp3" },
-    "credit": { "source": "Pexels · Kader Azra Namuslu", "license": "Pexels License (free)", "note": "Real 4K · 直链加载" },
-    "motion": "subtle"
-  },
-  {
-    "id": "human-life-1",
-    "title": "渔港暮色",
-    "subtitle": "Harbor at Dusk",
-    "board": "human",
-    "category": "human-life",
-    "type": "loop",
-    "mediaType": "image",
-    "image": "https://images.pexels.com/photos/2971038/pexels-photo-2971038.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "poster": "https://images.pexels.com/photos/2971038/pexels-photo-2971038.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "audio": { "day": "./media/audio/music_day.mp3", "wind": "./media/audio/wind.mp3" },
-    "credit": { "source": "Pexels · Jean van der Meulen", "license": "Pexels License (free)", "note": "Real 4K · 直链加载" },
+    "image": "./media/extreme-1.jpg?v=20260728orig",
+    "poster": "./media/extreme-1.jpg?v=20260728orig",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 极境摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
     "motion": "static"
   },
   {
-    "id": "human-life-2",
-    "title": "晨港轻舟",
-    "subtitle": "Harbor at Dawn",
-    "board": "human",
-    "category": "human-life",
+    "id": "travel-far-3",
+    "title": "长风",
+    "subtitle": "Far Wind",
+    "board": "travel",
+    "category": "travel-far",
     "type": "loop",
     "mediaType": "image",
-    "image": "https://images.pexels.com/photos/37770413/pexels-photo-37770413.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "poster": "https://images.pexels.com/photos/37770413/pexels-photo-37770413.jpeg?auto=compress&cs=tinysrgb&w=3840",
-    "audio": { "day": "./media/audio/music_day.mp3", "wind": "./media/audio/wind.mp3" },
-    "credit": { "source": "Pexels · Phil Evenden", "license": "Pexels License (free)", "note": "Real 4K · 直链加载" },
+    "image": "./media/extreme-2.jpg?v=20260728orig",
+    "poster": "./media/extreme-2.jpg?v=20260728orig",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 极境摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-road-1",
+    "title": "林途",
+    "subtitle": "Forest Trail",
+    "board": "travel",
+    "category": "travel-road",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-1.jpg?v=20260728orig",
+    "poster": "./media/forest-1.jpg?v=20260728orig",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 幽林摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-road-2",
+    "title": "雪径",
+    "subtitle": "Snow Path",
+    "board": "travel",
+    "category": "travel-road",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/snow.jpg",
+    "poster": "./media/snow.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 雪原摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
     "motion": "static"
+  },
+  {
+    "id": "travel-road-3",
+    "title": "瀑径",
+    "subtitle": "Falling Waters",
+    "board": "travel",
+    "category": "travel-road",
+    "type": "loop",
+    "mediaType": "video",
+    "video": "./media/waterfall.mp4",
+    "image": "./media/waterfall.jpg",
+    "poster": "./media/waterfall.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 飞瀑摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-horizon-1",
+    "title": "海平线",
+    "subtitle": "Sea Horizon",
+    "board": "travel",
+    "category": "travel-horizon",
+    "type": "loop",
+    "mediaType": "video",
+    "video": "./media/ocean.mp4",
+    "image": "./media/ocean.jpg",
+    "poster": "./media/ocean.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 海洋摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-horizon-2",
+    "title": "静水",
+    "subtitle": "Still Water",
+    "board": "travel",
+    "category": "travel-horizon",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-1.jpg?v=20260728orig",
+    "poster": "./media/water-1.jpg?v=20260728orig",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 静水摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "static"
+  },
+  {
+    "id": "travel-horizon-3",
+    "title": "远流",
+    "subtitle": "Long River",
+    "board": "travel",
+    "category": "travel-horizon",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-2.jpg?v=20260728orig",
+    "poster": "./media/water-2.jpg?v=20260728orig",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 河流摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-night-1",
+    "title": "夜行",
+    "subtitle": "Night Walk",
+    "board": "travel",
+    "category": "travel-night",
+    "type": "loop",
+    "mediaType": "video",
+    "video": "./media/aurora.mp4",
+    "image": "./media/aurora.jpg",
+    "poster": "./media/aurora.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "night": "./media/audio/music_night.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 极光摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-night-2",
+    "title": "星野",
+    "subtitle": "Starry Field",
+    "board": "travel",
+    "category": "travel-night",
+    "type": "loop",
+    "mediaType": "video",
+    "video": "./media/stars.mp4",
+    "image": "./media/stars.jpg",
+    "poster": "./media/stars.jpg",
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "night": "./media/audio/music_night.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 星空摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "travel-night-3",
+    "title": "夜泊",
+    "subtitle": "Night Rest",
+    "board": "travel",
+    "category": "travel-night",
+    "type": "loop",
+    "mediaType": "video",
+    "video": "./media/campfire.mp4",
+    "image": "./media/campfire.jpg",
+    "poster": "./media/campfire.jpg",
+    "audio": {
+      "main": "./media/audio/campfire.mp3"
+    },
+    "credit": {
+      "source": "本地 4K 篝火摄影",
+      "license": "站点本地素材",
+      "note": "Real 4K · 本地加载"
+    },
+    "motion": "subtle"
   }
 ]
