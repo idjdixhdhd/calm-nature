@@ -736,9 +736,9 @@
       radial-gradient(90% 60% at 50% 100%,rgba(150,180,255,.08),transparent 60%),
       linear-gradient(180deg,#05100b,#030806);}
 
-  .sanct-body{padding:6px max(18px,var(--safe-l)) calc(30px + var(--safe-b)) max(18px,var(--safe-r));flex:1;display:flex;flex-direction:column;justify-content:center;min-height:100%}
+  .sanct-body{padding:calc(74px + var(--safe-t)) max(18px,var(--safe-l)) calc(30px + var(--safe-b)) max(18px,var(--safe-r));flex:1;display:flex;flex-direction:column;justify-content:flex-start;min-height:100%}
 
-  .sanct-intro{text-align:center;margin:4vh 0 3vh}
+  .sanct-intro{text-align:center;margin:1vh 0 3vh}
 
   .sanct-intro h2{font-size:clamp(26px,6vw,42px);letter-spacing:.1em}
 
@@ -765,7 +765,7 @@
   .sanct-card .sc-status{font-size:12px;color:var(--accent);margin-top:auto;min-height:16px;line-height:1.5}
 
 
-  .sanct-detail{position:absolute;inset:0;z-index:12;display:none;flex-direction:column;background:linear-gradient(180deg,rgba(5,14,11,.92),rgba(3,8,6,.98));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:max(16px,var(--safe-t)) max(18px,var(--safe-l)) calc(20px + var(--safe-b)) max(18px,var(--safe-r));animation:fade .35s ease}
+  .sanct-detail{position:absolute;inset:0;z-index:12;display:none;flex-direction:column;background:linear-gradient(180deg,#05100b,#030806);padding:max(16px,var(--safe-t)) max(18px,var(--safe-l)) calc(20px + var(--safe-b)) max(18px,var(--safe-r));animation:fade .35s ease}
 
   .sanct-detail.open{display:flex}
 
@@ -906,6 +906,8 @@
   .rd-add{display:inline-block;font-size:13px;color:var(--accent);cursor:pointer;padding:6px 10px;border:1px dashed rgba(var(--accent-rgb),.5);border-radius:10px;transition:.15s}
   .rd-add:hover{background:rgba(var(--accent-rgb),.12)}
   .rd-addform{margin-top:10px;background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px}
+  .rd-opt{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:10px;cursor:pointer;user-select:none}
+  .rd-opt input{width:16px;height:16px;accent-color:var(--accent)}
 
   .rd-star.on{color:var(--accent2)}
 
@@ -3165,7 +3167,9 @@ function sanctTodayHTML(){
 
   const doy = Math.floor((d - new Date(d.getFullYear(),0,0))/86400000);
 
-  const q = READER_LIB[doy % READER_LIB.length];
+  const pool = dailyPool();
+
+  const q = pool[doy % pool.length];
 
   const readTxt = q ? (q.t.length>22 ? q.t.slice(0,22)+"…" : q.t) : "—";
 
@@ -3573,7 +3577,7 @@ function renderReader(c){
     html += `<div class="q-pick" id="rd-chips">` + tags.map(t=>`<div class="qp${t===tag?' sel':''}" data-tag="${t}">${t}</div>`).join("") + `</div>`;
 
     if(tag==="共读库"){
-      html += `<div class="rd-addform" style="display:block"><div class="wall-sec-title" style="margin-bottom:8px">${getIcon('globe')} 投稿到共读库（任何人可见）</div><textarea id="rd-pub-t" class="q-area" placeholder="投稿一句给所有人读到的句子 / 文章段落…"></textarea><input id="rd-pub-a" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="出处 / 作者（可选）"><input id="rd-pub-by" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="你的署名（可选）"><div class="wall-acts" style="margin-top:8px"><span class="q-btn primary" id="rd-submit">投稿到共读库</span></div><div class="q-hint" style="margin-top:6px;font-size:12px;opacity:.7">投稿经 GitHub 公开存储，任何人打开站点都能读到；无需登录。</div></div>`;
+      html += `<div class="rd-addform" style="display:block"><div class="wall-sec-title" style="margin-bottom:8px">${getIcon('globe')} 投稿到共读库（任何人可见）</div><textarea id="rd-pub-t" class="q-area" placeholder="投稿一句给所有人读到的句子 / 文章段落…"></textarea><input id="rd-pub-a" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="出处 / 作者（可选）"><input id="rd-pub-by" class="echo-name-in" style="width:100%;margin-top:8px" placeholder="你的署名（可选）"><label class="rd-opt"><input type="checkbox" id="rd-pub-daily"> 同时加入「每日一读」轮播</label><div class="wall-acts" style="margin-top:8px"><span class="q-btn primary" id="rd-submit">投稿到共读库</span></div><div class="q-hint" style="margin-top:6px;font-size:12px;opacity:.7">投稿经 GitHub 公开存储，任何人打开站点都能读到；无需登录。</div></div>`;
       html += `<div id="rd-public" style="margin-top:14px"></div>`;
     } else {
       html += `<div class="rd-addbar"><span class="rd-add" id="rd-add">＋ 添加我的文摘</span></div>`;
@@ -3665,6 +3669,12 @@ function renderReader(c){
         sub.textContent = "投稿中…"; sub.style.pointerEvents = "none";
         try{
           await publishReader(t, a, by);
+          const dailyCb = c.querySelector("#rd-pub-daily");
+          if(dailyCb && dailyCb.checked){
+            Sanctuary.store.userDaily = Sanctuary.store.userDaily||[];
+            Sanctuary.store.userDaily.unshift({t, a:a||"我", tag:"我的"});
+            Sanctuary.save();
+          }
           pendingReader.unshift({t, a, by});
           pubAttempts = 0;
           c.querySelector("#rd-pub-t").value=""; c.querySelector("#rd-pub-a").value=""; c.querySelector("#rd-pub-by").value="";
@@ -4105,7 +4115,9 @@ function renderCreate(c){
   Sanctuary.load();
   const def = (scenes.find(s=>s.type==="24h") || scenes[0]).id;
   let sceneId = def, src = "reader", ownText = "", ownAuthor = "佚名";
-  let html = `<div class="create-preview" id="cp"><img class="cp-img" id="cp-img" src="${(scenes.find(s=>s.id===def)||{}).poster||""}"><div class="cp-shade"></div><div class="cp-q" id="cp-q">${escapeHtml(READER_LIB[0].t)}</div><div class="cp-a" id="cp-a">—— ${escapeHtml(READER_LIB[0].a)}</div></div>`;
+  const defSc = scenes.find(s=>s.id===def)||{};
+  const defPoster = defSc.poster||defSc.image||"";
+  let html = `<div class="create-preview" id="cp"${defPoster?'':' style="background:linear-gradient(160deg,#0b2a22,#03110d)"'}><img class="cp-img" id="cp-img" src="${defPoster}"${defPoster?'':' style="display:none"'}><div class="cp-shade"></div><div class="cp-q" id="cp-q">${escapeHtml(READER_LIB[0].t)}</div><div class="cp-a" id="cp-a">—— ${escapeHtml(READER_LIB[0].a)}</div></div>`;
   html += `<div class="q-hint">文字来源</div>`;
   html += `<div class="create-row" id="cp-src"><div class="create-chip sel" data-src="reader">读者金句</div><div class="create-chip" data-src="own">自己写</div></div>`;
   html += `<div id="cp-own" style="display:none"><textarea class="q-area" id="cp-text" placeholder="写一句你想留下的话…"></textarea><input class="echo-name-in" id="cp-author" placeholder="署名（可选）" style="margin-top:8px;width:100%"></div>`;
@@ -4113,6 +4125,8 @@ function renderCreate(c){
   html += `<div class="create-row" id="cp-scenes">` + scenes.slice(0,12).map(s=>`<div class="create-chip${s.id===def?' sel':''}" data-sid="${s.id}">${s.title}</div>`).join("") + `</div>`;
   html += `<div class="wall-acts"><div class="q-btn primary" id="cp-save">保存到我的拼帖</div><div class="q-btn" id="cp-export">导出图片</div></div>`;
   c.innerHTML = html;
+  const cpImg = c.querySelector("#cp-img"), cpPrev = c.querySelector("#cp");
+  if(cpImg) cpImg.onerror = ()=>{ cpImg.style.display="none"; if(cpPrev) cpPrev.style.background="linear-gradient(160deg,#0b2a22,#03110d)"; };
   function refreshQuote(){
     if(src==="reader"){ const q = READER_LIB[Math.floor(Math.random()*READER_LIB.length)]; c.querySelector("#cp-q").textContent = q.t; c.querySelector("#cp-a").textContent = "—— "+q.a; }
     else { c.querySelector("#cp-q").textContent = ownText || "（在此写一句话）"; c.querySelector("#cp-a").textContent = ownAuthor ? "—— "+ownAuthor : ""; }
@@ -4129,7 +4143,10 @@ function renderCreate(c){
   c.querySelectorAll("[data-sid]").forEach(el=> el.addEventListener("click", ()=>{
     sceneId = el.dataset.sid;
     c.querySelectorAll("[data-sid]").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
-    const sc = scenes.find(s=>s.id===sceneId); if(sc) c.querySelector("#cp-img").src = sc.poster||sc.image||sc.video;
+    const sc = scenes.find(s=>s.id===sceneId);
+    const ps = sc ? (sc.poster||sc.image||"") : "";
+    if(ps){ if(cpImg){ cpImg.style.display=""; cpImg.src=ps; } if(cpPrev) cpPrev.style.background=""; }
+    else { if(cpImg) cpImg.style.display="none"; if(cpPrev) cpPrev.style.background="linear-gradient(160deg,#0b2a22,#03110d)"; }
   }));
   c.querySelector("#cp-save").addEventListener("click", ()=>{
     if(src==="own"){ ownText = c.querySelector("#cp-text").value.trim(); ownAuthor = c.querySelector("#cp-author").value.trim()||"佚名"; }
@@ -4156,14 +4173,17 @@ function wrapText(ctx, text, maxW){
 }
 function exportCollagePNG(sceneId, text, author){
   const sc = scenes.find(s=>s.id===sceneId); if(!sc) return;
-  const img = new Image(); img.crossOrigin = "anonymous";
-  img.onload = ()=>{
+  const imgSrc = (sc.poster||sc.image||"");
+  const draw = (img)=>{
     try{
       const W=1080, H=1350, cv=document.createElement("canvas"); cv.width=W; cv.height=H;
       const x=cv.getContext("2d");
-      x.fillStyle="#05080a"; x.fillRect(0,0,W,H);
-      const ir=Math.max(W/img.width, H/img.height); const iw=img.width*ir, ih=img.height*ir;
-      x.drawImage(img,(W-iw)/2,(H-ih)/2,iw,ih);
+      if(img){
+        const ir=Math.max(W/img.width, H/img.height); const iw=img.width*ir, ih=img.height*ir;
+        x.drawImage(img,(W-iw)/2,(H-ih)/2,iw,ih);
+      } else {
+        const bg=x.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#0b2a22"); bg.addColorStop(.5,"#06201a"); bg.addColorStop(1,"#03110d"); x.fillStyle=bg; x.fillRect(0,0,W,H);
+      }
       const g=x.createLinearGradient(0,H,0,H*0.35); g.addColorStop(0,"rgba(0,0,0,.85)"); g.addColorStop(1,"rgba(0,0,0,0)");
       x.fillStyle=g; x.fillRect(0,0,W,H);
       x.fillStyle="#fff"; x.textAlign="center"; x.textBaseline="alphabetic";
@@ -4178,8 +4198,11 @@ function exportCollagePNG(sceneId, text, author){
       flashToast("已导出拼帖图片");
     }catch(e){ flashToast("导出失败："+e.message); }
   };
-  img.onerror = ()=> flashToast("图片加载失败，请用线上版导出");
-  img.src = sc.poster || sc.image || sc.video;
+  if(!imgSrc){ draw(null); return; }
+  const img=new Image(); img.crossOrigin="anonymous";
+  img.onload=()=> draw(img);
+  img.onerror=()=> draw(null);
+  img.src=imgSrc;
 }
 
 function downloadJSON(name, obj){
@@ -5577,12 +5600,19 @@ function updateMoodBadge(forceName){
 
 // ---------- startup ----------
 
+function dailyPool(){
+  if(typeof Sanctuary!=="undefined") Sanctuary.load();
+  const user = (typeof Sanctuary!=="undefined" && Sanctuary.store.userDaily) ? Sanctuary.store.userDaily : [];
+  return READER_LIB.concat(user.map(u=>({t:u.t, a:u.a||"我", tag:u.tag||"我的"})));
+}
+
 function renderSplashDaily(){
   const el = document.getElementById("splash-daily");
   if(!el) return;
   const d = new Date();
   const doy = Math.floor((d - new Date(d.getFullYear(),0,0))/86400000);
-  const q = (typeof READER_LIB!=="undefined" && READER_LIB.length) ? READER_LIB[doy % READER_LIB.length] : null;
+  const pool = dailyPool();
+  const q = pool.length ? pool[doy % pool.length] : null;
   if(q){
     document.getElementById("sd-quote").textContent = "“"+q.t+"”";
     document.getElementById("sd-author").textContent = q.a || "共读库";
