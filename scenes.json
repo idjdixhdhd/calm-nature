@@ -24,7 +24,6 @@
     "category": "short",
     "type": "loop",
     "video": "./media/rain.mp4",
-    "poster": "./media/rain.jpg",
     "audio": {
       "main": "./media/audio/rain.mp3"
     },
