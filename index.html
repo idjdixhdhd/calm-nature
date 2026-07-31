@@ -98,6 +98,12 @@
   .splash-cta button:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.55),0 0 60px -6px rgba(var(--accent-rgb),.65)}
 
   .splash-cta button:active{transform:scale(.96)}
+  .splash-daily{position:relative;z-index:2;max-width:520px;margin:22px auto 0;padding:16px 20px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--shadow-card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-align:left;cursor:pointer;transition:transform .3s,box-shadow .3s;animation:fadeUp 1.2s .5s both}
+  .splash-daily:hover{transform:translateY(-3px);box-shadow:var(--shadow-card),0 0 0 1px rgba(var(--accent-rgb),.4)}
+  .splash-daily .sd-quote{font-family:"Cormorant Garamond","Songti SC",serif;font-size:17px;line-height:1.7;color:#eef3ee}
+  .splash-daily .sd-meta{margin-top:10px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  .splash-daily .sd-sep{opacity:.5}
+  .splash-daily .sd-go{margin-left:auto;color:var(--accent);letter-spacing:.04em}
 
   .splash-hint{position:absolute;bottom:max(22px,var(--safe-b));font-size:11px;letter-spacing:.2em;color:var(--muted);opacity:.7;animation:bounce 2.2s infinite}
 
@@ -1293,6 +1299,11 @@
   <div class="splash-title serif">自然之境<span class="en orbit">Quiet Nature</span></div>
 
   <div class="splash-tag">一处只属于你的自然庇护所。<br>选一片景象，让时间慢下来。</div>
+
+  <div class="splash-daily" id="splash-daily">
+    <div class="sd-quote" id="sd-quote"></div>
+    <div class="sd-meta"><span id="sd-author"></span><span class="sd-sep">·</span><span id="sd-tag"></span><span class="sd-go" id="sd-go">每日一读 ›</span></div>
+  </div>
 
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
 
@@ -3501,7 +3512,18 @@ const READER_LIB = [
   {t:"笑，全世界便与你同声笑；哭，你便独自哭。", a:"读者", tag:"人生"},
   {t:"我们都是赶路的人，偶尔也要停下来，等一等灵魂。", a:"读者", tag:"时光"},
   {t:"愿你出走半生，归来仍是少年。", a:"读者", tag:"时光"},
-  {t:"世间所有的相遇，都是久别重逢。", a:"白落梅", tag:"人生"}
+  {t:"世间所有的相遇，都是久别重逢。", a:"白落梅", tag:"人生"},
+
+  {t:"风很温柔，云很悠闲，你只需要呼吸。", a:"共读库", tag:"自然"},
+  {t:"把日子过成慢镜头：看一片叶子落下，也值得高兴半天。", a:"共读库", tag:"时光"},
+  {t:"世界很吵，但你可以给自己留一间安静的房间。", a:"共读库", tag:"自我"},
+  {t:"慢慢来，比较快。", a:"共读库", tag:"自我"},
+  {t:"允许自己什么都不做，只是坐着，听风。", a:"共读库", tag:"自然"},
+  {t:"真正的休息，是让心也下班。", a:"共读库", tag:"治愈"},
+  {t:"你不需要永远坚强，偶尔柔软也是一种力量。", a:"共读库", tag:"自我"},
+  {t:"把烦恼交给夜风，明早再拾。", a:"共读库", tag:"时光"},
+  {t:"一盏灯，一本书，一段不被打扰的时光，便是人间好时节。", a:"共读库", tag:"治愈"},
+  {t:"万物皆有裂痕，那是光照进来的地方。", a:"莱昂纳德·科恩", tag:"哲思"}
 ];
 
 
@@ -5555,6 +5577,19 @@ function updateMoodBadge(forceName){
 
 // ---------- startup ----------
 
+function renderSplashDaily(){
+  const el = document.getElementById("splash-daily");
+  if(!el) return;
+  const d = new Date();
+  const doy = Math.floor((d - new Date(d.getFullYear(),0,0))/86400000);
+  const q = (typeof READER_LIB!=="undefined" && READER_LIB.length) ? READER_LIB[doy % READER_LIB.length] : null;
+  if(q){
+    document.getElementById("sd-quote").textContent = "“"+q.t+"”";
+    document.getElementById("sd-author").textContent = q.a || "共读库";
+    document.getElementById("sd-tag").textContent = q.tag || "";
+  }
+}
+
 function init(){
 
   initParticles();
@@ -5566,6 +5601,10 @@ function init(){
   requestAnimationFrame(loop);
 
   paintIcons();
+
+  renderSplashDaily();
+  const sdEl = document.getElementById("splash-daily");
+  if(sdEl) sdEl.addEventListener("click", ()=>{ showView("sanctuary"); openModule("reader"); });
 
 
 
