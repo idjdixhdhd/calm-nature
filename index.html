@@ -1297,7 +1297,7 @@
   <div class="splash-cta"><button id="btn-enter">进入</button></div>
 
   <div class="splash-sub">
-    <button id="btn-human-splash" class="ghost">人间</button>
+    <button id="btn-travel-splash" class="ghost">旅人</button>
     <button id="btn-sanctuary-splash" class="ghost">空栈</button>
   </div>
 
@@ -1357,7 +1357,7 @@
 
       <div class="board-switch">
         <span class="bs" id="bs-nature">自然</span>
-        <span class="bs" id="bs-human">人间</span>
+        <span class="bs" id="bs-travel">旅人</span>
       </div>
 
       <div class="ic" id="btn-sanct-gallery" title="空栈" data-icon="home"></div>
@@ -1658,11 +1658,11 @@ function setBoard(b){
   if(body){ body.dataset.rendered = ""; body.innerHTML = ""; }
   const nm = document.getElementById("gal-board-name");
   const en = document.getElementById("gal-board-en");
-  if(nm) nm.textContent = (b==="human" ? "人间" : "自然之境");
-  if(en) en.textContent = (b==="human" ? "Human World" : "Gallery");
-  const bn = document.getElementById("bs-nature"), bh = document.getElementById("bs-human");
-  if(bn) bn.classList.toggle("on", b!=="human");
-  if(bh) bh.classList.toggle("on", b==="human");
+  if(nm) nm.textContent = (b==="travel" ? "旅人·远方" : "自然之境");
+  if(en) en.textContent = (b==="travel" ? "The Wanderer" : "Gallery");
+  const bn = document.getElementById("bs-nature"), bt = document.getElementById("bs-travel");
+  if(bn) bn.classList.toggle("on", b!=="travel");
+  if(bt) bt.classList.toggle("on", b==="travel");
   renderGallery();
 }
 
@@ -1690,11 +1690,13 @@ const CAT_META = {
 
   sky:{title:"天垂·奇景", en:"Sky Wonders", desc:"极光、星夜与天象，把头顶的浩瀚收进眼底。"},
 
-  "human-night":{title:"夜行漫游", en:"Night Wander", desc:"雨夜街道、城市霓虹与夜市灯火——在城市的暗处慢慢走，让喧嚣沉下去。"},
+  "travel-far":{title:"远山·苍茫", en:"Distant Mountains", desc:"翻过一道山梁，前面还有更远的山。天地很大，人很小。"},
 
-  "human-warm":{title:"暖光栖息", en:"Warm Hearth", desc:"茶馆、咖啡馆、烛火与书架的暖光，是疲惫时可停靠的角落。"},
+  "travel-road":{title:"长路·林途", en:"The Long Road", desc:"一个人走在没有尽头的林间与雪径，水声领着路。"},
 
-  "human-life":{title:"烟火市井", en:"Market & Alley", desc:"市集、老街与渔港的晨昏，人间最朴素的烟火气。"}
+  "travel-horizon":{title:"海阔·水路", en:"Sea & River", desc:"一直走到水天相接的地方，河往远方流，不回头。"},
+
+  "travel-night":{title:"夜泊", en:"Night Rest", desc:"夜里也有光在天上走；走累了，生一堆火。"}
 
 };
 
@@ -2128,7 +2130,7 @@ function renderGallery(){
   body.innerHTML = "";
 
   if(!cats || !cats.length){
-    body.innerHTML = `<div class="board-empty"><div class="be-ic">🌿</div><h3 class="serif">人间 · 素材整理中</h3><p>沉浸式的人间烟火画廊正在筹备真实 4K 素材，敬请期待。届时这里会是城市夜、雨巷、茶馆、市集等治愈日常。</p></div>`;
+    body.innerHTML = `<div class="board-empty"><div class="be-ic">🌿</div><h3 class="serif">旅人 · 素材整理中</h3><p>沉浸式的旅途画廊正在筹备真实 4K 素材，敬请期待。届时这里会是公路、车窗、远山与车站等独处的风景。</p></div>`;
     return;
   }
 
@@ -5595,7 +5597,7 @@ function init(){
 
   document.getElementById("btn-enter").addEventListener("click", ()=>{ setBoard("nature"); showView("guide"); });
 
-  document.getElementById("btn-human-splash").addEventListener("click", ()=>{ setBoard("human"); showView("gallery"); });
+  document.getElementById("btn-travel-splash").addEventListener("click", ()=>{ setBoard("travel"); showView("gallery"); });
 
   document.getElementById("btn-gal-from-guide").addEventListener("click", ()=> showView("gallery"));
 
@@ -5603,7 +5605,7 @@ function init(){
 
   document.getElementById("bs-nature").addEventListener("click", ()=> setBoard("nature"));
 
-  document.getElementById("bs-human").addEventListener("click", ()=> setBoard("human"));
+  document.getElementById("bs-travel").addEventListener("click", ()=> setBoard("travel"));
 
   document.getElementById("btn-back").addEventListener("click", exitPlayer);
 
