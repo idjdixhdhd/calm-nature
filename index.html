@@ -1243,6 +1243,35 @@
 .accent-bar{ height:3px; width:100%; background:linear-gradient(90deg,var(--accent),transparent); }
 
 .bond-card{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px; }
+
+  /* 新模块：小石子 / 温柔回顾 / 成长轨迹 / 身体扫描 / 自动安静 / 漂流瓶 */
+  .stone-scene{position:relative;height:210px;margin:14px 0;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#0a1a2a,#06121d);display:flex;align-items:flex-end;justify-content:center}
+  .stone-water{position:absolute;left:0;right:0;bottom:0;height:64px;background:radial-gradient(120% 100% at 50% 100%,rgba(120,180,200,.28),transparent);animation:wave 4.5s ease-in-out infinite}
+  .stone-shore{position:absolute;left:0;right:0;bottom:0;height:58px;background:linear-gradient(180deg,#1a2a20,#0c1812)}
+  .stone-pebble{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);max-width:74%;padding:12px 16px;background:rgba(20,30,26,.92);border:1px solid var(--glass-border);border-radius:14px;color:var(--ui);font-size:14px;text-align:center;line-height:1.5;box-shadow:0 6px 22px rgba(0,0,0,.45);transition:all .7s cubic-bezier(.2,.8,.2,1)}
+  .stone-pebble.ashore{bottom:62px;background:linear-gradient(160deg,#274033,#16271d);box-shadow:0 0 26px rgba(var(--accent-rgb),.55);border-color:rgba(var(--accent-rgb),.6)}
+  .stone-scene.done .stone-water{display:none}
+  @keyframes wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .rev-toggle{display:flex;gap:8px;margin:10px 0}
+  .rev-toggle span{padding:6px 18px;border-radius:20px;border:1px solid var(--glass-border);color:var(--muted);font-size:13px;cursor:pointer;transition:.2s}
+  .rev-toggle span.on{background:var(--accent);color:#06120d;border-color:var(--accent)}
+  .rev-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px;margin:8px 0}
+  .rev-h{font-size:14px;margin-bottom:8px;color:var(--ui)}
+  .rev-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed rgba(var(--accent-rgb),.18);font-size:13px;color:var(--muted)}
+  .rev-row b{color:var(--ui)}
+  .rev-msg{margin-top:10px;font-size:13px;line-height:1.7;color:var(--ui)}
+  .grow-tree{display:flex;justify-content:center;margin:10px 0}
+  .grow-name{text-align:center;font-size:16px;color:var(--ui);margin:6px 0;font-weight:600}
+  .body-prog{height:4px;background:rgba(var(--accent-rgb),.2);border-radius:4px;overflow:hidden;margin:10px 0}
+  .body-bar{height:100%;background:var(--accent);transition:width .4s}
+  .body-step{font-size:15px;line-height:1.75;color:var(--ui);min-height:88px;display:flex;align-items:center;padding:14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px}
+  .body-done{text-align:center;color:var(--ui);padding:22px}
+  .body-done .i-svg{width:44px;height:44px;color:var(--accent);margin-bottom:10px}
+  .bottle-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px 16px 16px 22px;margin-top:12px;color:var(--ui);font-size:15px;line-height:1.7;position:relative}
+  .bottle-card::before{content:"";position:absolute;left:14px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .bottle-meta{margin-top:8px;font-size:12px;color:var(--muted)}
+  .quiet-mode #app{filter:brightness(.82) saturate(.92)}
+  .quiet-mode .topbar,.quiet-mode .appbar{opacity:.5}
 </style>
 
 </head>
@@ -2892,6 +2921,10 @@ const Sanctuary = {
     if(!this.store.rituals) this.store.rituals = [];
     if(!this.store.bonds) this.store.bonds = [];
     if(!this.store.readerNotes) this.store.readerNotes = {};
+    if(!this.store.stone) this.store.stone = {date:"", text:"", done:false};
+    if(!this.store.body) this.store.body = {sessions:0, last:0};
+    if(!this.store.quiet) this.store.quiet = {auto:false};
+    if(!this.store.bottle) this.store.bottle = {sent:[]};
     if(!this.store.settings) this.store.settings = {};
 
     return this.store;
@@ -2930,11 +2963,11 @@ const STACKS = [
 
   {key:"reader", icon:"scroll", svg:"reader", title:"读者栈", en:"Reader", accent:"#e6b873", mode:"自我", desc:"每日一句，与好文字安静相处——把《读者》装进口袋。", modules:["reader"]},
 
-  {key:"void",   icon:"moonNew", svg:"void", title:"留白栈", en:"The Void", accent:"#b49cf0", mode:"自我", desc:"给心事留白，与时间为友。写给自己的，不必给别人看。", modules:["mood","notes","capsule"]},
+  {key:"void",   icon:"moonNew", svg:"void", title:"留白栈", en:"The Void", accent:"#b49cf0", mode:"自我", desc:"给心事留白，与时间为友。写给自己的，不必给别人看。", modules:["mood","notes","capsule","stone","body","review","growth","quiet"]},
 
   {key:"fold",   icon:"swan", svg:"fold", title:"折叠栈", en:"Fold", accent:"#8fb8e6", mode:"需求", desc:"折一枚纸，折一段静气。从一张方纸开始，跟随呼吸折一只纸鹤——手的动作，会让心慢下来。", modules:["fold"]},
 
-  {key:"module", icon:"puzzle", svg:"module", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成一套日常仪式，随时启用，也能导出分享。", modules:["ritual","wall"]}
+  {key:"module", icon:"puzzle", svg:"module", title:"模块栈", en:"Module", accent:"#e69b73", mode:"需求", desc:"像搭积木一样，把场景·声景·计时组合成一套日常仪式，随时启用，也能导出分享。", modules:["ritual","wall","bottle"]}
 
 ];
 
@@ -2968,7 +3001,14 @@ const MODULES = {
 
   ritual:{svg:"puzzle",  title:"我的仪式", en:"Rituals", d:"组合场景·声景·计时"},
 
-  wall:{svg:"write",    title:"共笔墙", en:"Shared Wall", d:"留言 · 互享 · 多人"}
+  wall:{svg:"write",    title:"共笔墙", en:"Shared Wall", d:"留言 · 互享 · 多人"},
+
+  stone:{svg:"drop",     title:"今日小石子", en:"Today's Stone", d:"放一枚石子，代表今天想完成的一件事"},
+  review:{svg:"notebook",title:"温柔回顾", en:"Gentle Review", d:"这一周 / 这一个月，你如何与自己相处"},
+  growth:{svg:"tree",    title:"成长轨迹", en:"Growth Trail", d:"你来过的日子，慢慢长成一棵树"},
+  body:{svg:"wave",     title:"身体扫描", en:"Body Scan", d:"跟着指引，从脚到头松下来"},
+  quiet:{svg:"moon",    title:"自动安静", en:"Auto Quiet", d:"进站点，世界自动调暗、安静下来"},
+  bottle:{svg:"bubble",  title:"漂流瓶", en:"Drift Bottle", d:"写一句扔出去，被陌生人轻轻捡起"},
 
 };
 
@@ -3284,6 +3324,12 @@ function openModule(key){
   else if(key==="capsule") renderCapsule(c);
   else if(key==="fold") renderFold(c);
   else if(key==="ritual") renderRitual(c);
+  else if(key==="stone") renderStone(c);
+  else if(key==="review") renderReview(c);
+  else if(key==="growth") renderGrowth(c);
+  else if(key==="body") renderBody(c);
+  else if(key==="quiet") renderQuiet(c);
+  else if(key==="bottle") renderBottle(c);
 
   document.getElementById("sanct-detail").classList.add("open");
 
@@ -4076,21 +4122,23 @@ const Presence = {
   },
   stop(){ this.running=false; clearInterval(this.beatTimer); clearInterval(this.pollTimer); const el=document.getElementById("presence-dot"); if(el) el.style.display="none"; },
   async gh(query, vars){
-    try{ const r=await fetch("https://api.github.com/graphql",{method:"POST",headers:{"Authorization":"Bearer "+this.tok,"Content-Type":"application/json","User-Agent":"calm-nature"},body:JSON.stringify({query,variables:vars||{}})}); const j=await r.json(); if(j&&j.errors) console.warn("presence gh", j.errors); return j; }catch(e){ return null; }
+    try{ return await ghql(query, vars); }catch(e){ console.warn("presence gh:", e&&e.message); return null; }
   },
   async ensureDiscussion(){
     try{
-      const cats = await this.gh(`query($r:ID!){ repository(id:$r){ discussionCategories(first:20){ nodes{ id name } } } }`, {r:this.repoId});
+      const cats = await this.gh(`query($repoId:ID!){ node(id:$repoId){ ... on Repository{ discussionCategories(first:20){ nodes{ id name } } } } }`, {repoId:this.repoId});
+      const cn = cats&&cats.node&&cats.node.discussionCategories&&cats.node.discussionCategories.nodes;
       const useCat = this.catId;
-      const q = `query($r:ID!,$c:ID!,$t:String!){ repository(id:$r){ discussions(first:50,categoryId:$c,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id title } } } }`;
-      const j = await this.gh(q, {r:this.repoId, c:useCat, t:PRESENCE_TITLE});
-      const nodes = j&&j.data&&j.data.repository&&j.data.repository.discussions&&j.data.repository.discussions.nodes;
+      const q = `query($repoId:ID!,$c:ID!,$t:String!){ node(id:$repoId){ ... on Repository{ discussions(first:50,categoryId:$c,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id title } } } } }`;
+      const j = await this.gh(q, {repoId:this.repoId, c:useCat, t:PRESENCE_TITLE});
+      const nodes = j&&j.node&&j.node.discussions&&j.node.discussions.nodes;
       const found = nodes&&nodes.find(n=>n.title===PRESENCE_TITLE);
       if(found){ this.discId=found.id; return; }
-      const m = `mutation($r:ID!,$c:ID!,$t:String!){ createDiscussion(input:{repositoryId:$r,categoryId:$c,title:$t,body:\"presence heartbeat\"}){ discussion{ id } } }`;
-      const r2 = await this.gh(m, {r:this.repoId, c:useCat, t:PRESENCE_TITLE});
-      this.discId = r2&&r2.data&&r2.data.createDiscussion&&r2.data.createDiscussion.discussion&&r2.data.createDiscussion.discussion.id;
-    }catch(e){}
+      const m = `mutation($repoId:ID!,$c:ID!,$t:String!){ createDiscussion(input:{repositoryId:$repoId,categoryId:$c,title:$t,body:\"presence heartbeat\"}){ discussion{ id } } }`;
+      const r2 = await this.gh(m, {repoId:this.repoId, c:useCat, t:PRESENCE_TITLE});
+      this.discId = r2&&r2.createDiscussion&&r2.createDiscussion.discussion&&r2.createDiscussion.discussion.id;
+      if(!this.discId) flashToast("陪伴微光：连接 GitHub 失败");
+    }catch(e){ console.warn("presence ensure:", e&&e.message); flashToast("陪伴微光：连接 GitHub 失败"); }
   },
   async beat(){
     if(!this.discId) return;
@@ -4100,7 +4148,7 @@ const Presence = {
     if(!this.discId) return;
     try{
       const j = await this.gh(`query($d:ID!){ discussion(id:$d){ comments(first:100,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id body createdAt } } } }`, {d:this.discId});
-      const nodes = j&&j.data&&j.data.discussion&&j.data.discussion.comments&&j.data.discussion.comments.nodes;
+      const nodes = j&&j.discussion&&j.discussion.comments&&j.discussion.comments.nodes;
       if(!nodes) return;
       const now=Date.now(), cutoff=now-5*60*1000; const map={};
       nodes.forEach(n=>{ try{ const o=JSON.parse(n.body); if(o&&o.id){ if(!map[o.id]||o.ts>map[o.id]) map[o.id]=o.ts; } }catch(e){} });
@@ -4351,6 +4399,194 @@ function downloadJSON(name, obj){
     const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(url), 2000);
   }catch(e){ flashToast("导出失败"); }
+}
+
+function renderStone(c){
+  Sanctuary.load();
+  const today = Sanctuary.todayKey();
+  let st = Sanctuary.store.stone;
+  if(!st || st.date !== today){ st = {date:today, text:"", done:false}; Sanctuary.store.stone = st; Sanctuary.save(); }
+  function paint(){
+    const s = Sanctuary.store.stone;
+    let html = `<div class="q-hint">今天，想完成的一件小事是什么？写下来，放一枚小石子在水边。</div>`;
+    if(!s.text){
+      html += `<textarea class="q-area" id="stone-text" placeholder="例如：读 10 页书 / 散步 20 分钟 / 给妈妈打个电话…"></textarea>`;
+      html += `<div class="q-actions"><div class="q-btn primary" id="stone-put">放下石子</div></div>`;
+    } else if(!s.done){
+      html += `<div class="stone-scene"><div class="stone-water"></div><div class="stone-pebble" id="stone-pebble">${escapeHtml(s.text)}</div></div>`;
+      html += `<div class="q-hint">石子已在水边。完成了，就把它推上岸。</div>`;
+      html += `<div class="q-actions"><div class="q-btn primary" id="stone-done">推上岸 ✓</div><div class="q-btn" id="stone-reset">换一枚</div></div>`;
+    } else {
+      html += `<div class="stone-scene done"><div class="stone-shore"></div><div class="stone-pebble ashore">${escapeHtml(s.text)}</div></div>`;
+      html += `<div class="q-hint">今天已完成 ✦ 辛苦了。</div>`;
+      html += `<div class="q-actions"><div class="q-btn" id="stone-reset">明天再来</div></div>`;
+    }
+    c.innerHTML = html;
+    const t = c.querySelector("#stone-text");
+    if(t) c.querySelector("#stone-put").addEventListener("click", ()=>{ const v=t.value.trim(); if(!v){ flashToast("先写一句吧"); return; } Sanctuary.store.stone.text=v; Sanctuary.store.stone.done=false; Sanctuary.save(); paint(); });
+    const d = c.querySelector("#stone-done"); if(d) d.addEventListener("click", ()=>{ Sanctuary.store.stone.done=true; Sanctuary.save(); paint(); flashToast("已推上岸 ✦"); });
+    const r = c.querySelector("#stone-reset"); if(r) r.addEventListener("click", ()=>{ Sanctuary.store.stone={date:Sanctuary.todayKey(),text:"",done:false}; Sanctuary.save(); paint(); });
+  }
+  paint();
+}
+
+function renderReview(c){
+  Sanctuary.load();
+  let range = "week";
+  function statsFor(days){
+    const cutoff = Date.now() - days*86400000;
+    let moodN=0, journalN=0, capsuleN=0, stoneN=0;
+    Object.keys(Sanctuary.store.moods||{}).forEach(k=>{ const r=Sanctuary.store.moods[k]; if(r && r.ts && r.ts>=cutoff) moodN++; });
+    (Sanctuary.store.journal||[]).forEach(x=>{ if(x.ts && x.ts>=cutoff) journalN++; });
+    (Sanctuary.store.capsules||[]).forEach(x=>{ if(x.ts && x.ts>=cutoff) capsuleN++; });
+    if(Sanctuary.store.stone && Sanctuary.store.stone.done && Sanctuary.store.stone.date===Sanctuary.todayKey()) stoneN=1;
+    return {moodN, journalN, capsuleN, stoneN, total:moodN+journalN+capsuleN+stoneN};
+  }
+  function paint(){
+    const s = statsFor(range==="week"?7:30);
+    const label = range==="week"?"这一周":"这一个月";
+    let html = `<div class="rev-toggle"><span class="${range==='week'?'on':''}" data-r="week">周</span><span class="${range==='month'?'on':''}" data-r="month">月</span></div>`;
+    html += `<div class="rev-card"><div class="rev-h">${label}，你这样与自己相处</div>`;
+    html += `<div class="rev-row"><span>留下心境</span><b>${s.moodN} 次</b></div>`;
+    html += `<div class="rev-row"><span>写下的字</span><b>${s.journalN} 段</b></div>`;
+    html += `<div class="rev-row"><span>封存胶囊</span><b>${s.capsuleN} 枚</b></div>`;
+    html += `<div class="rev-row"><span>小石子</span><b>${s.stoneN} 枚上岸</b></div></div>`;
+    const msg = s.total===0 ? `${label}，你还没怎么来过。没关系，慢慢来——能想起这里，就已经很好。` : `${label}你来了 ${s.total} 次。不必赶进度，能停一下，已经很好。`;
+    html += `<div class="rev-msg">${escapeHtml(msg)}</div>`;
+    c.innerHTML = html;
+    c.querySelectorAll("[data-r]").forEach(el=> el.addEventListener("click", ()=>{ range=el.dataset.r; paint(); }));
+  }
+  paint();
+}
+
+function growthTreeSVG(pts){
+  const lv = Math.min(pts,40);
+  const leaves = Math.min(14, Math.floor(lv/2.4));
+  let lvs="";
+  for(let i=0;i<leaves;i++){ const x=12+(i%2?1:-1)*(3+(i*1.5)%8); const y=17-i*1.15; lvs+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.7" fill="var(--accent)" opacity="${(0.45+0.035*i).toFixed(2)}"/>`; }
+  return `<svg viewBox="0 0 24 28" width="130" height="150" aria-hidden="true"><path d="M12 27V13" stroke="#6b5640" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 18c-3.4-1-5.6-3.2-5.6-6.4 3.4 0 5.6 2.2 5.6 6.4z" fill="#3f7d5a"/><path d="M12 16c3.4-1 5.6-3.2 5.6-6.4-3.4 0-5.6 2.2-5.6 6.4z" fill="#4f9a6e"/>${lvs}</svg>`;
+}
+function renderGrowth(c){
+  Sanctuary.load();
+  const moodN = Object.keys(Sanctuary.store.moods||{}).length;
+  const journalN = (Sanctuary.store.journal||[]).length;
+  const capsuleN = (Sanctuary.store.capsules||[]).length;
+  const noteN = (Sanctuary.store.notes||[]).length;
+  const stoneN = (Sanctuary.store.stone && Sanctuary.store.stone.done) ? 1 : 0;
+  const pts = moodN*1 + journalN*2 + capsuleN*3 + noteN*1 + stoneN*2;
+  const stages = [
+    {min:0, name:"一粒种子", desc:"你来了。这就够了。"},
+    {min:3, name:"破土", desc:"开始有痕迹了。"},
+    {min:8, name:"幼苗", desc:"你持续在照顾自己。"},
+    {min:16, name:"小树", desc:"这片安静，已长成习惯。"},
+    {min:30, name:"亭亭如盖", desc:"你拥有一片自己的树荫。"}
+  ];
+  let stage = stages[0]; for(const st of stages){ if(pts>=st.min) stage=st; }
+  const next = stages.find(st=>st.min>pts);
+  let html = `<div class="grow-tree">${growthTreeSVG(pts)}</div>`;
+  html += `<div class="grow-name">${stage.name}</div>`;
+  html += `<div class="q-hint">${stage.desc}</div>`;
+  html += `<div class="rev-row"><span>成长值</span><b>${pts}</b></div>`;
+  html += next ? `<div class="q-hint">再积累 ${next.min-pts} 点，长成「${next.name}」。</div>` : `<div class="q-hint">已是繁茂之姿。继续就好。</div>`;
+  c.innerHTML = html;
+}
+
+function renderBody(c){
+  const steps = [
+    "找一个舒服的姿势，躺下或靠着，轻轻闭上眼睛。",
+    "把注意力放到脚趾。感受它们接触床单的温度与重量。",
+    "让小腿慢慢放松，像沉进一汪温水里。",
+    "膝盖、大腿，一点一点松开。",
+    "臀部与腰，落进支撑里，不必用力。",
+    "腹部的起伏，跟着呼吸，轻轻升起、落下。",
+    "胸口松开了，肩膀沉下来，远离耳朵。",
+    "手臂垂在身侧，手指自然舒展。",
+    "脖颈、下巴放松，眉头也舒展开。",
+    "最后，整个自己都安静了。停在这里，想留多久都行。"
+  ];
+  let i=0, timer=null;
+  function paint(){
+    if(timer){ clearInterval(timer); timer=null; }
+    if(i>=steps.length){
+      c.innerHTML = `<div class="body-done">${getIcon('moon')}<div>扫描完成。愿你安心入睡。</div><div class="q-actions"><div class="q-btn" id="body-restart">再扫一次</div></div></div>`;
+      c.querySelector("#body-restart").addEventListener("click", ()=>{ i=0; paint(); });
+      return;
+    }
+    const pct = Math.round(i/steps.length*100);
+    let html = `<div class="body-prog"><div class="body-bar" style="width:${pct}%"></div></div>`;
+    html += `<div class="body-step">${steps[i]}</div>`;
+    html += `<div class="q-hint">跟随呼吸，停留片刻（约 15 秒）。</div>`;
+    html += `<div class="q-actions"><div class="q-btn primary" id="body-next">下一段 →</div><div class="q-btn" id="body-auto">自动播放</div></div>`;
+    c.innerHTML = html;
+    c.querySelector("#body-next").addEventListener("click", ()=>{ i++; paint(); });
+    c.querySelector("#body-auto").addEventListener("click", ()=>{ if(timer) return; flashToast("自动播放中，每段约 15 秒"); const tick=()=>{ if(i>=steps.length){ paint(); return; } i++; paint(); }; timer=setInterval(tick, 15000); });
+  }
+  paint();
+}
+
+function applyQuietMode(){
+  try{ Sanctuary.load(); const on = Sanctuary.store.quiet && Sanctuary.store.quiet.auto; document.body.classList.toggle("quiet-mode", !!on); }catch(e){}
+}
+function renderQuiet(c){
+  Sanctuary.load();
+  const on = !!(Sanctuary.store.quiet && Sanctuary.store.quiet.auto);
+  let html = `<div class="q-hint">开启后，每次进站点，画面会自动调暗、收起干扰，只留下自然的安静。像走进另一个房间。</div>`;
+  html += `<div class="rev-row"><span>自动安静</span><b class="si ${on?'on':''}" id="quiet-toggle">${on?'开':'关'}</b></div>`;
+  html += `<div class="q-hint" style="color:var(--muted)">注：网页无法真正关闭手机系统通知（那需要系统权限）。这里做的是「视觉安静」——把站点本身调暗、安静下来。</div>`;
+  c.innerHTML = html;
+  c.querySelector("#quiet-toggle").addEventListener("click", ()=>{
+    const nv = !(Sanctuary.store.quiet && Sanctuary.store.quiet.auto);
+    Sanctuary.store.quiet = Sanctuary.store.quiet || {}; Sanctuary.store.quiet.auto = nv; Sanctuary.save();
+    applyQuietMode(); renderQuiet(c); flashToast(nv ? "已进入自动安静" : "已关闭自动安静");
+  });
+}
+
+async function ensureBottleDiscussion(title){
+  try{
+    const cats = await ghql(`query($repoId:ID!){ node(id:$repoId){ ... on Repository{ discussionCategories(first:20){ nodes{ id name } } } } }`, {repoId:WALL_CFG.repoId});
+    const useCat = WALL_CFG.categoryId;
+    const j = await ghql(`query($repoId:ID!,$c:ID!,$t:String!){ node(id:$repoId){ ... on Repository{ discussions(first:50,categoryId:$c,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id title } } } } }`, {repoId:WALL_CFG.repoId, c:useCat, t:title});
+    const nodes = j && j.node && j.node.discussions && j.node.discussions.nodes;
+    const found = nodes && nodes.find(n=>n.title===title);
+    if(found) return found.id;
+    const r2 = await ghql(`mutation($repoId:ID!,$c:ID!,$t:String!){ createDiscussion(input:{repositoryId:$repoId,categoryId:$c,title:$t,body:"drift bottles"}){ discussion{ id } } }`, {repoId:WALL_CFG.repoId, c:useCat, t:title});
+    return r2 && r2.createDiscussion && r2.createDiscussion.discussion && r2.createDiscussion.discussion.id;
+  }catch(e){ console.warn("bottle disc", e&&e.message); return null; }
+}
+function renderBottle(c){
+  Sanctuary.load();
+  const DISC_TITLE = "[反馈] 漂流瓶";
+  let html = `<div class="q-hint">写一句扔进海里，会被某个陌生人轻轻捡起；你也去捡一只别人扔的瓶子。匿名、轻、不回复也行。</div>`;
+  html += `<textarea class="q-area" id="bottle-text" placeholder="写一句给陌生人的话…（心事、祝福、或一句诗）"></textarea>`;
+  html += `<div class="q-actions"><div class="q-btn primary" id="bottle-throw">扔出瓶子</div><div class="q-btn" id="bottle-pick">捡一只瓶子</div></div>`;
+  html += `<div id="bottle-show"></div>`;
+  c.innerHTML = html;
+  c.querySelector("#bottle-throw").addEventListener("click", async ()=>{
+    const v = c.querySelector("#bottle-text").value.trim(); if(!v){ flashToast("先写一句吧"); return; }
+    const el = c.querySelector("#bottle-show"); el.innerHTML = `<div class="q-hint">正在扔出…</div>`;
+    try{
+      const discId = await ensureBottleDiscussion(DISC_TITLE);
+      if(!discId){ el.innerHTML = `<div class="q-hint" style="color:#ff9b9b">漂流瓶通道连接失败（GitHub）</div>`; return; }
+      await ghql(`mutation($d:ID!,$b:String!){ addDiscussionComment(input:{discussionId:$d,body:$b}){ comment{ id } } }`, {d:discId, b:JSON.stringify({t:v, ts:Date.now()})});
+      Sanctuary.store.bottle = Sanctuary.store.bottle || {}; Sanctuary.store.bottle.sent = Sanctuary.store.bottle.sent || [];
+      Sanctuary.store.bottle.sent.push({t:v, ts:Date.now()}); Sanctuary.save();
+      el.innerHTML = `<div class="bottle-card">${escapeHtml(v)}<div class="bottle-meta">已漂向海里 · 愿它被温柔捡起</div></div>`;
+      c.querySelector("#bottle-text").value = "";
+    }catch(e){ el.innerHTML = `<div class="q-hint" style="color:#ff9b9b">扔出失败：${escapeHtml(e.message)}</div>`; }
+  });
+  c.querySelector("#bottle-pick").addEventListener("click", async ()=>{
+    const el = c.querySelector("#bottle-show"); el.innerHTML = `<div class="q-hint">正在海边寻找…</div>`;
+    try{
+      const discId = await ensureBottleDiscussion(DISC_TITLE);
+      if(!discId){ el.innerHTML = `<div class="q-hint" style="color:#ff9b9b">漂流瓶通道连接失败（GitHub）</div>`; return; }
+      const data = await ghql(`query($d:ID!){ discussion(id:$d){ comments(first:100,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id body createdAt } } } }`, {d:discId});
+      const nodes = data && data.discussion && data.discussion.comments && data.discussion.comments.nodes || [];
+      const bottles = nodes.map(n=>{ try{ return JSON.parse(n.body); }catch(e){ return null; } }).filter(o=>o && o.t);
+      if(!bottles.length){ el.innerHTML = `<div class="q-hint">海里还很安静，还没有瓶子。你先扔一只？</div>`; return; }
+      const pick = bottles[Math.floor(Math.random()*bottles.length)];
+      el.innerHTML = `<div class="bottle-card">${escapeHtml(pick.t)}<div class="bottle-meta">一只陌生的瓶子，漂到了你手里</div></div>`;
+    }catch(e){ el.innerHTML = `<div class="q-hint" style="color:#ff9b9b">捡瓶子失败：${escapeHtml(e.message)}</div>`; }
+  });
 }
 
 function renderNotes(c){
@@ -5800,6 +6036,7 @@ function init(){
   if(sdEl) sdEl.addEventListener("click", ()=>{ showView("sanctuary"); openModule("reader"); });
 
   applyAccountColor();
+  applyQuietMode();
   applySplashPersonal();
 
   if(localStorage.getItem("qn_presence_on")!=="0"){ try{ Presence.init(); }catch(e){} } else { const pd=document.getElementById("presence-dot"); if(pd) pd.style.display="none"; }
