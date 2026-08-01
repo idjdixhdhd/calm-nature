@@ -1019,6 +1019,9 @@
   .site-stat .ss-sep{color:var(--muted)}
   .umami-wrap{margin-top:10px;border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;background:#0b121a;height:66vh}
   .umami-iframe{width:100%;height:100%;border:0;display:block;min-height:66vh}
+  .umami-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:11px;line-height:1.5;color:var(--muted,#9fb0a6)}
+  .umami-legend span{background:rgba(var(--accent-rgb,140,170,150),.08);border:1px solid var(--glass-border,#2a3a36);border-radius:8px;padding:3px 7px}
+  .umami-legend b{color:var(--text,#eef3ee);font-weight:600}
   .umami-fallback{font-size:12px;opacity:.6;margin-top:10px;line-height:1.7}
   .umami-fallback a{color:var(--accent);text-decoration:none}
   .umami-fallback a:hover{text-decoration:underline}
@@ -6203,6 +6206,15 @@ function renderWall(c){
     <div id="admin-stat-slot"></div>
     <div id="self-stat-slot" class="self-stat-wrap"></div>
     <div class="wall-sec-title">访问数据 · Umami 实时看板</div>
+    <div class="umami-legend">
+      <span><b>实时在线</b> 此刻正在看的人数</span>
+      <span><b>访客</b> 独立人数（同一人只算一次）</span>
+      <span><b>浏览量</b> 页面被打开的总次数</span>
+      <span><b>来源</b> 从哪来（直接 / 微信 / QQ / 搜索）</span>
+      <span><b>页面</b> 大家看了哪些页</span>
+      <span><b>设备·浏览器·系统</b> 自动识别访客用的手机或电脑</span>
+      <span><b>地区</b> 访客所在国家 / 省份</span>
+    </div>
     <div class="umami-wrap"><iframe class="umami-iframe" src="https://cloud.umami.is/share/U6luwWBJ7AYy1vUP" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="访问数据实时看板"></iframe></div>
     <div class="umami-fallback">完整看板（来源 / 页面 / 地区 / 设备 / 浏览器 / 系统 / 实时在线）由 Umami 提供。图表从国外服务器加载，偶现空白或偏慢——可<a href="https://cloud.umami.is/share/U6luwWBJ7AYy1vUP" target="_blank" rel="noopener">在新标签打开 Umami 看板 ↗</a>。下方「不蒜子」为本站累计访问量。</div>
     <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。上方「不蒜子」显示全站累计访客 / 访问量；下方「访问信息」免后端实时识别你本次的来源 / 设备 / 系统 / 浏览器（切换微信、QQ、系统浏览器刷新即可见变化）。</div>
