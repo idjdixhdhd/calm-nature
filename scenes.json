@@ -5,6 +5,8 @@
     "subtitle": "Misty Meadow",
     "category": "oneday",
     "type": "24h",
+    "video": "./media/forest.mp4",
+    "poster": "./media/forest.jpg",
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3",
@@ -21,6 +23,8 @@
     "subtitle": "Rain on Window",
     "category": "short",
     "type": "loop",
+    "video": "./media/rain.mp4",
+    "poster": "./media/splash-hero.jpg",
     "audio": {
       "main": "./media/audio/rain.mp3"
     },
@@ -35,6 +39,8 @@
     "subtitle": "Campfire",
     "category": "short",
     "type": "loop",
+    "video": "./media/campfire.mp4",
+    "poster": "./media/campfire.jpg",
     "audio": {
       "main": "./media/audio/campfire.mp3"
     },
@@ -49,6 +55,8 @@
     "subtitle": "Starry Night",
     "category": "short",
     "type": "loop",
+    "video": "./media/stars.mp4",
+    "poster": "./media/stars.jpg",
     "audio": {
       "night": "./media/audio/music_night.mp3",
       "wind": "./media/audio/wind.mp3"
@@ -64,16 +72,17 @@
     "subtitle": "Alpine Valleys",
     "category": "majestic",
     "type": "loop",
+    "mediaType": "video",
+    "video": "./media/mountain.mp4",
+    "poster": "./media/mountain.jpg",
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
     },
     "credit": {
-      "source": "Pixabay 山景摄影 · 4K",
-      "license": "Free / CC BY-SA 4.0 / Pixabay License",
-      "note": "Real 4K landscape photography"
-    },
-    "motion": "subtle"
+      "video": "Pixabay 山景延时摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（wind / music_day）"
+    }
   },
   {
     "id": "ocean",
@@ -81,16 +90,17 @@
     "subtitle": "Cliffs & Waves",
     "category": "majestic",
     "type": "loop",
+    "mediaType": "video",
+    "video": "./media/ocean.mp4",
+    "poster": "./media/ocean.jpg",
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "main": "./media/audio/seagulls.mp3"
     },
     "credit": {
-      "source": "Wikimedia Commons / Karelj – 林多斯悬崖碧海 · CC BY 4.0",
-      "license": "Free / CC BY-SA 4.0 / Pixabay License",
-      "note": "Real 4K landscape photography"
-    },
-    "motion": "subtle"
+      "video": "Pixabay 海岸航拍摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（seagulls / wind）"
+    }
   },
   {
     "id": "waterfall",
@@ -98,16 +108,17 @@
     "subtitle": "Jungle Falls",
     "category": "majestic",
     "type": "loop",
+    "mediaType": "video",
+    "video": "./media/waterfall.mp4",
+    "poster": "./media/waterfall.jpg",
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
     },
     "credit": {
-      "source": "Wikimedia Commons / Basile Morin – 孔恩瀑布（世界最宽瀑布） · CC BY-SA 4.0",
-      "license": "Free / CC BY-SA 4.0 / Pixabay License",
-      "note": "Real 4K landscape photography"
-    },
-    "motion": "subtle"
+      "video": "Pixabay 瀑布摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（wind / music_day）"
+    }
   },
   {
     "id": "aurora",
@@ -115,16 +126,17 @@
     "subtitle": "Aurora Borealis",
     "category": "majestic",
     "type": "loop",
+    "mediaType": "video",
+    "video": "./media/aurora.mp4",
+    "poster": "./media/aurora.jpg",
     "audio": {
       "night": "./media/audio/music_night.mp3",
       "wind": "./media/audio/wind.mp3"
     },
     "credit": {
-      "source": "Unsplash 极光雪原摄影",
-      "license": "Free / CC BY-SA 4.0 / Pixabay License",
-      "note": "Real 4K landscape photography"
-    },
-    "motion": "subtle"
+      "video": "Pixabay 极光摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（music_night / wind）"
+    }
   },
   {
     "id": "snow",
@@ -132,16 +144,17 @@
     "subtitle": "Snowy Sunset",
     "category": "majestic",
     "type": "loop",
+    "mediaType": "video",
+    "video": "./media/snow.mp4",
+    "poster": "./media/snow.jpg",
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "day": "./media/audio/music_day.mp3"
     },
     "credit": {
-      "source": "Pixabay 雪原森林摄影 · 4K",
-      "license": "Free / CC BY-SA 4.0 / Pixabay License",
-      "note": "Real 4K landscape photography"
-    },
-    "motion": "subtle"
+      "video": "Pixabay 雪原航拍摄影（Pixabay License）",
+      "audio": "开源 beach-wallpaper（wind / music_day）"
+    }
   },
   {
     "id": "water-1",
@@ -149,6 +162,9 @@
     "subtitle": "Still Waters",
     "category": "water",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-1.jpg",
+    "poster": "./media/water-1.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -166,6 +182,9 @@
     "subtitle": "Still Waters",
     "category": "water",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-2.jpg",
+    "poster": "./media/water-2.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -183,6 +202,9 @@
     "subtitle": "Still Waters",
     "category": "water",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-3.jpg",
+    "poster": "./media/water-3.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -200,6 +222,9 @@
     "subtitle": "Edge of Earth",
     "category": "extreme",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-1.jpg",
+    "poster": "./media/extreme-1.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -217,6 +242,9 @@
     "subtitle": "Edge of Earth",
     "category": "extreme",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-2.jpg",
+    "poster": "./media/extreme-2.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -234,6 +262,9 @@
     "subtitle": "Edge of Earth",
     "category": "extreme",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-3.jpg",
+    "poster": "./media/extreme-3.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -251,6 +282,9 @@
     "subtitle": "Enchanted Woods",
     "category": "forest",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-1.jpg",
+    "poster": "./media/forest-1.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -268,6 +302,9 @@
     "subtitle": "Enchanted Woods",
     "category": "forest",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-2.jpg",
+    "poster": "./media/forest-2.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -285,6 +322,9 @@
     "subtitle": "Enchanted Woods",
     "category": "forest",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-3.jpg",
+    "poster": "./media/forest-3.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -302,6 +342,9 @@
     "subtitle": "Sky & Wonders",
     "category": "sky",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-1.jpg",
+    "poster": "./media/sky-1.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -319,6 +362,9 @@
     "subtitle": "Sky & Wonders",
     "category": "sky",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-2.jpg",
+    "poster": "./media/sky-2.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -336,6 +382,9 @@
     "subtitle": "Sky & Wonders",
     "category": "sky",
     "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-3.jpg",
+    "poster": "./media/sky-3.jpg",
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
@@ -344,6 +393,86 @@
     "audio": {
       "wind": "./media/audio/wind.mp3",
       "night": "./media/audio/music_night.mp3"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "night-stars",
+    "title": "夜·星野",
+    "subtitle": "Night Sky",
+    "category": "night",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/stars.jpg",
+    "poster": "./media/stars.jpg",
+    "audio": {
+      "night": "./media/audio/music_night.mp3",
+      "wind": "./media/audio/wind.mp3"
+    },
+    "credit": {
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real night-sky still photography"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "night-aurora",
+    "title": "夜·极光",
+    "subtitle": "Aurora",
+    "category": "night",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/aurora.jpg",
+    "poster": "./media/aurora.jpg",
+    "audio": {
+      "night": "./media/audio/music_night.mp3",
+      "wind": "./media/audio/wind.mp3"
+    },
+    "credit": {
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real aurora still photography"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "night-camp",
+    "title": "夜·篝火",
+    "subtitle": "Campfire",
+    "category": "night",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/campfire.jpg",
+    "poster": "./media/campfire.jpg",
+    "audio": {
+      "night": "./media/audio/music_night.mp3",
+      "wind": "./media/audio/wind.mp3"
+    },
+    "credit": {
+      "source": "Pixabay",
+      "license": "Pixabay License (free)",
+      "note": "Real campfire still photography"
+    },
+    "motion": "subtle"
+  },
+  {
+    "id": "night-snow",
+    "title": "夜·雪寂",
+    "subtitle": "Snow Silence",
+    "category": "night",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/snow.jpg",
+    "poster": "./media/snow.jpg",
+    "audio": {
+      "night": "./media/audio/music_night.mp3",
+      "wind": "./media/audio/wind.mp3"
+    },
+    "credit": {
+      "source": "Pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "note": "Real snowfield still photography"
     },
     "motion": "subtle"
   }
