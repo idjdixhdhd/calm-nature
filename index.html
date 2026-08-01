@@ -107,6 +107,13 @@
 
   .splash-hint{position:absolute;bottom:max(22px,var(--safe-b));font-size:11px;letter-spacing:.2em;color:var(--muted);opacity:.7;animation:bounce 2.2s infinite}
 
+  /* 有人也在 · 陪伴微光 */
+  .presence-dot{position:fixed;left:50%;bottom:max(56px,calc(var(--safe-b) + 48px));transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;color:var(--muted);opacity:.5;transition:opacity .4s,color .4s;pointer-events:none}
+  .presence-dot .pd-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:.4s}
+  .presence-dot.on{opacity:1;color:var(--accent)}
+  .presence-dot.on .pd-dot{background:var(--accent);box-shadow:0 0 12px 2px rgba(var(--accent-rgb),.85);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.55}}
+
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
 
@@ -1605,6 +1612,8 @@
 <div class="account-gate" id="account-gate"></div>
 
 <!-- SETTINGS PANEL -->
+<div id="presence-dot" class="presence-dot"><span class="pd-dot"></span><span class="pd-txt">此刻只有你</span></div>
+
 <div class="settings-panel" id="settings-panel"></div>
 <div class="settings-panel" id="profile-panel"></div>
 <div class="settings-panel" id="data-detail"></div>
@@ -3993,28 +4002,107 @@ function activateOwner(){
   try{ localStorage.setItem("quiet-nature-owner","1"); }catch(e){}
 }
 
+/* WebAudio 合成噪声：无需任何音频文件，框架版也能响 */
+const SynthNoise = {
+  ctx:null, nodes:{},
+  ensureCtx(){ if(!this.ctx){ try{ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } } if(this.ctx && this.ctx.state==="suspended"){ this.ctx.resume().catch(()=>{}); } return this.ctx; },
+  makeBuffer(ctx, type){
+    const len = Math.floor(ctx.sampleRate*3);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    if(type==="white"){ for(let i=0;i<len;i++) d[i]=Math.random()*2-1; }
+    else if(type==="pink"){ let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0; for(let i=0;i<len;i++){ const w=Math.random()*2-1; b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759; b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856; b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980; d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11; b6=w*0.115926; } }
+    else { let last=0; for(let i=0;i<len;i++){ const w=Math.random()*2-1; last=(last+0.02*w)/1.02; d[i]=last*3.5; } }
+    return buf;
+  },
+  start(key, type, vol){
+    const ctx = this.ensureCtx(); if(!ctx) return;
+    this.stop(key);
+    const src = ctx.createBufferSource(); src.buffer = this.makeBuffer(ctx, type); src.loop = true;
+    const g = ctx.createGain(); g.gain.value = Math.max(0, Math.min(1, vol||0.4));
+    let node = src;
+    if(type==="stream"){ const f=ctx.createBiquadFilter(); f.type="bandpass"; f.frequency.value=480; f.Q.value=0.5; node.connect(f); node=f; }
+    else if(type==="fire"){ const f=ctx.createBiquadFilter(); f.type="lowpass"; f.frequency.value=900; node.connect(f); node=f; }
+    node.connect(g); g.connect(ctx.destination); src.start();
+    this.nodes[key] = {src, g};
+  },
+  setVol(key, v){ const n=this.nodes[key]; if(n) n.g.gain.value = Math.max(0, Math.min(1, v)); },
+  stop(key){ const n=this.nodes[key]; if(n){ try{ n.src.stop(); }catch(e){} delete this.nodes[key]; } },
+  stopAll(){ Object.keys(this.nodes).forEach(k=>this.stop(k)); }
+};
+
 const EchoMixer = {
-  els:{},
+  els:{}, _vol:{},
   tracks:[
     {key:"wind",  name:"风声",   svg:"leaf",  url:"./media/audio/wind.mp3",        def:.5},
     {key:"day",   name:"晨光乐", svg:"sun",   url:"./media/audio/music_day.mp3",   def:.4},
     {key:"night", name:"星夜乐", svg:"moon",  url:"./media/audio/music_night.mp3", def:.4},
     {key:"rain",  name:"雨声",   svg:"rain",  url:"./media/audio/rain.mp3",         def:.5},
     {key:"fire",  name:"篝火",   svg:"fire",  url:"./media/audio/campfire.mp3",     def:.5},
-    {key:"sea",   name:"海鸥",   svg:"dove",  url:"./media/audio/seagulls.mp3",     def:.35}
+    {key:"sea",   name:"海鸥",   svg:"dove",  url:"./media/audio/seagulls.mp3",     def:.35},
+    {key:"s_white",  name:"白噪音", svg:"leaf",  synth:"white", def:.35},
+    {key:"s_pink",   name:"粉噪音", svg:"sun",   synth:"pink",  def:.32},
+    {key:"s_brown",  name:"棕噪音", svg:"moon",  synth:"brown", def:.4},
+    {key:"s_stream", name:"溪流",   svg:"rain",  synth:"stream",def:.42}
   ],
   ensure(key){
     if(this.els[key]) return this.els[key];
-    const t = this.tracks.find(x=>x.key===key); if(!t) return null;
+    const t = this.tracks.find(x=>x.key===key); if(!t || t.synth) return null;
     const el = document.createElement("audio"); el.src = t.url; el.loop = true; el.preload = "auto";
     this.els[key] = el; return el;
   },
-  setVol(key, v){ const el = this.ensure(key); if(el) el.volume = Math.max(0, Math.min(1, v)); },
-  play(key){ const el = this.ensure(key); if(el){ el.volume = el.volume || 0.4; el.play().catch(()=>{}); } },
-  stop(key){ const el = this.els[key]; if(el){ try{ el.pause(); el.currentTime = 0; }catch(e){} } },
-  stopAll(){
-    Object.keys(this.els).forEach(k=>this.stop(k));
-    if(window._echoState){ Object.keys(window._echoState.on).forEach(k=> window._echoState.on[k]=false); }
+  setVol(key, v){ const t=this.tracks.find(x=>x.key===key); if(!t) return; this._vol[key]=v; if(t.synth){ SynthNoise.setVol(key,v); } else { const el=this.ensure(key); if(el) el.volume=Math.max(0,Math.min(1,v)); } },
+  play(key){ const t=this.tracks.find(x=>x.key===key); if(!t) return; const v=(this._vol[key]!=null)?this._vol[key]:t.def; if(t.synth){ SynthNoise.start(key,t.synth,v); } else { const el=this.ensure(key); if(el){ el.volume=v; el.play().catch(()=>{}); } } },
+  stop(key){ const t=this.tracks.find(x=>x.key===key); if(!t) return; if(t.synth){ SynthNoise.stop(key); } else { const el=this.els[key]; if(el){ try{ el.pause(); el.currentTime=0; }catch(e){} } } },
+  stopAll(){ Object.keys(this.els).forEach(k=>this.stop(k)); SynthNoise.stopAll(); if(window._echoState){ Object.keys(window._echoState.on).forEach(k=> window._echoState.on[k]=false); } }
+};
+
+/* 在线状态：复用 GitHub 通道做轻量「心跳」，匿名 id+时间戳，约 60s 上报/30s 轮询。
+   纯前端静态站无法真正检测并发在线，这是用最小后端依赖换来的近似实时。 */
+const Presence = {
+  id:null, file:"presence.json", repo: WALL_CFG.repo, tok: WALL_CFG.token,
+  el:null, beatTimer:null, pollTimer:null, running:false,
+  init(){
+    if(this.running) return;
+    try{ this.id = localStorage.getItem("qn_presence_id"); if(!this.id){ this.id = "p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem("qn_presence_id", this.id); } }catch(e){ this.id = "anon"+Math.random().toString(36).slice(2,8); }
+    this.el = document.getElementById("presence-dot");
+    this.running = true;
+    this.beat(); this.poll();
+    this.beatTimer = setInterval(()=>this.beat(), 60000);
+    this.pollTimer = setInterval(()=>this.poll(), 30000);
+  },
+  stop(){ this.running=false; clearInterval(this.beatTimer); clearInterval(this.pollTimer); const el=document.getElementById("presence-dot"); if(el) el.style.display="none"; },
+  async api(method, path, body){
+    try{
+      const r = await fetch("https://api.github.com/repos/"+this.repo+"/contents/"+path, {
+        method, headers:{"Authorization":"Bearer "+this.tok,"User-Agent":"calm-nature","Accept":"application/vnd.github+json","Content-Type":"application/json"},
+        body: body?JSON.stringify(body):undefined
+      });
+      const txt = await r.text(); let j=null; try{ j=JSON.parse(txt); }catch(e){}
+      return {status:r.status, body:j};
+    }catch(e){ return {status:0, body:null}; }
+  },
+  async beat(){
+    try{
+      const now = Date.now();
+      const get = await this.api("GET", this.file);
+      let map={}, sha=null;
+      if(get.status===200 && get.body && get.body.content){ try{ map=JSON.parse(atob(get.body.content.replace(/\s/g,""))); sha=get.body.sha; }catch(e){} }
+      map[this.id]=now;
+      const cutoff=now-10*60*1000; Object.keys(map).forEach(k=>{ if(map[k]<cutoff) delete map[k]; });
+      const content=btoa(unescape(encodeURIComponent(JSON.stringify(map))));
+      let put=await this.api("PUT", this.file, {message:"presence beat", content, sha});
+      if(put.status===409){ const g2=await this.api("GET", this.file); if(g2.status===200&&g2.body&&g2.body.sha){ await this.api("PUT", this.file, {message:"presence beat", content, sha:g2.body.sha}); } }
+    }catch(e){}
+  },
+  async poll(){
+    try{
+      const get = await this.api("GET", this.file);
+      let map={}; if(get.status===200 && get.body && get.body.content){ try{ map=JSON.parse(atob(get.body.content.replace(/\s/g,""))); }catch(e){} }
+      const now=Date.now(), cutoff=now-5*60*1000;
+      const others=Object.keys(map).filter(k=>k!==this.id && map[k]>=cutoff).length;
+      if(this.el){ const t=this.el.querySelector(".pd-txt"); if(others>0){ this.el.classList.add("on"); if(t) t.textContent="有人也在休息"; } else { this.el.classList.remove("on"); if(t) t.textContent="此刻只有你"; } }
+    }catch(e){}
   }
 };
 
@@ -4901,6 +4989,8 @@ const Accounts = {
 
       <div class="set-row"><span>自定义色调</span><input class="ag-input" id="set-custom" type="color" value="${p&&p.customColor?p.customColor:(p&&p.color?p.color:'#b8e0c8')}" style="width:60px;height:32px;padding:2px;border:1px solid var(--glass-border);border-radius:8px;background:rgba(0,0,0,.28)"><b class="si" id="set-custom-reset">重置</b></div>
 
+      <div class="set-row"><span>陪伴微光</span><b class="si" id="set-presence">${localStorage.getItem("qn_presence_on")!=="0"?"开":"关"}</b></div>
+
       <div class="set-row"><span>访问口令</span><input class="ag-input" id="set-pass" type="password" value="${p&&p.passcode?p.passcode:""}" placeholder="留空则无" style="width:150px"></div>
 
       <div class="set-row"><span>导出全部数据</span><b class="si" id="set-export">下载 JSON</b></div>
@@ -4940,6 +5030,16 @@ const Accounts = {
     if(resetEl) resetEl.addEventListener("click", ()=>{ if(p){ p.customColor = null; ACC.save(); applyAccountColor(); if(customEl) customEl.value = p.color||'#b8e0c8'; } });
     const tagEl = box.querySelector("#set-tagline");
     if(tagEl) tagEl.addEventListener("change", ()=>{ if(p){ p.tagline = tagEl.value.trim(); ACC.save(); applySplashPersonal(); } });
+
+    const pe = box.querySelector("#set-presence");
+    if(pe) pe.addEventListener("click", ()=>{
+      const on = localStorage.getItem("qn_presence_on")!=="0";
+      const nv = on ? "0" : "1";
+      localStorage.setItem("qn_presence_on", nv);
+      pe.textContent = nv==="1" ? "开" : "关";
+      if(nv==="1"){ const pd=document.getElementById("presence-dot"); if(pd) pd.style.display=""; Presence.init(); }
+      else Presence.stop();
+    });
 
     box.querySelector("#set-name").addEventListener("change", saveProfile);
 
@@ -5693,6 +5793,8 @@ function init(){
 
   applyAccountColor();
   applySplashPersonal();
+
+  if(localStorage.getItem("qn_presence_on")!=="0"){ try{ Presence.init(); }catch(e){} } else { const pd=document.getElementById("presence-dot"); if(pd) pd.style.display="none"; }
 
 
 
