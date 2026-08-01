@@ -235,6 +235,10 @@
 
   #pimg{position:absolute;inset:0;width:100%;height:100%;display:none;background-size:cover;background-position:center;background-repeat:no-repeat;z-index:1;filter:contrast(1.08) saturate(1.12) brightness(1.02)}
 
+  /* 3D 海滩容器（复刻 adams914/beach-wallpaper） */
+  #p-beach{position:absolute;inset:0;z-index:1;display:none;background:#04080c;overflow:hidden}
+  #p-beach canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
+
   /* original full-bleed: cover the screen edge-to-edge on every orientation */
   @media (orientation: portrait){
     #pv{ object-fit: cover; }
@@ -1486,6 +1490,8 @@
 
     <div id="pimg"></div>
 
+    <div id="p-beach"></div>
+
     <div id="v-loading"><div class="v-spin"></div><div class="v-tip">正在加载…轻触播放</div></div>
 
   </div>
@@ -2357,40 +2363,62 @@ function enterPlayer(id){
   const backdropUrl = currentScene.image || currentScene.poster || "";
   if(pback) pback.style.backgroundImage = backdropUrl ? "url("+backdropUrl+")" : "";
 
-  if(currentScene.mediaType === "image"){
-
-    videoEl.style.display = "none"; videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load();
-
-    pimg.style.display = "block"; pimg.style.backgroundImage = "url("+currentScene.image+")";
-
-    pimg.classList.remove("ken-static","ken-subtle");
-
-    const motion = currentScene.motion || "subtle";
-
-    pimg.classList.add(motion === "static" ? "ken-static" : "ken-subtle");
-
-    pimg.style.animationPlayState = "running"; pimg.style.animationDelay = "0s";
-
+  /* 海滩：挂载 3D 海滩（复刻 adams914/beach-wallpaper），不依赖外部图片 */
+  if(currentScene.render === "beach"){
+    const pb=document.getElementById("p-beach");
+    if(pb){
+      pb.style.display="block";
+      try{ if(window._sceneBeach){ window._sceneBeach.stop(); } }catch(e){}
+      if(typeof window.startBeach==="function"){
+        window._sceneBeach = startBeach(pb, {hour:Number(currentScene.beachHour)||15, speed:55, audio:false});
+      } else {
+        pimg.style.display="block"; pimg.style.backgroundImage="url("+currentScene.image+")";
+        if(pback) pback.style.backgroundImage="url("+currentScene.image+")";
+      }
+    }
+    if(videoEl){ videoEl.style.display="none"; videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load(); }
     showVLoading(false);
-
   } else {
+    const pb=document.getElementById("p-beach");
+    if(pb){
+      pb.style.display="none";
+      if(window._sceneBeach){ try{ window._sceneBeach.stop(); }catch(e){} window._sceneBeach=null; }
+    }
+    if(currentScene.mediaType === "image"){
 
-    pimg.style.display = "none"; pimg.style.backgroundImage = "";
+      videoEl.style.display = "none"; videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load();
 
-    videoEl.style.display = "block";
+      pimg.style.display = "block"; pimg.style.backgroundImage = "url("+currentScene.image+")";
 
-    videoEl.poster = currentScene.poster || "";
+      pimg.classList.remove("ken-static","ken-subtle");
 
-    videoEl.src = currentScene.video;
+      const motion = currentScene.motion || "subtle";
 
-    videoEl.muted = true;
+      pimg.classList.add(motion === "static" ? "ken-static" : "ken-subtle");
 
-    startVideo();
+      pimg.style.animationPlayState = "running"; pimg.style.animationDelay = "0s";
 
-    wireVideo();
+      showVLoading(false);
 
-    showVLoading(true, "正在加载…轻触播放");
+    } else {
 
+      pimg.style.display = "none"; pimg.style.backgroundImage = "";
+
+      videoEl.style.display = "block";
+
+      videoEl.poster = currentScene.poster || "";
+
+      videoEl.src = currentScene.video;
+
+      videoEl.muted = true;
+
+      startVideo();
+
+      wireVideo();
+
+      showVLoading(true, "正在加载…轻触播放");
+
+    }
   }
 
   unlocked = false;
@@ -2436,6 +2464,8 @@ function exitPlayer(){
   exitFs();
 
   if(videoEl){ videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load(); videoEl.style.display="block"; }
+
+  if(window._sceneBeach){ try{ window._sceneBeach.stop(); }catch(e){} window._sceneBeach=null; }
 
   const pimg = document.getElementById("pimg"); pimg.style.display="none"; pimg.style.backgroundImage="";
 
@@ -4541,8 +4571,14 @@ function renderSyncBreath(c){
 
 function renderWatchSea(c){
   const TITLE="[同看一片海]";
-  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。</div><canvas class="nc-hero" id="ws-cv"></canvas><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><div class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></div><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
-  NatureCanvas(c.querySelector("#ws-cv"),"beach");
+  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。</div><div class="nc-hero" id="ws-cv"></div><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><div class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></div><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
+  const wsBox=c.querySelector("#ws-cv");
+  if(typeof window.startBeach==="function"){
+    if(window._wsBeach){ try{ window._wsBeach.stop(); }catch(e){} }
+    window._wsBeach = startBeach(wsBox, {hour:15, speed:45, audio:false});
+  } else {
+    const fc=document.createElement('canvas'); wsBox.appendChild(fc); NatureCanvas(fc,"beach");
+  }
   const list=c.querySelector("#ws-list"); const stat=c.querySelector("#ws-stat");
   let serverId=null;
   async function load(){ if(!serverId) serverId=await roomEnsure(TITLE); const ns=await roomList(TITLE, serverId, 12); if(serverId){ stat.textContent="海已连接 · 此刻有人也在这里"; } else { stat.textContent="本地模式 · 你的话先存本机"; } if(!ns.length){ list.innerHTML='<div class="room-meta">还没有人说话，海很安静。</div>'; return; } list.innerHTML=ns.slice(0,8).reverse().map(n=>`<div class="room-post">${escapeHtml(n.body||"")}</div>`).join(""); }
@@ -6641,6 +6677,9 @@ function init(){
 init();
 
 </script>
+
+<!-- 3D 海滩模块（复刻 adams914/beach-wallpaper，本地 Three.js，无外部图片依赖） -->
+<script type="module" src="beach.js"></script>
 
 <!-- 访问统计 · 不蒜子（即时数字，零账号，加载即计数） -->
 <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
