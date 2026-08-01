@@ -402,6 +402,7 @@
     "subtitle": "The Shore",
     "category": "sea",
     "type": "loop",
+    "render": "beach",
     "mediaType": "image",
     "image": "./media/ocean.jpg",
     "poster": "./media/ocean.jpg",
