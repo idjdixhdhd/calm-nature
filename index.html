@@ -1017,6 +1017,11 @@
   .site-stat .ss-label{color:var(--accent);letter-spacing:.1em;font-size:12px}
   .site-stat .ss-num{font-weight:600}
   .site-stat .ss-sep{color:var(--muted)}
+  .umami-wrap{margin-top:10px;border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;background:#0b121a;height:66vh}
+  .umami-iframe{width:100%;height:100%;border:0;display:block;min-height:66vh}
+  .umami-fallback{font-size:12px;opacity:.6;margin-top:10px;line-height:1.7}
+  .umami-fallback a{color:var(--accent);text-decoration:none}
+  .umami-fallback a:hover{text-decoration:underline}
   .self-stat-wrap{margin-top:10px}
   .self-stat{display:flex;flex-direction:column;gap:7px;background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:11px 13px;font-size:12.5px;color:#eef3ee}
   .self-stat .ss-row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
@@ -6197,6 +6202,9 @@ function renderWall(c){
     <div class="wall-sec-title">${getIcon('gear')} 站长模式 · 访问统计</div>
     <div id="admin-stat-slot"></div>
     <div id="self-stat-slot" class="self-stat-wrap"></div>
+    <div class="wall-sec-title">访问数据 · Umami 实时看板</div>
+    <div class="umami-wrap"><iframe class="umami-iframe" src="https://cloud.umami.is/share/U6luwWBJ7AYy1vUP" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="访问数据实时看板"></iframe></div>
+    <div class="umami-fallback">完整看板（来源 / 页面 / 地区 / 设备 / 浏览器 / 系统 / 实时在线）由 Umami 提供。图表从国外服务器加载，偶现空白或偏慢——可<a href="https://cloud.umami.is/share/U6luwWBJ7AYy1vUP" target="_blank" rel="noopener">在新标签打开 Umami 看板 ↗</a>。下方「不蒜子」为本站累计访问量。</div>
     <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。上方「不蒜子」显示全站累计访客 / 访问量；下方「访问信息」免后端实时识别你本次的来源 / 设备 / 系统 / 浏览器（切换微信、QQ、系统浏览器刷新即可见变化）。</div>
     <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">隐藏站长面板</div></div>
   </div>` : `<div class="wall-admin" id="wall-admin" style="display:none"></div>`);
