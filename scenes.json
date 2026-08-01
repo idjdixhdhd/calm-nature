@@ -397,14 +397,14 @@
     "motion": "subtle"
   },
   {
-    "id": "night-stars",
-    "title": "夜·星野",
-    "subtitle": "Night Sky",
-    "category": "night",
+    "id": "beach-shore",
+    "title": "海滩",
+    "subtitle": "The Shore",
+    "category": "sea",
     "type": "loop",
     "mediaType": "image",
-    "image": "./media/stars.jpg",
-    "poster": "./media/stars.jpg",
+    "image": "./media/ocean.jpg",
+    "poster": "./media/ocean.jpg",
     "audio": {
       "night": "./media/audio/music_night.mp3",
       "wind": "./media/audio/wind.mp3"
@@ -412,67 +412,7 @@
     "credit": {
       "source": "Pexels",
       "license": "Pexels License (free, no attribution required)",
-      "note": "Real night-sky still photography"
-    },
-    "motion": "subtle"
-  },
-  {
-    "id": "night-aurora",
-    "title": "夜·极光",
-    "subtitle": "Aurora",
-    "category": "night",
-    "type": "loop",
-    "mediaType": "image",
-    "image": "./media/aurora.jpg",
-    "poster": "./media/aurora.jpg",
-    "audio": {
-      "night": "./media/audio/music_night.mp3",
-      "wind": "./media/audio/wind.mp3"
-    },
-    "credit": {
-      "source": "Pexels",
-      "license": "Pexels License (free, no attribution required)",
-      "note": "Real aurora still photography"
-    },
-    "motion": "subtle"
-  },
-  {
-    "id": "night-camp",
-    "title": "夜·篝火",
-    "subtitle": "Campfire",
-    "category": "night",
-    "type": "loop",
-    "mediaType": "image",
-    "image": "./media/campfire.jpg",
-    "poster": "./media/campfire.jpg",
-    "audio": {
-      "night": "./media/audio/music_night.mp3",
-      "wind": "./media/audio/wind.mp3"
-    },
-    "credit": {
-      "source": "Pixabay",
-      "license": "Pixabay License (free)",
-      "note": "Real campfire still photography"
-    },
-    "motion": "subtle"
-  },
-  {
-    "id": "night-snow",
-    "title": "夜·雪寂",
-    "subtitle": "Snow Silence",
-    "category": "night",
-    "type": "loop",
-    "mediaType": "image",
-    "image": "./media/snow.jpg",
-    "poster": "./media/snow.jpg",
-    "audio": {
-      "night": "./media/audio/music_night.mp3",
-      "wind": "./media/audio/wind.mp3"
-    },
-    "credit": {
-      "source": "Pexels",
-      "license": "Pexels License (free, no attribution required)",
-      "note": "Real snowfield still photography"
+      "note": "Real beach photography"
     },
     "motion": "subtle"
   }
