@@ -1013,15 +1013,10 @@
   .wall-admin-form{display:flex;gap:8px;margin-top:10px;align-items:center;justify-content:center;flex-wrap:wrap}
   .wall-admin-form .echo-name-in{width:170px}
   .wall-admin{margin-top:16px;background:rgba(0,0,0,.22);border:1px dashed rgba(var(--accent-rgb),.4);border-radius:18px;padding:14px}
-  .site-stat{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(var(--accent-rgb),.12);border:1px solid rgba(var(--accent-rgb),.3);border-radius:12px;padding:10px 13px;margin-bottom:12px;font-size:13px;color:#eef3ee;position:fixed;left:14px;bottom:14px;z-index:80;margin-bottom:0;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .site-stat{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(var(--accent-rgb),.12);border:1px solid rgba(var(--accent-rgb),.3);border-radius:12px;padding:10px 13px;margin-bottom:12px;font-size:13px;color:#eef3ee}
   .site-stat .ss-label{color:var(--accent);letter-spacing:.1em;font-size:12px}
   .site-stat .ss-num{font-weight:600}
   .site-stat .ss-sep{color:var(--muted)}
-  .data-wrap{flex:1;min-height:62vh;margin-top:12px;border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03)}
-  .data-iframe{width:100%;height:100%;min-height:62vh;border:0;display:block}
-  .data-fallback{font-size:12px;opacity:.6;margin-top:10px;line-height:1.7}
-  .data-fallback a{color:var(--accent);text-decoration:none}
-  .data-fallback a:hover{text-decoration:underline}
   .self-stat-wrap{margin-top:10px}
   .self-stat{display:flex;flex-direction:column;gap:7px;background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:11px 13px;font-size:12.5px;color:#eef3ee}
   .self-stat .ss-row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
@@ -1717,7 +1712,7 @@
 <button id="btn-feedback" title="反馈 / 报 Bug">反馈</button>
 
 <!-- 访问统计（不蒜子）：常驻左下角公开显示，脚本加载后即填充全站累计访问量 -->
-<div id="site-stat" class="site-stat">
+<div id="site-stat" class="site-stat" style="display:none">
   <span class="ss-label">站点访问</span>
   <span class="ss-num"><span id="busuanzi_value_site_pv">–</span> 次</span>
   <span class="ss-sep">·</span>
@@ -3110,8 +3105,6 @@ const MODULES = {
   syncbreath:{svg:"wave",   title:"同步呼吸", en:"Sync Breath", d:"和陌生人一起，同呼吸"},
   watchsea:{svg:"wave",    title:"同看一片海", en:"Watch the Sea", d:"和陌生人同看一段海"},
 
-  data:{svg:"globe",   title:"访问数据", en:"Analytics", d:"来源 / 页面 / 地区 实时看板"},
-
 };
 
 
@@ -3443,7 +3436,6 @@ function openModule(key){
   else if(key==="glownote") renderGlowNote(c);
   else if(key==="syncbreath") renderSyncBreath(c);
   else if(key==="watchsea") renderWatchSea(c);
-  else if(key==="data") renderData(c);
 
   document.getElementById("sanct-detail").classList.add("open");
 
@@ -4578,11 +4570,6 @@ function renderSyncBreath(c){
   let serverId=null;
   async function tick(){ if(!cv.isConnected){ clearInterval(iv); return; } if(!serverId) serverId=await roomEnsure(TITLE); const el=c.querySelector("#sb-count"); if(!serverId){ if(el) el.textContent="本地模式 · 此刻只有你一人在呼吸（联网后可与陌生人同呼吸）"; return; } await ROOM.post(serverId, JSON.stringify({id:myId,ts:Date.now()})); const ns=await ROOM.list(serverId,60); const now=Date.now(),cut=now-60000; const set={}; ns.forEach(n=>{try{const o=JSON.parse(n.body);if(o&&o.id){if(!set[o.id]||o.ts>set[o.id])set[o.id]=o.ts;}}catch(e){}}); const others=Object.keys(set).filter(k=>k!==myId&&set[k]>=cut).length; if(el) el.textContent=`此刻 ${others+1} 人同在呼吸`; }
   tick(); const iv=setInterval(tick, 15000);
-}
-
-function renderData(c){
-  const SHARE = "https://cloud.umami.is/share/U6luwWBJ7AYy1vUP";
-  c.innerHTML = `<div class="mod-h">访问数据</div><div class="mod-sub">站点从哪来、看了哪些页面、来自哪些地区——实时看板（由 Umami 提供）。</div><div class="data-wrap"><iframe class="data-iframe" src="${SHARE}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="访问数据实时看板"></iframe></div><div class="data-fallback">若图表加载慢或空白（数据服务器在国外），可<a href="${SHARE}" target="_blank" rel="noopener">在新标签页打开 Umami 看板 ↗</a>。左下角「不蒜子」为本站累计访问量。</div>`;
 }
 
 function renderWatchSea(c){
@@ -6183,7 +6170,7 @@ async function publishReader(text, author, by){
 
 function renderWall(c){
   Sanctuary.load();
-  const _statEl = document.getElementById("site-stat"); if(_statEl){ _statEl.style.display="flex"; if(_statEl.parentNode!==document.body) document.body.appendChild(_statEl); } // 公开常驻左下角；确保留在 body 不被模块 innerHTML 清掉
+  const _statEl = document.getElementById("site-stat"); if(_statEl){ _statEl.style.display="none"; if(_statEl.parentNode!==document.body) document.body.appendChild(_statEl); } // 重渲染前先救回并隐藏，避免被 innerHTML 清掉
   let html = `<div class="wall-section"><div class="wall-sec-title">${getIcon('pushpin')} 本地私密留言（仅本机可见）</div>`;
   html += `<div class="wall-compose">
     <textarea class="q-area" id="wall-text" placeholder="在空栈留一句话——给未来的自己，或给偶然路过这里的人…"></textarea>
@@ -6210,7 +6197,7 @@ function renderWall(c){
     <div class="wall-sec-title">${getIcon('gear')} 站长模式 · 访问统计</div>
     <div id="admin-stat-slot"></div>
     <div id="self-stat-slot" class="self-stat-wrap"></div>
-    <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。左下角「不蒜子」常驻显示全站累计访客 / 访问量；下方「访问信息」免后端实时识别你本次的来源 / 设备 / 系统 / 浏览器（切换微信、QQ、系统浏览器刷新即可见变化）。</div>
+    <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。上方「不蒜子」显示全站累计访客 / 访问量；下方「访问信息」免后端实时识别你本次的来源 / 设备 / 系统 / 浏览器（切换微信、QQ、系统浏览器刷新即可见变化）。</div>
     <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">隐藏站长面板</div></div>
   </div>` : `<div class="wall-admin" id="wall-admin" style="display:none"></div>`);
   c.innerHTML = html;
@@ -6334,8 +6321,9 @@ function renderWall(c){
   // 重渲染后：若仍处于站长模式，恢复面板与访问统计显示
   if(window.__wallAdmin && WALL_CFG.enabled && WALL_CFG.token){
     const ab = c.querySelector("#wall-admin"); if(ab) ab.style.display = "block";
-    const ae = c.querySelector("#wall-admin-enter"); if(ae) ae.style.display = "none";
-    const af = c.querySelector("#wall-admin-form"); if(af) af.style.display = "none";
+    const stat = document.getElementById("site-stat");
+    const slot = c.querySelector("#admin-stat-slot");
+    if(stat && slot){ stat.style.display = "flex"; slot.appendChild(stat); }
     const selfSlot = c.querySelector("#self-stat-slot");
     if(selfSlot) loadSelfStats(selfSlot);
   }
