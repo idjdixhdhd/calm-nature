@@ -4059,49 +4059,58 @@ const EchoMixer = {
 
 /* 在线状态：复用 GitHub 通道做轻量「心跳」，匿名 id+时间戳，约 60s 上报/30s 轮询。
    纯前端静态站无法真正检测并发在线，这是用最小后端依赖换来的近似实时。 */
+/* 在线状态：复用 GitHub Discussions 通道做轻量「心跳」。
+   现有细粒度 PAT 已具备 Discussions 权限（无需新令牌、也不暴露更高权限的令牌）。
+   匿名 id+时间戳写入一个独立分类的讨论，约 60s 上报/30s 轮询。
+   纯前端静态站无法真正检测并发在线，这是用最小后端依赖换来的近似实时方案。 */
+const PRESENCE_TITLE = "[presence] 在线状态心跳";
 const Presence = {
-  id:null, file:"presence.json", repo: WALL_CFG.repo, tok: WALL_CFG.token,
-  el:null, beatTimer:null, pollTimer:null, running:false,
+  id:null, tok: WALL_CFG.token, repoId: WALL_CFG.repoId, catId: WALL_CFG.categoryId,
+  discId:null, el:null, beatTimer:null, pollTimer:null, running:false, pruneTick:0,
   init(){
     if(this.running) return;
-    try{ this.id = localStorage.getItem("qn_presence_id"); if(!this.id){ this.id = "p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem("qn_presence_id", this.id); } }catch(e){ this.id = "anon"+Math.random().toString(36).slice(2,8); }
+    try{ this.id = localStorage.getItem("qn_presence_id"); if(!this.id){ this.id="p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem("qn_presence_id", this.id); } }catch(e){ this.id="anon"+Math.random().toString(36).slice(2,8); }
     this.el = document.getElementById("presence-dot");
     this.running = true;
-    this.beat(); this.poll();
-    this.beatTimer = setInterval(()=>this.beat(), 60000);
-    this.pollTimer = setInterval(()=>this.poll(), 30000);
+    this.ensureDiscussion().then(()=>{ if(!this.discId) return; this.beat(); this.poll(); this.beatTimer=setInterval(()=>this.beat(),60000); this.pollTimer=setInterval(()=>this.poll(),30000); });
   },
   stop(){ this.running=false; clearInterval(this.beatTimer); clearInterval(this.pollTimer); const el=document.getElementById("presence-dot"); if(el) el.style.display="none"; },
-  async api(method, path, body){
-    try{
-      const r = await fetch("https://api.github.com/repos/"+this.repo+"/contents/"+path, {
-        method, headers:{"Authorization":"Bearer "+this.tok,"User-Agent":"calm-nature","Accept":"application/vnd.github+json","Content-Type":"application/json"},
-        body: body?JSON.stringify(body):undefined
-      });
-      const txt = await r.text(); let j=null; try{ j=JSON.parse(txt); }catch(e){}
-      return {status:r.status, body:j};
-    }catch(e){ return {status:0, body:null}; }
+  async gh(query, vars){
+    try{ const r=await fetch("https://api.github.com/graphql",{method:"POST",headers:{"Authorization":"Bearer "+this.tok,"Content-Type":"application/json","User-Agent":"calm-nature"},body:JSON.stringify({query,variables:vars||{}})}); const j=await r.json(); if(j&&j.errors) console.warn("presence gh", j.errors); return j; }catch(e){ return null; }
   },
-  async beat(){
+  async ensureDiscussion(){
     try{
-      const now = Date.now();
-      const get = await this.api("GET", this.file);
-      let map={}, sha=null;
-      if(get.status===200 && get.body && get.body.content){ try{ map=JSON.parse(atob(get.body.content.replace(/\s/g,""))); sha=get.body.sha; }catch(e){} }
-      map[this.id]=now;
-      const cutoff=now-10*60*1000; Object.keys(map).forEach(k=>{ if(map[k]<cutoff) delete map[k]; });
-      const content=btoa(unescape(encodeURIComponent(JSON.stringify(map))));
-      let put=await this.api("PUT", this.file, {message:"presence beat", content, sha});
-      if(put.status===409){ const g2=await this.api("GET", this.file); if(g2.status===200&&g2.body&&g2.body.sha){ await this.api("PUT", this.file, {message:"presence beat", content, sha:g2.body.sha}); } }
+      const cats = await this.gh(`query($r:ID!){ repository(id:$r){ discussionCategories(first:20){ nodes{ id name } } } }`, {r:this.repoId});
+      const cn = cats&&cats.data&&cats.data.repository&&cats.data.repository.discussionCategories&&cats.data.repository.discussionCategories.nodes;
+      const useCat = (cn&&cn.find(c=>c.id!==this.catId)) ? cn.find(c=>c.id!==this.catId).id : this.catId;
+      const q = `query($r:ID!,$c:ID!,$t:String!){ repository(id:$r){ discussions(first:50,categoryId:$c,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id title } } } }`;
+      const j = await this.gh(q, {r:this.repoId, c:useCat, t:PRESENCE_TITLE});
+      const nodes = j&&j.data&&j.data.repository&&j.data.repository.discussions&&j.data.repository.discussions.nodes;
+      const found = nodes&&nodes.find(n=>n.title===PRESENCE_TITLE);
+      if(found){ this.discId=found.id; return; }
+      const m = `mutation($r:ID!,$c:ID!,$t:String!){ createDiscussion(input:{repositoryId:$r,categoryId:$c,title:$t,body:\"presence heartbeat\"}){ discussion{ id } } }`;
+      const r2 = await this.gh(m, {r:this.repoId, c:useCat, t:PRESENCE_TITLE});
+      this.discId = r2&&r2.data&&r2.data.createDiscussion&&r2.data.createDiscussion.discussion&&r2.data.createDiscussion.discussion.id;
     }catch(e){}
   },
+  async beat(){
+    if(!this.discId) return;
+    try{ const b=JSON.stringify({id:this.id, ts:Date.now()}); await this.gh(`mutation($d:ID!,$b:String!){ addDiscussionComment(input:{discussionId:$d,body:$b}){ comment{ id } } }`, {d:this.discId, b}); }catch(e){}
+  },
   async poll(){
+    if(!this.discId) return;
     try{
-      const get = await this.api("GET", this.file);
-      let map={}; if(get.status===200 && get.body && get.body.content){ try{ map=JSON.parse(atob(get.body.content.replace(/\s/g,""))); }catch(e){} }
-      const now=Date.now(), cutoff=now-5*60*1000;
+      const j = await this.gh(`query($d:ID!){ discussion(id:$d){ comments(first:100,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id body createdAt } } } }`, {d:this.discId});
+      const nodes = j&&j.data&&j.data.discussion&&j.data.discussion.comments&&j.data.discussion.comments.nodes;
+      if(!nodes) return;
+      const now=Date.now(), cutoff=now-5*60*1000; const map={};
+      nodes.forEach(n=>{ try{ const o=JSON.parse(n.body); if(o&&o.id){ if(!map[o.id]||o.ts>map[o.id]) map[o.id]=o.ts; } }catch(e){} });
       const others=Object.keys(map).filter(k=>k!==this.id && map[k]>=cutoff).length;
       if(this.el){ const t=this.el.querySelector(".pd-txt"); if(others>0){ this.el.classList.add("on"); if(t) t.textContent="有人也在休息"; } else { this.el.classList.remove("on"); if(t) t.textContent="此刻只有你"; } }
+      this.pruneTick++;
+      if(nodes.length>60 && this.pruneTick%4===0){
+        nodes.filter(n=> Date.now()-new Date(n.createdAt).getTime() > 10*60*1000).slice(0,30).forEach(n=> this.gh(`mutation($cid:ID!){ deleteDiscussionComment(input:{id:$cid}){ deletedCommentId } }`, {cid:n.id}));
+      }
     }catch(e){}
   }
 };
