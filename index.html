@@ -4063,7 +4063,7 @@ const EchoMixer = {
    现有细粒度 PAT 已具备 Discussions 权限（无需新令牌、也不暴露更高权限的令牌）。
    匿名 id+时间戳写入一个独立分类的讨论，约 60s 上报/30s 轮询。
    纯前端静态站无法真正检测并发在线，这是用最小后端依赖换来的近似实时方案。 */
-const PRESENCE_TITLE = "[presence] 在线状态心跳";
+const PRESENCE_TITLE = "[反馈] 在线状态心跳";
 const Presence = {
   id:null, tok: WALL_CFG.token, repoId: WALL_CFG.repoId, catId: WALL_CFG.categoryId,
   discId:null, el:null, beatTimer:null, pollTimer:null, running:false, pruneTick:0,
@@ -4081,8 +4081,7 @@ const Presence = {
   async ensureDiscussion(){
     try{
       const cats = await this.gh(`query($r:ID!){ repository(id:$r){ discussionCategories(first:20){ nodes{ id name } } } }`, {r:this.repoId});
-      const cn = cats&&cats.data&&cats.data.repository&&cats.data.repository.discussionCategories&&cats.data.repository.discussionCategories.nodes;
-      const useCat = (cn&&cn.find(c=>c.id!==this.catId)) ? cn.find(c=>c.id!==this.catId).id : this.catId;
+      const useCat = this.catId;
       const q = `query($r:ID!,$c:ID!,$t:String!){ repository(id:$r){ discussions(first:50,categoryId:$c,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id title } } } }`;
       const j = await this.gh(q, {r:this.repoId, c:useCat, t:PRESENCE_TITLE});
       const nodes = j&&j.data&&j.data.repository&&j.data.repository.discussions&&j.data.repository.discussions.nodes;
