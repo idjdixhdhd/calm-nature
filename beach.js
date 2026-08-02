@@ -1555,7 +1555,7 @@ function bindInteract(){
     // 重置视角：把相机恢复到初始机位（与双击海面等价，给一个明确按钮）
     resetBtn.addEventListener('click', () => { camCtl.yaw = 0; camCtl.pitch = 0; camCtl.dist = 1; showUI(); });
 
-    // 隐藏功能：无操作 4 秒后面板淡出（齿轮/全屏/重置常驻）；移动 / 触摸即显示
+    // 隐藏功能：无操作 6 秒后面板淡出（齿轮/全屏/重置常驻）；移动 / 触摸即显示
     let hideTimer = 0;
     function showUI(){
       panel.classList.remove('bz-hidden');
@@ -1565,7 +1565,7 @@ function bindInteract(){
         if (panel.hidden) return;                        // 面板已被齿轮收起时不自动隐藏
         if (extraSel && document.activeElement && document.activeElement.closest && document.activeElement.closest(extraSel)) return; // 正在输入聊天
         panel.classList.add('bz-hidden');
-      }, 4000);
+      }, 6000);
     }
 
     const extraSel = (opts && opts.hideSelector) ? opts.hideSelector : null;
