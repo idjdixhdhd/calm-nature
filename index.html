@@ -1299,6 +1299,7 @@
 .mod-card{ background:var(--glass); border:1px solid var(--glass-border); border-radius:16px; padding:16px; margin:10px 0; backdrop-filter:blur(10px); }
 .mod-btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:999px; background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#fff)); color:#08110d; font-weight:600; font-size:14px; cursor:pointer; border:none; }
 .mod-btn.ghost{ background:transparent; border:1px solid var(--glass-border); color:var(--text); }
+.mod-btn:disabled{ opacity:.42; cursor:not-allowed; filter:saturate(.6); box-shadow:none; }
 .mod-btn:active{ transform:scale(.97); }
 /* 晨启夜收 */
 .routine-wrap{ display:flex; gap:10px; margin:6px 0 14px; }
@@ -4452,16 +4453,19 @@ function renderMoon(c){
 function renderGarden(c){
   Sanctuary.load();
   Sanctuary.store.garden = Sanctuary.store.garden||{sessions:0,flowers:0};
-  let grow=0, focusing=false, endAt=0, tick=null;
+  let grow=0, focusing=false, done=false, endAt=0, leftMs=0, tick=null;
+  const fmt=(ms)=>{ ms=Math.max(0,ms); const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000); return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); };
   function paint(){
     const g=Sanctuary.store.garden;
+    const canEnd = focusing && done;
+    const startLabel = focusing ? (done ? "结束这次专注" : "专注中 "+fmt(leftMs)) : "开始 15 分钟专注";
     c.innerHTML=`<div class="nc-hero tall" id="gd-cv"></div>
       <div class="mod-h">专注花园</div>
-      <div class="mod-sub">开始专注，中央那朵金色的花会随倒计时慢慢绽放；完成一次，就有一朵花永远留在你的花园里。</div>
-      <div class="garden-stat"><div><b id="gd-sess">${g.sessions}</b>次专注</div><div><b id="gd-flower">${g.flowers}</b>朵花</div><div><b id="gd-left">${focusing?'--:--':'已绽放'}</b></div></div>
-      <button class="mod-btn" id="gd-start">${focusing?'结束这次专注':'开始 15 分钟专注'}</button>
+      <div class="mod-sub">开始专注，中央那朵金色的花会随倒计时慢慢绽放；完成一次（满 15 分钟），就有一朵花永远留在你的花园里。</div>
+      <div class="garden-stat"><div><b id="gd-sess">${g.sessions}</b>次专注</div><div><b id="gd-flower">${g.flowers}</b>朵花</div><div><b id="gd-left">${focusing?(done?'可结束':fmt(leftMs)):'已绽放'}</b></div></div>
+      <button class="mod-btn" id="gd-start" ${canEnd?'':'disabled'}>${startLabel}</button>
       ${focusing?'<button class="mod-btn ghost" id="gd-stop">中止（不计入花园）</button>':''}
-      <div class="room-meta" id="gd-tip">${focusing?'花正在生长，陪你一起呼吸…':'点开始，让一朵花为你而开。'}</div>`;
+      <div class="room-meta" id="gd-tip">${focusing?(done?'15 分钟到了，点「结束这次专注」让花绽放':'花正在生长，陪你一起呼吸…（满 15 分钟才能结束）'):'点开始，让一朵花为你而开。'}</div>`;
     const gbox = c.querySelector("#gd-cv");
     if (window.__gGarden) window.__gGarden.stop();
     window.__gGarden = null;
@@ -4474,11 +4478,12 @@ function renderGarden(c){
     } catch(e){
       try{ NatureCanvas(gbox, "garden", { count: g.flowers, getGrow: () => grow }); }catch(e2){}
     }
-    c.querySelector("#gd-start").onclick=()=>{ if(focusing){ finish(); } else { start(); } };
-    const st=c.querySelector("#gd-stop"); if(st) st.onclick=()=>{ focusing=false; if(tick)clearInterval(tick); tick=null; grow=0; flashToast("已中止，这次不计入花园"); paint(); };
+    const sb=c.querySelector("#gd-start");
+    if(sb) sb.onclick=()=>{ if(focusing){ if(!done){ flashToast("还没到 15 分钟，先专注一会儿"); return; } finish(); } else { start(); } };
+    const st=c.querySelector("#gd-stop"); if(st) st.onclick=()=>{ focusing=false; done=false; if(tick)clearInterval(tick); tick=null; grow=0; flashToast("已中止，这次不计入花园"); paint(); };
   }
-  function start(){ focusing=true; grow=0; endAt=Date.now()+15*60000; if(tick)clearInterval(tick); tick=setInterval(()=>{ const left=endAt-Date.now(); if(left<=0){ finish(); return; } grow=Math.min(1,1-left/(15*60000)); const el=c.querySelector("#gd-left"); if(el)el.textContent=String(Math.floor(left/60000)).padStart(2,"0")+":"+String(Math.floor((left%60000)/1000)).padStart(2,"0"); }, 500); paint(); }
-  function finish(){ focusing=false; if(tick)clearInterval(tick); tick=null; Sanctuary.store.garden.sessions++; Sanctuary.store.garden.flowers++; Sanctuary.save(); grow=1; flashToast("专注完成，花园又多了一朵花"); paint(); }
+  function start(){ focusing=true; done=false; grow=0; leftMs=15*60000; endAt=Date.now()+leftMs; if(tick)clearInterval(tick); tick=setInterval(()=>{ const left=endAt-Date.now(); leftMs=left; if(left<=0){ if(tick)clearInterval(tick); tick=null; done=true; grow=1; flashToast("15 分钟到了，点结束让花绽放"); paint(); return; } grow=Math.min(1,1-left/(15*60000)); const el=c.querySelector("#gd-left"); if(el)el.textContent=fmt(left); const b=c.querySelector("#gd-start"); if(b&&!done){ b.textContent="专注中 "+fmt(left); } }, 500); paint(); }
+  function finish(){ if(!done){ flashToast("还没到 15 分钟"); return; } focusing=false; done=false; if(tick)clearInterval(tick); tick=null; Sanctuary.store.garden.sessions++; Sanctuary.store.garden.flowers++; Sanctuary.save(); grow=1; flashToast("专注完成，花园又多了一朵花"); paint(); }
   paint();
 }
 
