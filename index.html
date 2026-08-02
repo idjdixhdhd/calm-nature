@@ -244,6 +244,11 @@
   .beach-ui.bz-hidden{opacity:0}
   .beach-ui .bz-gear{pointer-events:auto;position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(10,20,30,.45);color:#fff;font-size:18px;line-height:38px;cursor:pointer;backdrop-filter:blur(4px)}
   .beach-ui .bz-panel{pointer-events:auto;position:absolute;top:60px;right:12px;width:188px;padding:12px;border-radius:14px;background:rgba(10,20,30,.55);border:1px solid rgba(255,255,255,.18);color:#eef;backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  .beach-ui .bz-sync{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.9;cursor:pointer}
+  .beach-ui .bz-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+  .beach-ui .bz-btns{display:flex;gap:8px}
+  .beach-ui .bz-fs,.beach-ui .bz-reset{flex:1;padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(10,20,30,.5);color:#eef;font-size:12px;cursor:pointer;white-space:nowrap}
+  .beach-ui .bz-fs:active,.beach-ui .bz-reset:active{transform:scale(.96)}
   .beach-ui .bz-stages{display:flex;gap:6px;margin-bottom:10px}
   .beach-ui .bz-stages button{flex:1;padding:6px 0;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#eef;font-size:13px;cursor:pointer}
   .beach-ui .bz-stages button:hover{background:rgba(255,255,255,.18)}
@@ -446,7 +451,7 @@
 
   /* stealth idle: chrome fades away, the natural thread stays as a faint glow */
 
-  #view-player.idle #ptop{opacity:0}
+  #view-player.idle #ptitle{opacity:0}
 
   #view-player.idle #ctrl,#view-player.idle #tl-label,#view-player.idle #seek-label{opacity:0;pointer-events:none}
 
@@ -2322,6 +2327,7 @@ function enterPlayer(id){
       try{ if(window._sceneBeach){ window._sceneBeach.stop(); } }catch(e){}
       if(typeof window.startBeach==="function"){
         window._sceneBeach = startBeach(pb, {hour:Number(currentScene.beachHour)||15, speed:55, audio:false});
+        try{ if(window.NatureAmbient){ window.NatureAmbient.ensure(); window.NatureAmbient.play({id:"beach-shore"}); } }catch(e){}
       } else {
         pimg.style.display="block"; pimg.style.backgroundImage="url("+currentScene.image+")";
         if(pback) pback.style.backgroundImage="url("+currentScene.image+")";
@@ -2436,7 +2442,7 @@ function startVideo(){
 
   if(!videoEl) return;
 
-  videoEl.muted = true;
+  videoEl.muted = !unlocked;
 
   const p = videoEl.play();
 
@@ -2752,6 +2758,11 @@ function unlock(){
     if(currentScene.type === "24h") Audio.apply24h(vh);
 
     else Audio.applyLoop();
+
+    // 视频场景：解锁后取消静音，放出素材本来的声音
+    if(videoEl && currentScene && currentScene.mediaType !== "image"){
+      try{ videoEl.muted = false; const p = videoEl.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}
+    }
 
   }catch(e){ console.warn("audio unlock skipped:", e); }
 
@@ -3359,6 +3370,7 @@ function openModule(key){
   if(key==="immerse"){ document.getElementById("sanct-detail").classList.remove("open"); showView("gallery"); return; }
 
   EchoMixer.stopAll(); FlowTimer.stop();
+  try{ if(window.NatureAmbient) window.NatureAmbient.stop(); }catch(e){}
   if(window.speechSynthesis) window.speechSynthesis.cancel();
 
   const titles = {mood:"心境", reader:"每日一读", fav:"收藏连播", solar:"我的节气历", echo:"回声·声景", flow:"心流·专注", create:"拼帖·创作", wall:"共笔墙", notes:"灵感手账", capsule:"时间胶囊", fold:"折纸冥想", ritual:"我的仪式", garden:"专注花园", verse:"随机诗句", relay:"共读接力", moon:"月相画廊", morningnight:"晨启夜收", glownote:"微光留言", syncbreath:"同步呼吸", watchsea:"同看一片海"};
@@ -4486,7 +4498,7 @@ function renderGarden(c){
     window.__gGarden = null;
     try {
       if (typeof window.startGarden === "function" && gbox) {
-        window.__gGarden = startGarden(gbox, { count: g.flowers, getGrow: () => grow });
+        window.__gGarden = startGarden(gbox, { count: g.flowers, getGrow: () => grow, getFocusing: () => focusing });
       } else {
         throw new Error("no-3d");
       }
@@ -4625,6 +4637,7 @@ function renderWatchSea(c){
   } catch(e){
     try{ const fc=document.createElement('canvas'); wsBox.appendChild(fc); NatureCanvas(fc,"beach"); }catch(e2){}
   }
+  try{ if(window.NatureAmbient){ window.NatureAmbient.ensure(); window.NatureAmbient.play({id:"ocean"}); } }catch(e){}
   const list=c.querySelector("#ws-list"); const stat=c.querySelector("#ws-stat");
   let serverId=null;
   const LS_WS="cn_ws_local";
@@ -6746,7 +6759,7 @@ function init(){
   function isHome(){ var g=document.getElementById("view-gallery"), sd=document.getElementById("sanct-detail"), pl=document.getElementById("view-player"); return g && g.classList.contains("active") && (!sd||!sd.classList.contains("open")) && (!pl||!pl.classList.contains("active")); }
   function softBack(){
     var sd=document.getElementById("sanct-detail");
-    if(sd && sd.classList.contains("open")){ if(typeof EchoMixer!=="undefined") EchoMixer.stopAll(); if(typeof FlowTimer!=="undefined") FlowTimer.stop(); stopScene3D(); sd.classList.remove("open"); return; }
+    if(sd && sd.classList.contains("open")){ if(typeof EchoMixer!=="undefined") EchoMixer.stopAll(); if(typeof FlowTimer!=="undefined") FlowTimer.stop(); stopScene3D(); try{ if(typeof NatureAmbient!=="undefined") NatureAmbient.stop(); }catch(e){} sd.classList.remove("open"); return; }
     var pl=document.getElementById("view-player");
     if(pl && pl.classList.contains("active")){ exitPlayer(); return; }
     if(document.getElementById("view-sanctuary").classList.contains("active")){
@@ -6772,7 +6785,7 @@ function init(){
     if(!t) return;
     if(t.id==="btn-back"){ if(typeof exitPlayer==="function") exitPlayer(); }
     else if(t.id==="btn-sanct-back"){ showView("gallery"); }
-    else if(t.id==="sd-close"){ if(typeof EchoMixer!=="undefined") EchoMixer.stopAll(); if(typeof FlowTimer!=="undefined") FlowTimer.stop(); stopScene3D(); var sd=document.getElementById("sanct-detail"); if(sd) sd.classList.remove("open"); }
+    else if(t.id==="sd-close"){ if(typeof EchoMixer!=="undefined") EchoMixer.stopAll(); if(typeof FlowTimer!=="undefined") FlowTimer.stop(); stopScene3D(); try{ if(typeof NatureAmbient!=="undefined") NatureAmbient.stop(); }catch(e){} var sd=document.getElementById("sanct-detail"); if(sd) sd.classList.remove("open"); }
     else if(t.id==="stack-back"){ renderSanctuary(); }
   });
 
