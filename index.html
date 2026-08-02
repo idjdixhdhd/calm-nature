@@ -1390,6 +1390,11 @@
 .gs-btn.on{color:#fff;background:var(--accent);border-color:var(--accent)}
 .grow-bar{height:8px;border-radius:6px;background:rgba(var(--accent-rgb),.16);overflow:hidden;margin:10px 0}
 .grow-bar i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width 1.2s ease}
+.grow-forest{margin-top:14px;text-align:left}
+.forest-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.forest-tree{display:flex;flex-direction:column;align-items:center;width:64px;background:rgba(var(--accent-rgb),.08);border:1px solid var(--glass-border);border-radius:12px;padding:4px 2px}
+.forest-tree svg{width:48px;height:auto}
+.forest-tree span{font-size:11px;color:var(--muted);margin-top:-4px}
 @media (prefers-reduced-motion:reduce){.gt-grow,.gt-leaves{animation:none}}
 @keyframes treeSway{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
 
@@ -3071,8 +3076,9 @@ const Sanctuary = {
     if(!this.store.settings) this.store.settings = {};
 
     // 成长轨迹：累计成长值（不再实时重算，改为按活动增量累计，石子也可累计）
-    if(!this.store.growth) this.store.growth = {species:"pine", total:0, base:{moods:0,journal:0,capsules:0,notes:0,stone:0}};
+    if(!this.store.growth) this.store.growth = {species:"pine", total:0, forest:[], base:{moods:0,journal:0,capsules:0,notes:0,stone:0}};
     if(!this.store.growth.base) this.store.growth.base = {moods:0,journal:0,capsules:0,notes:0,stone:0};
+    if(!this.store.growth.forest) this.store.growth.forest = [];
     try{
       const g=this.store.growth, b=g.base;
       const cm=Object.keys(this.store.moods||{}).length;
@@ -4285,8 +4291,15 @@ const EchoMixer = {
   ensure(key){
     if(this.els[key]) return this.els[key];
     const t = this.tracks.find(x=>x.key===key); if(!t || t.synth) return null;
-    const el = document.createElement("audio"); el.src = t.url; el.loop = true; el.preload = "auto";
-    this.els[key] = el; return el;
+    const el = document.createElement("audio");
+    el.src = t.url; el.loop = true; el.preload = "auto";
+    el.setAttribute("playsinline",""); el.setAttribute("webkit-playsinline","");
+    // 移动端 Chrome 要求 audio 元素必须在 DOM 中才会真正播放（否则 play() 被静默拒绝）
+    el.style.cssText = "position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none";
+    (document.body || document.documentElement).appendChild(el);
+    this.els[key] = el;
+    try{ el.load(); }catch(e){}
+    return el;
   },
   setVol(key, v){ const t=this.tracks.find(x=>x.key===key); if(!t) return; this._vol[key]=v; if(t.synth){ SynthNoise.setVol(key,v); } else { const el=this.ensure(key); if(el) el.volume=Math.max(0,Math.min(1,v)); } },
   play(key){ const t=this.tracks.find(x=>x.key===key); if(!t) return; const v=(this._vol[key]!=null)?this._vol[key]:t.def; if(t.synth){ SynthNoise.start(key,t.synth,v); } else { const el=this.ensure(key); if(el){ el.volume=v; el.play().catch(()=>{}); } } },
@@ -5077,13 +5090,16 @@ function renderReview(c){
   paint();
 }
 
-const GROWTH_MAX = 10000;
+const GROWTH_MAX = 1000;
 const SPECIES = {
-  pine:   {name:"松",   crown:"pine"},
-  willow: {name:"柳",   crown:"willow"},
-  maple:  {name:"枫",   crown:"maple"},
-  peach:  {name:"桃",   crown:"peach"},
-  ginkgo: {name:"银杏", crown:"ginkgo"}
+  pine:    {name:"松",   crown:"pine"},
+  cypress: {name:"柏",   crown:"cypress"},
+  willow:  {name:"柳",   crown:"willow"},
+  maple:   {name:"枫",   crown:"maple"},
+  plane:   {name:"梧桐", crown:"maple"},
+  ginkgo:  {name:"银杏", crown:"ginkgo"},
+  peach:   {name:"桃",   crown:"peach"},
+  cherry:  {name:"樱",   crown:"peach"}
 };
 function seasonNow(){
   const m=new Date().getMonth()+1;
@@ -5106,6 +5122,10 @@ function buildCrown(type, pal, r){
   if(type==="pine"){
     const t=(dy,w,y)=>`<path d="M12 ${y} L${(12-w).toFixed(1)} ${(y+dy).toFixed(1)} L${(12+w).toFixed(1)} ${(y+dy).toFixed(1)} Z" fill="${pal.crown}"/>`;
     return t(5, 4.6*k, 6) + t(4.4, 3.4*k, 9.2) + t(3.8, 2.3*k, 12.2);
+  }
+  if(type==="cypress"){
+    const h = 15*k;
+    return `<path d="M12 27 V${(27-h).toFixed(1)}" stroke="#6b5640" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M12 ${(27-h).toFixed(1)} q -3.2 ${(h*0.5).toFixed(1)} 0 ${h.toFixed(1)} q 3.2 ${(-h*0.5).toFixed(1)} 0 ${(-h).toFixed(1)} Z" fill="${pal.crown}"/>`;
   }
   if(type==="willow"){
     let s=`<circle cx="12" cy="10" r="${(5*k).toFixed(1)}" fill="${pal.crown}"/>`;
@@ -5139,20 +5159,19 @@ function buildTree(species, season, ratio){
 }
 function renderGrowth(c){
   Sanctuary.load();
-  const g = Sanctuary.store.growth || {species:"pine", total:0};
+  const g = Sanctuary.store.growth || {species:"pine", total:0, forest:[]};
+  if(!g.forest) g.forest = [];
   const total = g.total||0;
-  const ratio = total/GROWTH_MAX;
+  const maxed = total >= GROWTH_MAX;
+  const ratio = maxed ? 1 : total/GROWTH_MAX;
   const season = seasonNow();
   const STAGES = [
     {min:0,    name:"一粒种子",   desc:"你来了。这就够了。"},
-    {min:10,   name:"破土",       desc:"第一缕绿意钻出了泥土。"},
-    {min:50,   name:"幼苗",       desc:"你开始持续地照顾自己。"},
-    {min:150,  name:"小树",       desc:"这片安静，已长成习惯。"},
-    {min:400,  name:"亭亭如盖",   desc:"你拥有了一片自己的树荫。"},
-    {min:1000, name:"繁茂",       desc:"枝叶间有了风穿过的声音。"},
-    {min:3000, name:"参天",       desc:"许多年后，会有人在你底下歇脚。"},
-    {min:7000, name:"森林之心",   desc:"你已成为某片安宁的源头。"},
-    {min:10000,name:"万木长青",   desc:"成长没有终点，但你已足够丰盛。"}
+    {min:15,   name:"破土",       desc:"第一缕绿意钻出了泥土。"},
+    {min:60,   name:"幼苗",       desc:"你开始持续地照顾自己。"},
+    {min:200,  name:"小树",       desc:"这片安静，已长成习惯。"},
+    {min:500,  name:"亭亭如盖",   desc:"你拥有了一片自己的树荫。"},
+    {min:1000, name:"长成",       desc:"这棵树，已是你的一部分。"}
   ];
   let stage=STAGES[0]; for(const s of STAGES){ if(total>=s.min) stage=s; }
   const next = STAGES.find(s=>s.min>total);
@@ -5166,12 +5185,32 @@ function renderGrowth(c){
   html += spHtml;
   html += `<div class="grow-bar"><i style="width:${(Math.min(1,ratio)*100).toFixed(1)}%"></i></div>`;
   html += `<div class="rev-row"><span>成长值</span><b>${total} / ${GROWTH_MAX}</b></div>`;
-  html += next ? `<div class="q-hint">再积累 ${next.min-total} 点，长成「${next.name}」。</div>` : `<div class="q-hint">已是满级之姿。继续就好。</div>`;
+  if(maxed){
+    html += `<div class="q-hint">这棵树已长成 ✦ 可以种下新的了。</div>`;
+    html += `<div class="q-actions"><div class="q-btn primary" id="grow-plant">🌱 种下新树</div></div>`;
+  } else {
+    html += next ? `<div class="q-hint">再积累 ${next.min-total} 点，长成「${next.name}」。</div>` : ``;
+  }
+  if(g.forest.length){
+    let fr = `<div class="grow-forest"><div class="gh-t">已种下的树 · ${g.forest.length}</div><div class="forest-row">`;
+    g.forest.slice().reverse().forEach(f=>{
+      const nm = (SPECIES[f.species] && SPECIES[f.species].name) || f.species;
+      fr += `<div class="forest-tree" title="${nm}">${buildTree(f.species, season, 1)}<span>${nm}</span></div>`;
+    });
+    fr += `</div></div>`;
+    html += fr;
+  }
   html += `<div class="grow-how"><div class="gh-t">成长值怎么来</div><div class="gh-row"><span>每天心境签到</span><b>+1</b></div><div class="gh-row"><span>记一笔灵感手账</span><b>+1</b></div><div class="gh-row"><span>写一篇日记</span><b>+2</b></div><div class="gh-row"><span>封存一枚时间胶囊</span><b>+3</b></div><div class="gh-row"><span>完成一次小石子</span><b>+2</b></div></div>`;
   c.innerHTML = html;
   c.querySelectorAll(".gs-btn").forEach(b=> b.addEventListener("click", ()=>{
     Sanctuary.store.growth.species = b.dataset.sp; Sanctuary.save(); renderGrowth(c);
   }));
+  const plant = c.querySelector("#grow-plant");
+  if(plant) plant.addEventListener("click", ()=>{
+    Sanctuary.store.growth.forest.push({species:Sanctuary.store.growth.species, ts:Date.now()});
+    Sanctuary.store.growth.total = 0;
+    Sanctuary.save(); renderGrowth(c); flashToast("已种下一棵新的树 ✦");
+  });
 }
 
 let bodyVoiceOn = true;
