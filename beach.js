@@ -120,6 +120,8 @@ function moonState(h){
   const canvas=document.createElement('canvas');
   canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block';
   container.appendChild(canvas);
+  if(getComputedStyle(container).position==='static') container.style.position='relative';
+  container.style.overflow='hidden';
 const renderer=new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
@@ -360,19 +362,56 @@ float vn2(vec2 p){
   return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
 }
 float fbm(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<4;i++){ v+=a*vn2(p); p=p*2.03+vec2(19.7,7.3); a*=0.5; } return v; }
+float fbm8(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<8;i++){ v+=a*vn2(p); p=p*2.03+vec2(19.7,7.3); a*=0.5; } return v; }
+/* 大气散射：Rayleigh + Mie 近似 */
+vec3 atmosphere(vec3 dir,vec3 sunDir,vec3 sunCol,float sunVis){
+  float y=max(dir.y,0.0);
+  float cosT=dot(dir,sunDir);
+  float rayP=0.0597*(1.0+cosT*cosT);
+  float g=0.76;
+  float mieP=(1.0-g*g)/(6.28318*pow(1.0+g*g-2.0*g*cosT,1.5));
+  float rayD=exp(-y*8.0);
+  float mieD=exp(-y*2.5);
+  vec3 sky=mix(uHor,uZen,pow(y,0.55));
+  float sunset=1.0-smoothstep(0.0,0.36,sunDir.y);
+  vec3 rayC=mix(vec3(0.10,0.28,0.62),vec3(0.62,0.30,0.18),sunset);
+  sky+=rayC*rayP*rayD*0.18*sunVis;
+  sky+=sunCol*mieP*mieD*0.045*sunVis;
+  vec3 sdh=normalize(vec3(sunDir.x,0.0,sunDir.z));
+  vec3 ddh=normalize(vec3(dir.x,0.0,dir.z));
+  float az=max(dot(ddh,sdh),0.0);
+  sky+=sunCol*pow(az,2.2)*exp(-y*5.0)*0.22*sunset*sunVis;
+  return sky;
+}
+/* 体积感云 */
+vec3 cloudLayer(vec3 dir,vec3 sunDir,float sunVis,inout float alpha){
+  alpha=0.0;
+  if(dir.y<0.02) return vec3(0.0);
+  vec2 uv=dir.xz/(dir.y+0.28);
+  uv+=uTime*0.0009;
+  float d=fbm8(uv*0.28);
+  float a=smoothstep(0.42,0.72,d);
+  a*=smoothstep(0.02,0.28,dir.y);
+  if(a<0.001) return vec3(0.0);
+  alpha=a*0.88;
+  vec3 sdh=normalize(vec3(sunDir.x,0.85,sunDir.z));
+  float lit=0.52+0.48*max(dot(normalize(vec3(dir.x,0.55,dir.z)),sdh),0.0)*sunVis;
+  vec3 base=mix(vec3(0.58,0.61,0.65),vec3(0.96,0.97,0.98),lit);
+  base*=mix(0.40,1.0,smoothstep(0.02,0.40,dir.y));
+  return base;
+}
 void main(){
   vec3 dir=normalize(vDir);
-  float t=clamp(dir.y*1.35,0.0,1.0);
-  vec3 col=mix(uHor,uZen,pow(t,0.62));
-  /* 太阳：日轮 + 双层光晕 + 低空大范围弥散 */
+  vec3 col=atmosphere(dir,uSunDir,uSunCol,uSunVis);
+  /* 太阳：日轮 + 光晕 */
   if(uSunVis>0.002){
     float d=dot(dir,uSunDir);
     float ang=acos(clamp(d,-1.0,1.0));
     float disc=1.0-smoothstep(0.011,0.017,ang);
-    float glow=exp(-ang*ang*230.0)*0.62+exp(-ang*ang*26.0)*0.16;
+    float glow=exp(-ang*ang*230.0)*0.48+exp(-ang*ang*24.0)*0.14;
     float low=1.0-smoothstep(0.05,0.55,uSunDir.y);
-    glow+=exp(-ang*ang*3.2)*0.10*(0.35+0.65*low);
-    col+=uSunCol*(disc*1.15+glow)*uSunVis;
+    glow+=exp(-ang*ang*3.0)*0.08*(0.35+0.65*low);
+    col+=uSunCol*(disc*1.10+glow)*uSunVis;
   }
   /* 满月：环形山月面 + 边缘暗化 + 柔光晕 */
   if(uMoonVis>0.002){
@@ -394,7 +433,7 @@ void main(){
     float mg=exp(-ang*ang*260.0)*0.42+exp(-ang*ang*22.0)*0.10;
     col+=vec3(0.78,0.83,0.96)*mg*uMoonVis;
   }
-  /* 星空：3D hash 网格慢闪烁，低空淡出 */
+  /* 星空 */
   if(uStarA>0.004){
     vec3 sd=dir*150.0;
     vec3 cell=floor(sd);
@@ -407,16 +446,17 @@ void main(){
       col+=vec3(0.85,0.88,0.98)*s*uStarA*smoothstep(0.02,0.16,dir.y);
     }
   }
-  /* 晨昏海平线暖色光辉（沿太阳方位角，哪怕日轮已没入海平线） */
+  /* 神光：日轮附近放射状条纹 */
   if(uSunVis>0.002){
-    vec3 sdh=normalize(vec3(dir.x,0.0,dir.z));
-    vec3 ssh=normalize(vec3(uSunDir.x,0.0,uSunDir.z));
-    float az=max(dot(sdh,ssh),0.0);
-    col+=uSunCol*pow(az,3.0)*exp(-max(dir.y,0.0)*8.5)*uSunVis*0.34;
+    float gra=max(dot(normalize(vec3(dir.x,0.0,dir.z)),normalize(vec3(uSunDir.x,0.0,uSunDir.z))),0.0);
+    float streak=pow(gra,7.0)*(0.55+0.45*sin(atan(dir.z,dir.x)*14.0+uTime*0.15));
+    col+=uSunCol*streak*exp(-max(dir.y,0.0)*2.2)*uSunVis*0.05;
   }
+  /* 云 */
+  float cA; vec3 cCol=cloudLayer(dir,uSunDir,uSunVis,cA);
+  col=mix(col,cCol,cA);
   /* 地平线雾霭 */
   col=mix(col,uFogCol,exp(-max(dir.y,0.0)*7.5)*uFogD*0.62);
-  /* 抖动去色带 */
   col+=(hash12(gl_FragCoord.xy)-0.5)*0.006;
   gl_FragColor=vec4(col,1.0);
 }`;
@@ -441,8 +481,8 @@ function makeGlowSprite(color,scale){
   const s=new THREE.Sprite(m); s.scale.set(scale,scale,1); s.renderOrder=-1; scene.add(s);
   return s;
 }
-const sunSprite=makeGlowSprite(0xffdcb0,150);
-const moonSprite=makeGlowSprite(0xbdcbee,70);
+const sunSprite=makeGlowSprite(0xffdcb0,210);
+const moonSprite=makeGlowSprite(0xbdcbee,95);
 
 /* ==================== 6. 海洋（Gerstner 顶点波 + 细节法线 + 泡沫） ==================== */
 const OCEAN_VERT=`
@@ -1175,10 +1215,10 @@ function updateScene(dt){
   skyU.uStarA.value=pal.star; skyU.uFogD.value=pal.fogD; skyU.uTime.value=t;
   /* 泛光 sprite 跟随日/月方向 */
   sunSprite.position.copy(sun.dir).multiplyScalar(500);
-  sunSprite.material.opacity=sun.vis*0.30;
+  sunSprite.material.opacity=sun.vis*0.55;
   setCol(sunSprite.material.color,sun.col);
   moonSprite.position.copy(moon.dir).multiplyScalar(500);
-  moonSprite.material.opacity=moon.vis*0.30;
+  moonSprite.material.opacity=moon.vis*0.45;
 
   /* ---- 海洋 ---- */
   setCol(oceanU.uDeep.value,pal.wD); setCol(oceanU.uShallow.value,pal.wS);
@@ -1337,7 +1377,6 @@ function startLoops(){
     camCtl._unbind=()=>{ el.removeEventListener('pointerdown', onDown); el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerup', onUp); el.removeEventListener('pointercancel', onUp); el.removeEventListener('wheel', onWheel); el.removeEventListener('touchmove', onTouch); el.removeEventListener('touchend', onTouchEnd); el.removeEventListener('dblclick', onDbl); };
   }
   resize();
-  running=false;
   const _ro=new ResizeObserver(()=>{ try{ resize(); }catch(e){} });
   _ro.observe(container);
   const _io=new IntersectionObserver((es)=>{
@@ -1348,7 +1387,9 @@ function startLoops(){
   },{threshold:0.01});
   _io.observe(container);
   bindInteract();
-  if(container.clientWidth>0 && container.clientHeight>0){ running=true; startLoops(); }
+  /* 立即启动渲染循环（不依赖初始尺寸/可视判定）——尺寸由 ResizeObserver 校正，
+     离屏时由 IntersectionObserver 暂停；避免面板过渡期尺寸为 0 导致静默落到 2D 兜底 */
+  running=true; startLoops();
   window.addEventListener('resize', resize);
   return {
     stop(){ dispose(); },
