@@ -50,6 +50,7 @@ const CFG={
   interactive: !!(opts&&opts.interactive),
   audio: (opts&&opts.audio!==undefined)?opts.audio:null,
   still: !!(opts&&opts.still),
+  preview: !!(opts&&opts.preview),
   muted: true,
 };
 const INTERACTIVE = CFG.interactive;
@@ -1480,12 +1481,17 @@ function bindInteract(){
   window.addEventListener('resize', resize);
 
   /* ==================== 4b. 控制浮层：全屏 / 4 阶段 / 进度条 / 隐藏功能 ==================== */
+  if(!CFG.preview){
   (function attachBeachUI(){
     const fsRoot = container.closest ? (container.closest('[data-fs]') || container) : container;
     const ui = document.createElement('div');
     ui.className = 'beach-ui';
     ui.innerHTML =
-      '<button class="bz-gear" type="button" aria-label="设置">⚙</button>' +
+      '<div class="bz-quick">' +
+        '<button class="bz-gear" type="button" aria-label="设置">⚙</button>' +
+        '<button type="button" class="bz-fs" title="全屏">⛶</button>' +
+        '<button type="button" class="bz-reset" title="重置视角">⟲</button>' +
+      '</div>' +
       '<div class="bz-panel" hidden>' +
         '<div class="bz-stages">' +
           '<button type="button" data-h="6.5">晨</button>' +
@@ -1497,10 +1503,6 @@ function bindInteract(){
         '<div class="bz-clock">场景时刻 <span class="bz-clk">--:--</span></div>' +
         '<div class="bz-row">' +
           '<label class="bz-sync"><input type="checkbox"> 跟随真实时间</label>' +
-          '<div class="bz-btns">' +
-            '<button type="button" class="bz-fs">⛶ 全屏</button>' +
-            '<button type="button" class="bz-reset">⟲ 重置视角</button>' +
-          '</div>' +
         '</div>' +
       '</div>';
     container.appendChild(ui);
@@ -1551,18 +1553,18 @@ function bindInteract(){
     gear.addEventListener('click', () => { panel.hidden = !panel.hidden; showUI(); });
 
     // 重置视角：把相机恢复到初始机位（与双击海面等价，给一个明确按钮）
-    resetBtn.addEventListener('click', () => { camCtl.yaw = 0; camCtl.pitch = 0; camCtl.dist = 1; panel.hidden = false; showUI(); });
+    resetBtn.addEventListener('click', () => { camCtl.yaw = 0; camCtl.pitch = 0; camCtl.dist = 1; showUI(); });
 
-    // 隐藏功能：无操作 4 秒后浮层淡出（含齿轮）；移动 / 触摸即显示
+    // 隐藏功能：无操作 4 秒后面板淡出（齿轮/全屏/重置常驻）；移动 / 触摸即显示
     let hideTimer = 0;
     function showUI(){
-      ui.classList.remove('bz-hidden');
+      panel.classList.remove('bz-hidden');
       refreshClock();
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => {
-        if (!panel.hidden) return;                       // 面板打开时不自动隐藏
+        if (panel.hidden) return;                        // 面板已被齿轮收起时不自动隐藏
         if (extraSel && document.activeElement && document.activeElement.closest && document.activeElement.closest(extraSel)) return; // 正在输入聊天
-        ui.classList.add('bz-hidden');
+        panel.classList.add('bz-hidden');
       }, 4000);
     }
 
@@ -1571,9 +1573,9 @@ function bindInteract(){
     let onFsChange = null;
     if (extraSel){
       const syncExtra = () => {
-        // 仅在全屏时，聊天随浮层一同自动隐藏；普通视图下保持可见
+        // 仅在全屏时，聊天随面板一同自动隐藏；普通视图下保持可见
         const fs = (document.fullscreenElement === fsRoot) || (document.webkitFullscreenElement === fsRoot);
-        document.querySelectorAll(extraSel).forEach(el => el.classList.toggle('bz-hidden', !!fs && ui.classList.contains('bz-hidden')));
+        document.querySelectorAll(extraSel).forEach(el => el.classList.toggle('bz-hidden', !!fs && panel.classList.contains('bz-hidden')));
       };
       mo = new MutationObserver(syncExtra);
       mo.observe(ui, { attributes: true, attributeFilter: ['class'] });
@@ -1595,6 +1597,7 @@ function bindInteract(){
     };
     showUI();
   })();
+  }
 
   return {
     stop(){ dispose(); },
