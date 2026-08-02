@@ -136,6 +136,38 @@ const LOOK_BASE=new THREE.Vector3(0, 1.55, -26);
 camera.position.copy(CAM_BASE);
 camera.lookAt(LOOK_BASE);
 
+/* ==================== 3b. 交互控制器（缩放/拖拽旋转） ==================== */
+/* 仅当 startBeach(container,{interactive:true}) 时启用；否则保持原来的呼吸漂移+鼠标视差 */
+const INTERACTIVE = !!(opts && opts.interactive);
+const camCtl = { yaw:0, pitch:0, dist:1, dragging:false, lastX:0, lastY:0, pinchDist:0 };
+const ZMIN=0.42, ZMAX=2.4;
+const _baseOff = new THREE.Vector3(0, CAM_BASE.y-LOOK_BASE.y, CAM_BASE.z-LOOK_BASE.z); // ≈(0,1.45,39)
+const _baseEl = Math.atan2(_baseOff.y, _baseOff.z);
+const _camOff = new THREE.Vector3();
+function applyCam(dt){
+  const L = _baseOff.length() * camCtl.dist;
+  const el = clamp(_baseEl + camCtl.pitch, -0.45, 0.85);
+  const az = camCtl.yaw;
+  _camOff.set(
+    L*Math.cos(el)*Math.sin(az),
+    L*Math.sin(el),
+    L*Math.cos(el)*Math.cos(az)
+  );
+  const driftK = INTERACTIVE ? 0.22 : 1.0;
+  camera.position.set(
+    LOOK_BASE.x + _camOff.x + Math.sin(Time.anim*0.273)*0.30*driftK,
+    LOOK_BASE.y + _camOff.y + Math.sin(Time.anim*0.217+1.3)*0.16*driftK,
+    LOOK_BASE.z + _camOff.z + Math.sin(Time.anim*0.199+2.1)*0.22*driftK
+  );
+  const px = INTERACTIVE ? 0 : mouse.x;
+  const py = INTERACTIVE ? 0 : mouse.y;
+  camera.lookAt(
+    LOOK_BASE.x + px*1.1,
+    LOOK_BASE.y + Math.sin(Time.anim*0.242+0.7)*0.10*driftK + py*0.45,
+    LOOK_BASE.z
+  );
+}
+
 const mouse={x:0,y:0,tx:0,ty:0};
 function onMove(e){
   mouse.tx=(e.clientX/window.innerWidth)*2-1;
@@ -1181,19 +1213,10 @@ function updateScene(dt){
   /* 沙色随时段 */
   setCol(sandMat.color,pal.sand);
 
-  /* ---- 相机：呼吸漂移 + 鼠标微视差 ---- */
+  /* ---- 相机：交互（缩放/拖拽）或直接呼吸漂移 ---- */
   mouse.x+=(mouse.tx-mouse.x)*Math.min(1,dt*1.5);
   mouse.y+=(mouse.ty-mouse.y)*Math.min(1,dt*1.5);
-  camera.position.set(
-    CAM_BASE.x+Math.sin(t*0.273)*0.30+mouse.x*0.55,
-    CAM_BASE.y+Math.sin(t*0.217+1.3)*0.16+mouse.y*0.22,
-    CAM_BASE.z+Math.sin(t*0.199+2.1)*0.22
-  );
-  camera.lookAt(
-    LOOK_BASE.x+mouse.x*1.1,
-    LOOK_BASE.y+Math.sin(t*0.242+0.7)*0.10+mouse.y*0.45,
-    LOOK_BASE.z
-  );
+  applyCam(dt);
 
   /* ---- 椰树：海风摇摆 ---- */
   const gust=Math.sin(t*0.5)*0.5+Math.sin(t*0.23+1.7)*0.5;
@@ -1287,7 +1310,31 @@ function startLoops(){
     try{ _ro.disconnect(); }catch(e){}
     try{ window.removeEventListener('mousemove', onMove); }catch(e){}
     try{ window.removeEventListener('resize', resize); }catch(e){}
+    try{ if(camCtl._unbind) camCtl._unbind(); }catch(e){}
     if(canvas.parentNode) canvas.parentNode.removeChild(canvas);
+  }
+  /* 交互事件绑定（缩放/拖拽/双指捏合/双击复位） */
+  function bindInteract(){
+    if(!INTERACTIVE) return;
+    const el=canvas;
+    el.style.touchAction='none';
+    el.style.cursor='grab';
+    const onDown=(e)=>{ camCtl.dragging=true; camCtl.lastX=e.clientX; camCtl.lastY=e.clientY; el.style.cursor='grabbing'; try{ el.setPointerCapture(e.pointerId); }catch(_){} };
+    const onMove=(e)=>{ if(!camCtl.dragging) return; const dx=e.clientX-camCtl.lastX, dy=e.clientY-camCtl.lastY; camCtl.lastX=e.clientX; camCtl.lastY=e.clientY; camCtl.yaw-=dx*0.005; camCtl.pitch=clamp(camCtl.pitch-dy*0.004,-0.45,0.85); };
+    const onUp=(e)=>{ camCtl.dragging=false; el.style.cursor='grab'; try{ el.releasePointerCapture(e.pointerId); }catch(_){} };
+    const onWheel=(e)=>{ e.preventDefault(); camCtl.dist=clamp(camCtl.dist*(1+e.deltaY*0.0012), ZMIN, ZMAX); };
+    const onTouch=(e)=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(camCtl.pinchDist>0){ camCtl.dist=clamp(camCtl.dist*(camCtl.pinchDist/d), ZMIN, ZMAX); } camCtl.pinchDist=d; } };
+    const onTouchEnd=()=>{ camCtl.pinchDist=0; };
+    const onDbl=()=>{ camCtl.yaw=0; camCtl.pitch=0; camCtl.dist=1; };
+    el.addEventListener('pointerdown', onDown);
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+    el.addEventListener('wheel', onWheel, {passive:false});
+    el.addEventListener('touchmove', onTouch, {passive:true});
+    el.addEventListener('touchend', onTouchEnd);
+    el.addEventListener('dblclick', onDbl);
+    camCtl._unbind=()=>{ el.removeEventListener('pointerdown', onDown); el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerup', onUp); el.removeEventListener('pointercancel', onUp); el.removeEventListener('wheel', onWheel); el.removeEventListener('touchmove', onTouch); el.removeEventListener('touchend', onTouchEnd); el.removeEventListener('dblclick', onDbl); };
   }
   resize();
   running=false;
@@ -1300,6 +1347,7 @@ function startLoops(){
     }
   },{threshold:0.01});
   _io.observe(container);
+  bindInteract();
   if(container.clientWidth>0 && container.clientHeight>0){ running=true; startLoops(); }
   window.addEventListener('resize', resize);
   return {
