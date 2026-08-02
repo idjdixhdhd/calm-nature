@@ -274,6 +274,7 @@ export function startGarden(container, opts) {
     if (io) try { io.disconnect(); } catch (e) {}
     if (ro) try { ro.disconnect(); } catch (e) {}
     try { renderer.dispose(); } catch (e) {}
+    try { if (renderer.forceContextLoss) renderer.forceContextLoss(); } catch (e) {}
     if (cv && cv.parentNode) cv.parentNode.removeChild(cv);
     if (window.__gGarden === api) window.__gGarden = null;
     scene.traverse(o => {
