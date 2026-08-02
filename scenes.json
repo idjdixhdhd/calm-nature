@@ -217,6 +217,48 @@
     "motion": "subtle"
   },
   {
+    "id": "water-4",
+    "title": "潮汐信使 · 蓝绿海浪写给沙滩的情书",
+    "subtitle": "The Tide's Letter",
+    "category": "water",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-4.jpg",
+    "poster": "./media/water-4.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · ocean waves on beach"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "海浪扑向沙滩，碎成万千银蝶。那只黑鸟掠过浪缘，像一封寄往远方的信。潮水退去时，留下的是盐粒的记忆，还是大海未曾说出口的秘密？"
+  },
+  {
+    "id": "water-5",
+    "title": "卵石纪年 · 浪噬光阴",
+    "subtitle": "Pebbles & Tides",
+    "category": "water",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/water-5.jpg",
+    "poster": "./media/water-5.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · waves over pebble shore"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "static",
+    "desc": "浪涛拍岸，飞珠溅玉，卵石滩承载着海洋永恒的节律与记忆。"
+  },
+  {
     "id": "extreme-1",
     "title": "苍茫·极境 · 其一",
     "subtitle": "Edge of Earth",
@@ -275,6 +317,153 @@
       "day": "./media/audio/music_day.mp3"
     },
     "motion": "subtle"
+  },
+  {
+    "id": "extreme-4",
+    "title": "荒途行者 · 恰伦峡谷的红色时差",
+    "subtitle": "Charyn Canyon, Kazakhstan",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-4.jpg",
+    "poster": "./media/extreme-4.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · red canyon road at dusk"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "一辆越野车如蚁行于谷底，穿越哈萨克斯坦恰伦大峡谷的红色迷宫。这不是征服，而是朝圣——人类渺小的身影，在这亘古雕琢的岩层之间，终于懂得了谦卑的意义。"
+  },
+  {
+    "id": "extreme-5",
+    "title": "法德拉之吻 · 苔痕封印",
+    "subtitle": "Iceland Fjaðrárgljúfur",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-5.jpg",
+    "poster": "./media/extreme-5.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · moss-covered basalt canyon"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "冰岛千年苔藓轻抚玄武岩壁，溪流蜿蜒如时光刻痕，静谧而古老。"
+  },
+  {
+    "id": "extreme-6",
+    "title": "北境残照 · 霜原低语",
+    "subtitle": "Norwegian Coast",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-6.jpg",
+    "poster": "./media/extreme-6.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · snowy arctic coast at sunset"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "static",
+    "desc": "挪威冬海岸边，枯草覆霜，落日余晖染红雪峰，海面如镜映苍穹。"
+  },
+  {
+    "id": "extreme-7",
+    "title": "五指朝天 · 雾锁灵峰",
+    "subtitle": "Fingers to the Sky",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-7.jpg",
+    "poster": "./media/extreme-7.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · peaks above the sea of clouds"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "五指山刺破云海，孤峰耸立于苍茫之上，宛若自然之手向天发问。"
+  },
+  {
+    "id": "extreme-8",
+    "title": "雪岭浮沉 · 紫霭焚天",
+    "subtitle": "Snow Peaks at Dawn",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-8.jpg",
+    "poster": "./media/extreme-8.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · snow ridges in purple dawn light"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "static",
+    "desc": "山脊破云而出，粉紫天光浸染雪顶，仿佛世界初生的呼吸。"
+  },
+  {
+    "id": "extreme-9",
+    "title": "大地血脉 · 红岩裂谷的千年呼吸",
+    "subtitle": "Earth Veins",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-9.jpg",
+    "poster": "./media/extreme-9.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · red rock canyon from above"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "在这片无言的红土高原上，时间不是用年轮计算的。每一道裂缝都是地球深呼吸留下的痕迹，每一座孤峰都在讲述亿万年的沉默。"
+  },
+  {
+    "id": "extreme-10",
+    "title": "光铸马蹄 · 科罗拉多河的日落神迹",
+    "subtitle": "Horseshoe Bend",
+    "category": "extreme",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/extreme-10.jpg",
+    "poster": "./media/extreme-10.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · Colorado River at golden hour"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "static",
+    "desc": "当太阳沉入马蹄湾尽头，整条科罗拉多河便化作流动的黄金。悬崖披上橙红锦缎，河水映出天穹最后的火焰。"
   },
   {
     "id": "forest-1",
@@ -337,6 +526,27 @@
     "motion": "subtle"
   },
   {
+    "id": "forest-4",
+    "title": "林冠破晓 · 雾隐千嶂",
+    "subtitle": "Misty Forest Crown",
+    "category": "forest",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/forest-4.jpg",
+    "poster": "./media/forest-4.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · pine crowns in morning mist"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "晨光穿透浓雾，针叶林冠泛起微光，千山万壑仍在云梦之间。"
+  },
+  {
     "id": "sky-1",
     "title": "天垂·奇景 · 其一",
     "subtitle": "Sky & Wonders",
@@ -395,6 +605,48 @@
       "night": "./media/audio/music_night.mp3"
     },
     "motion": "subtle"
+  },
+  {
+    "id": "sky-4",
+    "title": "金轮破暝 · 光之经文",
+    "subtitle": "Sunburst Scripture",
+    "category": "sky",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-4.jpg",
+    "poster": "./media/sky-4.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · sunrise rays over mountains"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "subtle",
+    "desc": "太阳自山脊跃出，放射状光束如神谕书写天幕，温暖洒满人间。"
+  },
+  {
+    "id": "sky-5",
+    "title": "云上日冕 · 光瀑倾城",
+    "subtitle": "Crown of Clouds",
+    "category": "sky",
+    "type": "loop",
+    "mediaType": "image",
+    "image": "./media/sky-5.jpg",
+    "poster": "./media/sky-5.jpg",
+    "credit": {
+      "source": "本地图库",
+      "license": "用户收藏 · 真实摄影",
+      "note": "Real landscape photography · sun rising above a sea of clouds"
+    },
+    "audio": {
+      "wind": "./media/audio/wind.mp3",
+      "day": "./media/audio/music_day.mp3"
+    },
+    "motion": "static",
+    "desc": "朝阳撕裂云海，万道金芒倾泻而下，照亮沉睡的群山与森林。"
   },
   {
     "id": "beach-shore",
