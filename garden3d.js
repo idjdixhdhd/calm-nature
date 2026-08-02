@@ -214,7 +214,7 @@ export function startGarden(container, opts) {
   scene.add(grass);
 
   const flowers = [];
-  const n = getCount();
+  const n = Math.max(getCount(), 6);   // 至少 6 朵装饰花，保证初次进入也是座花园而非空地
   for (let i = 0; i < n; i++) {
     const c = palette[i % palette.length];
     const f = makeFlower(SCATTER_RINGS(c), 0.55 + Math.random() * 0.45);
