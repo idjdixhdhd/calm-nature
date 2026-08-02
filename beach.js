@@ -1497,7 +1497,10 @@ function bindInteract(){
         '<div class="bz-clock">场景时刻 <span class="bz-clk">--:--</span></div>' +
         '<div class="bz-row">' +
           '<label class="bz-sync"><input type="checkbox"> 跟随真实时间</label>' +
-          '<button type="button" class="bz-fs">⛶ 全屏</button>' +
+          '<div class="bz-btns">' +
+            '<button type="button" class="bz-fs">⛶ 全屏</button>' +
+            '<button type="button" class="bz-reset">⟲ 重置视角</button>' +
+          '</div>' +
         '</div>' +
       '</div>';
     container.appendChild(ui);
@@ -1508,6 +1511,7 @@ function bindInteract(){
     const slider = ui.querySelector('.bz-time');
     const syncCb = ui.querySelector('.bz-sync input');
     const fsBtn = ui.querySelector('.bz-fs');
+    const resetBtn = ui.querySelector('.bz-reset');
     const clk = ui.querySelector('.bz-clk');
     const stages = ui.querySelectorAll('.bz-stages button');
 
@@ -1545,6 +1549,9 @@ function bindInteract(){
       showUI();
     });
     gear.addEventListener('click', () => { panel.hidden = !panel.hidden; showUI(); });
+
+    // 重置视角：把相机恢复到初始机位（与双击海面等价，给一个明确按钮）
+    resetBtn.addEventListener('click', () => { camCtl.yaw = 0; camCtl.pitch = 0; camCtl.dist = 1; panel.hidden = false; showUI(); });
 
     // 隐藏功能：无操作 4 秒后浮层淡出（含齿轮）；移动 / 触摸即显示
     let hideTimer = 0;
