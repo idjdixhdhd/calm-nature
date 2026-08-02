@@ -11,6 +11,18 @@ function lerp(a, b, t){ return a + (b - a) * t; }
 // 平滑过渡 smoothstep(a,b,x)
 function smooth(a, b, x){ const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); }
 
+/* 一朵花的连续生命周期：种子(0) → 缓慢生长(0..1) → 盛放保持(1) → 末尾整体淡出后循环。
+   phase 为相位偏移（错开各花），period 为周期（秒）。返回 g(生长度) 与 fade(末段整体缩放)。 */
+function lifeCycle(t, phase, period){
+  const x = (((t + phase) % period) + period) % period / period;  // 0..1
+  let g;
+  if (x < 0.08) g = 0;                                  // 种子阶段（短暂）
+  else if (x < 0.55) g = smooth(0.08, 0.55, x);         // 生长 0→1（茎→叶→花苞→绽放）
+  else g = 1;                                           // 盛放保持
+  const fade = x > 0.92 ? (1 - smooth(0.92, 1.0, x)) : 1; // 末段整体缩回，干净地进入下一轮
+  return { g, fade };
+}
+
 const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 /* ====================== 花瓣几何（写实弯曲，全部烘焙进顶点） ====================== */
@@ -202,7 +214,7 @@ function makeFlower(rings, pair, scaleBase, isFocus){
   root.add(head);
 
   root.scale.setScalar(scaleBase || 1);
-  return { root, stem, leaves, seed, sprout, head, ringObjs, isFocus, seedRand: Math.random() * 6.28 };
+  return { root, stem, leaves, seed, sprout, head, ringObjs, isFocus, seedRand: Math.random() * 6.28, scaleBase: scaleBase || 1 };
 }
 
 // 按生长度 g∈[0,1] 设置一朵花的所有形态：种子→幼苗→茎→叶→花苞→绽放
@@ -241,6 +253,7 @@ export function startGarden(container, opts){
   opts = opts || {};
   const getCount = () => (typeof opts.count === 'function' ? opts.count() : (opts.count || 0));
   const getGrow  = () => (typeof opts.getGrow  === 'function' ? opts.getGrow()  : 0);
+  const getFocusing = () => (typeof opts.getFocusing === 'function' ? opts.getFocusing() : false);
 
   const DPR = Math.min(2, window.devicePixelRatio || 1);
   let alive = true, raf = 0, t0 = performance.now();
@@ -295,13 +308,17 @@ export function startGarden(container, opts){
     const a = Math.random() * 6.28, r = 0.9 + Math.random() * 5.2;
     f.root.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
     f.root.rotation.y = Math.random() * 6.28;
-    applyGrowth(f, 1);
-    scene.add(f.root); flowers.push(f);
+    f.phase = Math.random() * 360;          // 错开生命周期相位
+    f.period = 300 + Math.random() * 180;   // 5–8 分钟一轮（种子→盛放→循环）
+    applyGrowth(f, 0);
+    flowers.push(f);
+    scene.add(f.root);
   }
 
-  // 中央焦点花（随 getGrow() 从种子生长）
+  // 中央焦点花（专注进行中随 15 分钟倒计时生长；空闲时演示一轮种子→绽放）
   const focus = makeFlower(FOCUS_RINGS, FOCUS_PAIR, 1.05, true);
   focus.root.position.set(0, 0, 0);
+  focus.phase = 0; focus.period = 132;      // 空闲演示一轮（约 2.2 分钟）
   applyGrowth(focus, clamp01(getGrow()));
   scene.add(focus.root);
 
@@ -322,15 +339,22 @@ export function startGarden(container, opts){
     if (!alive) return;
     if (!container.isConnected){ stop(); return; }
     const t = (now - t0) / 1000;
-    // 焦点花：平滑跟随生长度，按绽放度形变（仅变化时更新几何）
-    const tg = clamp01(getGrow());
-    dispG += (tg - dispG) * 0.08;
-    applyGrowth(focus, dispG < 0.001 ? 0.001 : dispG);
-    // 轻风摇曳
+    // 装饰花：各自相位错开的连续生命周期（种子→生长→盛放→淡出循环），花园始终在“生长”
     flowers.forEach(f => {
+      const lc = lifeCycle(t, f.phase, f.period);
+      applyGrowth(f, lc.g);
+      f.root.scale.setScalar(f.scaleBase * lc.fade);
       f.root.rotation.z = Math.sin(t * 0.6 + f.seedRand) * 0.03;
       f.root.rotation.y = f.seedRand + Math.sin(t * 0.2 + f.seedRand) * 0.05;
     });
+    // 焦点花：专注进行中→跟随 15 分钟倒计时；已完成→永留盛放；否则空闲演示种子→绽放
+    let fg, ffade = 1;
+    if (getFocusing()){ fg = clamp01(getGrow()); }
+    else if (getGrow() >= 0.99){ fg = 1; }
+    else { const lc = lifeCycle(t, focus.phase, focus.period); fg = lc.g; ffade = lc.fade; }
+    dispG += (fg - dispG) * 0.06;
+    applyGrowth(focus, dispG < 0.001 ? 0.001 : dispG);
+    focus.root.scale.setScalar(focus.scaleBase * ffade);
     focus.root.rotation.z = Math.sin(t * 0.5) * 0.02;
     const ca = Math.sin(t * 0.08) * 0.5;
     camera.position.x = ca; camera.position.z = Math.cos(t * 0.08) * 7; camera.lookAt(0, 1.6, 0);
