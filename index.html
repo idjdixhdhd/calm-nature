@@ -93,9 +93,9 @@
 
   .splash-cta{margin-top:42px;position:relative;animation:fadeUp 1.2s .7s both}
 
-  .splash-cta button{padding:16px 46px;border-radius:50px;border:1px solid var(--glass-border);background:linear-gradient(135deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.04));color:var(--ui);font-size:14px;letter-spacing:.28em;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.25),0 0 40px -8px rgba(var(--accent-rgb),.45);transition:transform .2s,box-shadow .3s}
+  .splash-cta button{padding:16px 46px;border-radius:50px;border:1px solid var(--glass-border);background:linear-gradient(135deg,rgba(var(--accent-rgb),.16),rgba(var(--accent-rgb),.03));color:var(--ui);font-size:14px;letter-spacing:.28em;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.20),0 0 26px -10px rgba(var(--accent-rgb),.32);transition:transform .2s,box-shadow .3s}
 
-  .splash-cta button:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.55),0 0 60px -6px rgba(var(--accent-rgb),.65)}
+  .splash-cta button:hover{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.40),0 0 34px -10px rgba(var(--accent-rgb),.45)}
 
   .splash-cta button:active{transform:scale(.96)}
   .splash-daily{position:relative;z-index:2;max-width:520px;margin:22px auto 0;padding:16px 20px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--shadow-card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-align:left;cursor:pointer;transition:transform .3s,box-shadow .3s;animation:fadeUp 1.2s .5s both}
@@ -142,9 +142,9 @@
 
   .guide-foot{margin:5vh auto 3vh;text-align:center}
 
-  .guide-foot button{padding:15px 40px;border-radius:50px;border:1px solid var(--glass-border);background:rgba(var(--accent-rgb),.12);color:var(--ui);font-size:14px;letter-spacing:.24em;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 0 30px -8px rgba(var(--accent-rgb),.4);transition:transform .2s,box-shadow .3s}
+  .guide-foot button{padding:15px 40px;border-radius:50px;border:1px solid var(--glass-border);background:rgba(var(--accent-rgb),.10);color:var(--ui);font-size:14px;letter-spacing:.24em;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 0 20px -10px rgba(var(--accent-rgb),.3);transition:transform .2s,box-shadow .3s}
 
-  .guide-foot button:hover{transform:translateY(-2px);box-shadow:0 0 40px -4px rgba(var(--accent-rgb),.6)}
+  .guide-foot button:hover{transform:translateY(-2px);box-shadow:0 0 26px -10px rgba(var(--accent-rgb),.42)}
 
 
 
@@ -1033,6 +1033,10 @@
   .self-stat .ss-row i{font-style:normal;color:#dfe7df;opacity:.92}
   #btn-feedback{position:fixed;right:14px;bottom:14px;z-index:90;width:50px;height:50px;border-radius:50%;border:1px solid var(--glass-border);background:rgba(0,0,0,.55);color:var(--ui);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.45);transition:.25s}
   #btn-feedback:active{transform:scale(.92)}
+  #exit-confirm{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  #exit-confirm.show{display:flex}
+  #exit-confirm .modal{background:rgba(18,28,23,.97);border:1px solid var(--glass-border);border-radius:18px;padding:24px 22px;max-width:300px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:fade .25s ease}
+  #exit-confirm .m-t{font-size:16px;line-height:1.6;margin-bottom:4px}
   .fb-box{width:min(92vw,420px);background:var(--panel);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
   .fb-box h3{margin:0 0 14px;font-size:18px;letter-spacing:.1em}
   .fb-box .q-area{min-height:110px}
@@ -1289,8 +1293,9 @@
 @keyframes modIn{ from{ opacity:0; transform:translateY(16px) scale(.985); } to{ opacity:1; transform:none; } }
 .nc-hero{ display:block; width:100%; height:172px; border-radius:18px; margin:6px 0 16px; background:#06121c; box-shadow: inset 0 0 40px rgba(0,0,0,.45), 0 8px 30px rgba(0,0,0,.3); }
 .nc-hero.tall{ height:230px; }
-.mod-h{ font-size:19px; font-weight:600; letter-spacing:.02em; margin:2px 0 4px; }
-.mod-sub{ font-size:13px; opacity:.62; line-height:1.6; margin-bottom:14px; }
+.nc-hero.tall#gd-cv{ height:300px; background:linear-gradient(180deg,#bfe6f2 0%,#dff3e0 58%,#3f7a4e 100%); }
+.mod-h{ font-size:19px; font-weight:600; letter-spacing:.02em; margin:4px 0 6px; }
+.mod-sub{ font-size:13px; opacity:.58; line-height:1.7; margin-bottom:20px; }
 .mod-card{ background:var(--glass); border:1px solid var(--glass-border); border-radius:16px; padding:16px; margin:10px 0; backdrop-filter:blur(10px); }
 .mod-btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:999px; background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#fff)); color:#08110d; font-weight:600; font-size:14px; cursor:pointer; border:none; }
 .mod-btn.ghost{ background:transparent; border:1px solid var(--glass-border); color:var(--text); }
@@ -1728,6 +1733,7 @@
 
 <!-- FEEDBACK PANEL -->
 <div class="settings-panel" id="feedback-panel"></div>
+<div id="exit-confirm"><div class="modal"><div class="m-t">确定离开「自然之境」吗？</div><div class="wall-acts" style="margin-top:16px;justify-content:center"><div class="q-btn" id="exit-stay">再待会儿</div><div class="q-btn primary" id="exit-leave">离开</div></div></div></div>
 <button id="btn-feedback" title="反馈 / 报 Bug">反馈</button>
 
 <!-- 访问统计（不蒜子）：常驻左下角公开显示，脚本加载后即填充全站累计访问量 -->
@@ -1983,113 +1989,21 @@ const Audio = {
 
   ctx:null, master:null, nodes:new Map(),
 
-  ensure(){
+  ensure(){ window.NatureAmbient.ensure(); },
 
-    if(this.ctx) return;
+  clear(){ window.NatureAmbient.stop(); },
 
-    const AC = window.AudioContext||window.webkitAudioContext;
-
-    this.ctx = new AC();
-
-    this.master = this.ctx.createGain();
-
-    this.master.gain.value = volume;
-
-    this.master.connect(this.ctx.destination);
-
-  },
-
-  get(url){
-
-    if(this.nodes.has(url)) return this.nodes.get(url);
-
-    const el = document.createElement("audio");
-
-    el.src = url; el.loop = true; el.preload = "auto";
-
-    const src = this.ctx.createMediaElementSource(el);
-
-    const g = this.ctx.createGain(); g.gain.value = 0;
-
-    src.connect(g); g.connect(this.master);
-
-    const node={el,gain:g}; this.nodes.set(url,node); return node;
-
-  },
-
-  clear(){
-
-    this.nodes.forEach(n=>{
-
-      try{ n.gain.gain.setTargetAtTime(0,this.ctx.currentTime,.4); n.el.pause(); n.el.currentTime=0; }catch(e){}
-
-    });
-
-  },
-
-  targets24h(h){
-
-    const wind=.22;
-
-    let day=0, night=0;
-
-    if(h>=5 && h<17) day = Math.min(1, Math.max(0, 1-Math.abs(h-11)/6));
-
-    else if(h>=17 && h<19) day = Math.max(0,1-(h-17)/2);
-
-    else if(h>=4 && h<5) day = h-4;
-
-    if(h>=19 || h<5){ const c = h>=19?(h<=23?21:23.5):1; night = Math.max(0,1-Math.abs(h-c)/4); }
-
-    if(h>=17 && h<19) night = (h-17)/2;
-
-    return {wind, day:day*.55, night:night*.55};
-
-  },
+  applyLoop(){ if(currentScene) window.NatureAmbient.play(currentScene); },
 
   apply24h(h){
-
-    if(!this.ctx || !currentScene || currentScene.type !== "24h") return;
-
-    const t = this.targets24h(h), map = currentScene.audio || {};
-
-    if(map.wind) this.fade(map.wind, t.wind);
-
-    if(map.day) this.fade(map.day, t.day);
-
-    if(map.night) this.fade(map.night, t.night);
-
+    if(!currentScene) return;
+    if(window.NatureAmbient.currentId() !== currentScene.id) window.NatureAmbient.play(currentScene);
+    window.NatureAmbient.setHour(h);
   },
 
-  applyLoop(){
+  setMuted(m){ window.NatureAmbient.setMuted(m); },
 
-    if(!this.ctx || !currentScene || currentScene.type !== "loop") return;
-
-    const map = currentScene.audio || {};
-
-    let main = map.main || map.wind;
-
-    if(main) this.fade(main, 1);
-
-    if(map.day && !map.main) this.fade(map.day, .35);
-
-    if(map.night && !map.main) this.fade(map.night, .35);
-
-  },
-
-  fade(url, to){
-
-    const node = this.get(url);
-
-    node.gain.gain.setTargetAtTime(muted?0:to, this.ctx.currentTime, .8);
-
-    if(to>.01 && node.el.paused) node.el.play().catch(()=>{});
-
-  },
-
-  setMuted(m){ muted=m; if(this.ctx) this.master.gain.setTargetAtTime(m?0:volume, this.ctx.currentTime, .3); },
-
-  setVolume(v){ volume=v; if(this.ctx && !muted) this.master.gain.setTargetAtTime(v, this.ctx.currentTime, .2); }
+  setVolume(v){ window.NatureAmbient.setVolume(v); }
 
 };
 
@@ -2131,7 +2045,7 @@ function showView(name){
 
   if(name==="gallery") renderGallery();
 
-  if(name==="sanctuary") renderSanctuary();
+  if(name==="sanctuary"){ try{ history.pushState({qn:1},""); }catch(e){} renderSanctuary(); }
 
   if(name!=="sanctuary"){ const sd=document.getElementById("sanct-detail"); if(sd) sd.classList.remove("open"); }
 
@@ -2339,6 +2253,7 @@ const IMAGE_DURATION = 60;
 let imageStart = 0, imagePaused = false;
 
 function enterPlayer(id){
+  try{ history.pushState({qn:1},""); }catch(e){}
 
   EchoMixer.stopAll(); FlowTimer.stop();
 
@@ -2989,7 +2904,7 @@ const ACC = {
 
 function accountKey(){
 
-  return ACC.active ? ("quiet-nature-"+ACC.active) : "quiet-nature-guest";
+  return "quiet-nature-data"; // 固定 key：换账号 / 更新后数据不丢失
 
 }
 
@@ -3001,7 +2916,13 @@ const Sanctuary = {
 
   load(){
 
-    try{ this.store = JSON.parse(localStorage.getItem(accountKey())||"null"); }catch(e){ this.store=null; }
+    try{ this.store = JSON.parse(localStorage.getItem("quiet-nature-data")||"null"); }catch(e){ this.store=null; }
+    // 迁移：换账号 / 更新后旧 key 的数据合并进来，防止"丢失"
+    if(!this.store || typeof this.store!=="object" || !Object.keys(this.store).length){
+      ["quiet-nature-guest","quiet-nature-sanctuary"].some(function(k){
+        try{ var v=JSON.parse(localStorage.getItem(k)||"null"); if(v&&typeof v==="object"&&Object.keys(v).length){ this.store=v; this.save(); return true; } }catch(e){} return false;
+      }, this);
+    }
 
     if(!this.store || typeof this.store!=="object") this.store = {moods:{},journal:[],favorites:[],solar:{}};
 
@@ -3036,7 +2957,7 @@ const Sanctuary = {
 
   },
 
-  save(){ try{ localStorage.setItem(accountKey(), JSON.stringify(this.store)); }catch(e){} },
+  save(){ try{ localStorage.setItem("quiet-nature-data", JSON.stringify(this.store)); }catch(e){} },
 
   todayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 
@@ -3347,6 +3268,7 @@ function openStack(key){
   html += `</div>`;
 
   body.innerHTML = html;
+  try{ window.__sanctInStack = true; history.pushState({qn:1},""); }catch(e){}
 
   body.querySelector("#stack-back").addEventListener("click", ()=> renderSanctuary());
 
@@ -3412,7 +3334,13 @@ function updateSanctStatus(){
 
 
 
+function stopScene3D(){
+  if(window._wsBeach){ try{ window._wsBeach.stop(); }catch(e){} window._wsBeach=null; }
+  if(window.__gGarden){ try{ window.__gGarden.stop(); }catch(e){} window.__gGarden=null; }
+}
+
 function openModule(key){
+  try{ history.pushState({qn:1},""); }catch(e){}
 
   if(key==="immerse"){ document.getElementById("sanct-detail").classList.remove("open"); showView("gallery"); return; }
 
@@ -3424,6 +3352,8 @@ function openModule(key){
   document.getElementById("sd-title").textContent = titles[key] || (MODULES[key]?MODULES[key].title:"");
 
   const c = document.getElementById("sd-content");
+
+  stopScene3D();
 
   c.innerHTML = "";
 
@@ -3792,7 +3722,7 @@ function renderReader(c){
     else items = ud.concat(lib.map(q=>({t:q.t,a:q.a,_lib:true,_id:lib.indexOf(q)})));
 
     const poolAll = lib.concat(ud);
-    const f = poolAll[doy % poolAll.length];
+    const f = poolAll[featured % poolAll.length];
 
     let html = "";
 
@@ -3832,7 +3762,7 @@ function renderReader(c){
 
     c.innerHTML = html;
 
-    c.querySelector("#rd-rand").addEventListener("click", ()=>{ let r; do{ r=Math.floor(Math.random()*N); }while(r===featured && N>1); featured=r; paint(); });
+    c.querySelector("#rd-rand").addEventListener("click", ()=>{ const L=poolAll.length; let r; do{ r=Math.floor(Math.random()*L); }while(r===featured && L>1); featured=r; paint(); });
 
     c.querySelectorAll("[data-star]").forEach(el=> el.addEventListener("click", ()=>{
 
@@ -4247,7 +4177,10 @@ const Presence = {
     try{ this.id = localStorage.getItem("qn_presence_id"); if(!this.id){ this.id="p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem("qn_presence_id", this.id); } }catch(e){ this.id="anon"+Math.random().toString(36).slice(2,8); }
     this.el = document.getElementById("presence-dot");
     this.running = true;
-    this.ensureDiscussion().then(()=>{ if(!this.discId) return; this.beat(); this.poll(); this.beatTimer=setInterval(()=>this.beat(),60000); this.pollTimer=setInterval(()=>this.poll(),30000); });
+    // 不再自动建 GitHub 讨论：真实"有人也在"需国内可达实时后端；
+    // 当前网络 GitHub 不可达，诚实显示独自，不伪造在线、不偷偷建 room。
+    this.el.classList.add("on");
+    const _t=this.el.querySelector(".pd-txt"); if(_t) _t.textContent="微光已亮 · 暂时独自";
   },
   stop(){ this.running=false; clearInterval(this.beatTimer); clearInterval(this.pollTimer); const el=document.getElementById("presence-dot"); if(el) el.style.display="none"; },
   async gh(query, vars){
@@ -4392,6 +4325,7 @@ const ROOM = {
   token: WALL_CFG.token, repoId: WALL_CFG.repoId, catId: WALL_CFG.categoryId,
   async gh(q,v){ try{ return await ghql(q,v); }catch(e){ console.warn("room:",e&&e.message); return null; } },
   async ensure(title){
+    title = "[room] "+title;
     let cursor=null;
     for(let i=0;i<12;i++){
       const q=`query($repoId:ID!,$c:ID!,$after:String){ node(id:$repoId){ ... on Repository{ discussions(first:50,categoryId:$c,after:$after,orderBy:{field:CREATED_AT,direction:DESC}){ nodes{ id title } pageInfo{ hasNextPage endCursor } } } } } }`;
@@ -4521,14 +4455,25 @@ function renderGarden(c){
   let grow=0, focusing=false, endAt=0, tick=null;
   function paint(){
     const g=Sanctuary.store.garden;
-    c.innerHTML=`<canvas class="nc-hero tall" id="gd-cv"></canvas>
+    c.innerHTML=`<div class="nc-hero tall" id="gd-cv"></div>
       <div class="mod-h">专注花园</div>
-      <div class="mod-sub">开始专注，中央那朵花会随倒计时慢慢生长；完成一次，就有一朵花永远留在花园里。</div>
+      <div class="mod-sub">开始专注，中央那朵金色的花会随倒计时慢慢绽放；完成一次，就有一朵花永远留在你的花园里。</div>
       <div class="garden-stat"><div><b id="gd-sess">${g.sessions}</b>次专注</div><div><b id="gd-flower">${g.flowers}</b>朵花</div><div><b id="gd-left">${focusing?'--:--':'已绽放'}</b></div></div>
       <button class="mod-btn" id="gd-start">${focusing?'结束这次专注':'开始 15 分钟专注'}</button>
       ${focusing?'<button class="mod-btn ghost" id="gd-stop">中止（不计入花园）</button>':''}
       <div class="room-meta" id="gd-tip">${focusing?'花正在生长，陪你一起呼吸…':'点开始，让一朵花为你而开。'}</div>`;
-    NatureCanvas(c.querySelector("#gd-cv"),"garden",{count:g.flowers, getGrow:()=>grow});
+    const gbox = c.querySelector("#gd-cv");
+    if (window.__gGarden) window.__gGarden.stop();
+    window.__gGarden = null;
+    try {
+      if (typeof window.startGarden === "function" && gbox) {
+        window.__gGarden = startGarden(gbox, { count: g.flowers, getGrow: () => grow });
+      } else {
+        throw new Error("no-3d");
+      }
+    } catch(e){
+      try{ NatureCanvas(gbox, "garden", { count: g.flowers, getGrow: () => grow }); }catch(e2){}
+    }
     c.querySelector("#gd-start").onclick=()=>{ if(focusing){ finish(); } else { start(); } };
     const st=c.querySelector("#gd-stop"); if(st) st.onclick=()=>{ focusing=false; if(tick)clearInterval(tick); tick=null; grow=0; flashToast("已中止，这次不计入花园"); paint(); };
   }
@@ -4550,32 +4495,87 @@ function renderVerse(c){
 }
 
 function renderGlowNote(c){
+  Sanctuary.load();
+  Sanctuary.store.glow = Sanctuary.store.glow || [];
   const TITLE="[微光] 留言";
-  c.innerHTML=`<div class="mod-h">微光留言</div><div class="mod-sub">给此刻也在的人，留一句匿名温柔的话。下一个人会轻轻捡起它。</div><canvas class="nc-hero" id="gn-cv"></canvas><div class="room-meta" id="gn-stat"></div><div id="gn-list"></div><textarea class="room-input" id="gn-in" placeholder="写一句温柔的话，留给陌生人…"></textarea><button class="mod-btn" id="gn-send" style="margin-top:8px">放下这句微光</button>`;
+  const SEED=["愿你今晚睡得安稳。","有人也在，别怕。","把心事交给海风吧。","你今天也很努力了。","慢一点，也没关系。"];
+  c.innerHTML=`<div class="mod-h">微光留言</div><div class="mod-sub">给此刻也在的人，留一句匿名温柔的话。下一个人会轻轻捡起它。· 你的话先留在本机，联网后会漂给陌生人</div><canvas class="nc-hero" id="gn-cv"></canvas><div class="room-meta" id="gn-stat"></div><div id="gn-list"></div><textarea class="room-input" id="gn-in" placeholder="写一句温柔的话，留给陌生人…"></textarea><button class="mod-btn" id="gn-send" style="margin-top:8px">放下这句微光</button>`;
   NatureCanvas(c.querySelector("#gn-cv"),"night");
   const list=c.querySelector("#gn-list"); const stat=c.querySelector("#gn-stat");
-  let serverId=null;
-  async function load(){
-    if(!serverId) serverId=await roomEnsure(TITLE);
-    const ns=await roomList(TITLE, serverId, 12);
-    const arr=ns.map(n=>{let t=n.body||"";try{const o=JSON.parse(t);if(o&&o.t)t=o.t;}catch(e){}return t;}).filter(Boolean);
-    if(serverId){ stat.textContent="微光已连接 · 这些话会被陌生人看见"; } else { stat.textContent="本地模式（连不上 GitHub）· 留言先存本机"; }
-    if(!arr.length){ list.innerHTML='<div class="room-meta">还没有微光，做第一个留下的人吧。</div>'; return; }
-    list.innerHTML=arr.slice(0,8).map(t=>`<div class="room-post">${escapeHtml(t)}</div>`).join("");
+  const myArr=()=>Sanctuary.store.glow.slice();
+  function paint(extra){
+    const mine=myArr();
+    const arr = (mine.length ? mine : SEED.map(t=>({t}))) .concat(extra||[]);
+    const shown = arr.slice(-9);
+    stat.textContent = mine.length ? ("这里亮着 "+mine.length+" 句微光 · 联网后会漂给陌生人") : "还没有你的微光，写第一句吧";
+    list.innerHTML = shown.map(o=>`<div class="room-post">${escapeHtml(o.t||o)}</div>`).join("");
   }
-  c.querySelector("#gn-send").onclick=async()=>{ const t=c.querySelector("#gn-in").value.trim(); if(!t){flashToast("写点什么再放下");return;} if(!serverId) serverId=await roomEnsure(TITLE); await roomPost(TITLE, serverId, JSON.stringify({t})); c.querySelector("#gn-in").value=""; flashToast("微光已放下"); load(); };
-  load();
+  async function sync(){
+    let id=null; try{ id=await Promise.race([roomEnsure(TITLE), new Promise(r=>setTimeout(()=>r(null),3500))]); }catch(e){ id=null; }
+    if(!id) return;
+    let ns=[]; try{ ns=await roomList(TITLE, id, 40); }catch(e){ ns=[]; }
+    const remote = ns.map(n=>{ let t=n.body||""; try{const o=JSON.parse(t); if(o&&o.t)t=o.t;}catch(e){} return t; }).filter(Boolean);
+    if(remote.length) paint(remote);
+  }
+  function send(){
+    const t=c.querySelector("#gn-in").value.trim(); if(!t){flashToast("写点什么再放下");return;}
+    Sanctuary.store.glow.push({t, ts:Date.now()}); Sanctuary.save();
+    c.querySelector("#gn-in").value=""; flashToast("微光已放下"); paint();
+    (async()=>{ try{ const id=await roomEnsure(TITLE); if(id) await roomPost(TITLE, id, JSON.stringify({t})); }catch(e){} })();
+  }
+  c.querySelector("#gn-send").onclick=send;
+  paint(); sync();
 }
 
 function renderRelay(c){
   const TITLE="[共读接力] 故事";
-  c.innerHTML=`<div class="mod-h">共读接力</div><div class="mod-sub">大家接力续写一句话，汇成一段共同的故事。接着上一句，写你的半句。</div><canvas class="nc-hero" id="rl-cv"></canvas><div id="rl-story" class="mod-card" style="line-height:1.9;font-family:var(--serif,serif)"></div><textarea class="room-input" id="rl-in" placeholder="接着上面，续写一句…"></textarea><button class="mod-btn" id="rl-send" style="margin-top:8px">续写一句</button>`;
-  NatureCanvas(c.querySelector("#rl-cv"),"lake");
+  Sanctuary.load();
+  const store = Sanctuary.store;
+  store.relay = store.relay || [];
+  c.innerHTML=`<div class="mod-h">共读接力</div><div class="mod-sub">大家接力续写一句话，汇成一段共同的故事。接着上一句，写你的半句。</div><canvas class="nc-hero" id="rl-cv" style="height:160px"></canvas><div id="rl-mode" class="room-meta">本机已保存 · 联网时可与大家接力</div><div id="rl-story" class="mod-card" style="line-height:1.9;font-family:var(--serif,serif);max-height:32vh;overflow-y:auto"></div><textarea class="room-input" id="rl-in" placeholder="接着上面，续写一句…"></textarea><button class="mod-btn" id="rl-send" style="margin-top:8px">续写一句</button>`;
+
+  // 动画：轻量自绘漂浮光点（无外部依赖，脱离自动停止）
+  const cv=c.querySelector("#rl-cv");
+  let raf=0, alive=true, t0=performance.now();
+  const dots=Array.from({length:22},()=>({x:Math.random(),y:Math.random(),r:0.6+Math.random()*1.8,s:0.2+Math.random()*0.5,o:0.15+Math.random()*0.35}));
+  function frame(now){
+    if(!alive) return;
+    if(!cv.isConnected){ alive=false; return; }
+    const w=cv.clientWidth||320, h=cv.clientHeight||160, dpr=Math.min(window.devicePixelRatio||1,2);
+    if(cv.width!==Math.round(w*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); }
+    const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+    const t=(now-t0)/1000; ctx.globalCompositeOperation="lighter";
+    dots.forEach(d=>{ const yy=((d.y - t*d.s*0.05)%1+1)%1; const x=d.x+Math.sin(t*0.3+d.r)*0.02; const px=x*w, py=yy*h, rr=d.r*2.2;
+      const g=ctx.createRadialGradient(px,py,0,px,py,rr*3); g.addColorStop(0,`rgba(190,230,210,${d.o})`); g.addColorStop(1,"rgba(190,230,210,0)");
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,rr*3,0,6.29); ctx.fill(); });
+    ctx.globalCompositeOperation="source-over"; raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+
   const story=c.querySelector("#rl-story");
+  function paint(){
+    if(!store.relay.length){ story.innerHTML='<div class="room-meta" style="opacity:.7">故事还是空白的，做第一个落笔的人吧。接着上一句，写下你的半句。</div>'; return; }
+    story.innerHTML = store.relay.map(x=>`<span>${escapeHtml(x.t)} </span>`).join("");
+    story.scrollTop = story.scrollHeight;
+  }
+  paint();
+
+  // 联网尽力同步（后台，不阻塞 UI）
   let serverId=null;
-  async function load(){ if(!serverId) serverId=await roomEnsure(TITLE); const ns=await roomList(TITLE, serverId, 30); const arr=ns.map(n=>{let t=n.body||"";try{const o=JSON.parse(t);if(o&&o.t)t=o.t;}catch(e){}return t;}).filter(Boolean).reverse(); if(!arr.length){story.textContent="故事还是空白的，做第一个落笔的人吧。";return;} story.innerHTML=arr.map(t=>`<span>${escapeHtml(t)} </span>`).join(""); }
-  c.querySelector("#rl-send").onclick=async()=>{ const t=c.querySelector("#rl-in").value.trim(); if(!t){flashToast("写点什么再续");return;} if(!serverId) serverId=await roomEnsure(TITLE); await roomPost(TITLE, serverId, JSON.stringify({t})); c.querySelector("#rl-in").value=""; flashToast("已续写"); load(); };
-  load();
+  (async()=>{ try{ if(serverId){ const ns=await roomList(TITLE, serverId, 60);
+    const remote=ns.map(n=>{let t=n.body||"";try{const o=JSON.parse(t);if(o&&o.t)t=o.t;}catch(e){}return t;}).filter(Boolean);
+    if(remote.length){ const set=new Set(store.relay.map(x=>x.t)); remote.forEach(t=>{ if(!set.has(t)) store.relay.push({t,ts:Date.now(),remote:true}); }); Sanctuary.save(); paint(); }
+    const el=c.querySelector("#rl-mode"); if(el) el.textContent="已连接 · 与大家共写同一段故事"; } }catch(e){} })();
+
+  c.querySelector("#rl-send").onclick=()=>{
+    const t=c.querySelector("#rl-in").value.trim();
+    if(!t){ flashToast("写点什么再续"); return; }
+    store.relay.push({t, ts:Date.now()}); Sanctuary.save();
+    c.querySelector("#rl-in").value=""; paint();
+    flashToast("已续写 · 本机已保存");
+    if(serverId){ roomPost(TITLE, serverId, JSON.stringify({t})).catch(()=>{}); }
+    else { roomEnsure(TITLE).then(id=>{ if(id){ serverId=id; roomPost(TITLE, id, JSON.stringify({t})).catch(()=>{}); const el=c.querySelector("#rl-mode"); if(el) el.textContent="已连接 · 与大家共写同一段故事"; } }).catch(()=>{}); }
+  };
 }
 
 function renderSyncBreath(c){
@@ -4593,17 +4593,21 @@ function renderSyncBreath(c){
 
 function renderWatchSea(c){
   const TITLE="[同看一片海]";
-  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。</div><div class="nc-hero" id="ws-cv"></div><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><div class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></div><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
+  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。· 拖拽旋转视角，滚轮或双指缩放海面</div><div class="nc-hero" id="ws-cv"></div><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><div class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></div><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
   const wsBox=c.querySelector("#ws-cv");
-  if(typeof window.startBeach==="function"){
-    if(window._wsBeach){ try{ window._wsBeach.stop(); }catch(e){} }
-    window._wsBeach = startBeach(wsBox, {hour:15, speed:45, audio:false});
-  } else {
-    const fc=document.createElement('canvas'); wsBox.appendChild(fc); NatureCanvas(fc,"beach");
+  if(window._wsBeach){ try{ window._wsBeach.stop(); }catch(e){} window._wsBeach=null; }
+  try {
+    if(typeof window.startBeach==="function"){
+      window._wsBeach = startBeach(wsBox, {hour:15, speed:45, audio:false, interactive:true});
+    } else {
+      throw new Error("no-3d");
+    }
+  } catch(e){
+    try{ const fc=document.createElement('canvas'); wsBox.appendChild(fc); NatureCanvas(fc,"beach"); }catch(e2){}
   }
   const list=c.querySelector("#ws-list"); const stat=c.querySelector("#ws-stat");
   let serverId=null;
-  async function load(){ if(!serverId) serverId=await roomEnsure(TITLE); const ns=await roomList(TITLE, serverId, 12); if(serverId){ stat.textContent="海已连接 · 此刻有人也在这里"; } else { stat.textContent="本地模式 · 你的话先存本机"; } if(!ns.length){ list.innerHTML='<div class="room-meta">还没有人说话，海很安静。</div>'; return; } list.innerHTML=ns.slice(0,8).reverse().map(n=>`<div class="room-post">${escapeHtml(n.body||"")}</div>`).join(""); }
+  async function load(){ const ns = serverId ? await roomList(TITLE, serverId, 12).catch(()=>[]) : []; if(serverId){ stat.textContent = ns.length ? ("海已连接 · 已有 "+ns.length+" 句话漂在这里") : "海已连接 · 还很安静"; } else { stat.textContent="本地模式 · 你的话先存本机"; } if(!ns.length){ list.innerHTML='<div class="room-meta">还没有人说话，海很安静。</div>'; return; } list.innerHTML=ns.slice(0,8).reverse().map(n=>`<div class="room-post">${escapeHtml(n.body||"")}</div>`).join(""); }
   c.querySelector("#ws-send").onclick=async()=>{ const t=c.querySelector("#ws-in").value.trim(); if(!t){flashToast("写点什么");return;} if(!serverId) serverId=await roomEnsure(TITLE); await roomPost(TITLE, serverId, t); c.querySelector("#ws-in").value=""; flashToast("已说"); load(); };
   load();
 }
@@ -4710,6 +4714,7 @@ const FlowTimer = {
     e.sub.textContent = this.running ? "专注中" : (this.remain>0 ? "已暂停" : "准备");
     const C = 2*Math.PI*92;
     e.ring.style.strokeDashoffset = (C*(1 - (this.total? this.remain/this.total : 0))).toFixed(1);
+    if(e.toggle) e.toggle.textContent = this.running ? "⏸ 暂停" : (this.remain>0 && this.remain<this.total ? "▶ 继续" : "▶ 开始专注");
   }
 };
 
@@ -4723,11 +4728,11 @@ function renderFlow(c){
   html += `<div class="flow-durs" id="flow-durs">` + [15,25,45].map(m=>`<div class="flow-dur${m===25?' sel':''}" data-min="${m}">${m} 分钟</div>`).join("") + `</div>`;
   html += `<div class="flow-bg">背景：<span id="flow-scene" style="color:var(--accent)">${(scenes.find(s=>s.id===sceneId)||{}).title||""}</span> · 下方可换</div>`;
   html += `<div class="q-hint" style="text-align:center">选一段自然做背景，开始一段不被打扰的专注。计时结束会有轻柔提示音。</div>`;
-  html += `<div class="echo-master"><div class="demo" id="flow-start">▶ 开始专注</div><div class="demo" id="flow-toggle">⏸ 暂停</div><div class="demo" id="flow-reset">↺ 重置</div></div>`;
+  html += `<div class="echo-master"><div class="demo" id="flow-toggle">▶ 开始专注</div><div class="demo" id="flow-reset">↺ 重置</div></div>`;
   html += `<div class="q-pick" id="flow-scenes">` + scenes.slice(0,12).map(s=>`<div class="qp${s.id===sceneId?' sel':''}" data-sid="${s.id}">${s.title}</div>`).join("") + `</div>`;
   html += `</div>`;
   c.innerHTML = html;
-  FlowTimer._els = { num:c.querySelector("#flow-num"), sub:c.querySelector("#flow-sub"), ring:c.querySelector("#flow-ring-c") };
+  FlowTimer._els = { num:c.querySelector("#flow-num"), sub:c.querySelector("#flow-sub"), ring:c.querySelector("#flow-ring-c"), toggle:c.querySelector("#flow-toggle") };
   FlowTimer.render();
   c.querySelectorAll("[data-min]").forEach(el=> el.addEventListener("click", ()=>{
     dur = (+el.dataset.min)*60;
@@ -4740,9 +4745,13 @@ function renderFlow(c){
     const sc = scenes.find(s=>s.id===sceneId); if(sc) c.querySelector("#flow-scene").textContent = sc.title;
     FlowTimer.scene = sceneId;
   }));
-  c.querySelector("#flow-start").addEventListener("click", ()=>{ FlowTimer.start(dur, sceneId); c.querySelector("#flow-toggle").textContent="⏸ 暂停"; flashToast("开始专注 · "+dur/60+" 分钟"); });
-  c.querySelector("#flow-toggle").addEventListener("click", ()=>{ if(FlowTimer.running) FlowTimer.pause(); else FlowTimer.resume(); c.querySelector("#flow-toggle").textContent = FlowTimer.running ? "⏸ 暂停" : "▶ 继续"; });
-  c.querySelector("#flow-reset").addEventListener("click", ()=>{ FlowTimer.stop(); FlowTimer.remain = dur; FlowTimer.total = dur; FlowTimer.render(); c.querySelector("#flow-toggle").textContent="⏸ 暂停"; });
+  const flowToggle = c.querySelector("#flow-toggle");
+  flowToggle.addEventListener("click", ()=>{
+    if(FlowTimer.running){ FlowTimer.pause(); }
+    else if(FlowTimer.remain>0 && FlowTimer.remain<FlowTimer.total){ FlowTimer.resume(); }
+    else { FlowTimer.start(dur, sceneId); flashToast("开始专注 · "+dur/60+" 分钟"); }
+  });
+  c.querySelector("#flow-reset").addEventListener("click", ()=>{ FlowTimer.stop(); FlowTimer.remain = dur; FlowTimer.total = dur; FlowTimer.render(); });
 }
 
 function renderCreate(c){
@@ -5012,7 +5021,18 @@ function renderQuiet(c){
 
 function renderBottle(c){
   Sanctuary.load();
+  Sanctuary.store.bottle = Sanctuary.store.bottle || {};
+  Sanctuary.store.bottle.sent = Sanctuary.store.bottle.sent || [];
+  Sanctuary.store.bottle.found = Sanctuary.store.bottle.found || [];
   const TITLE="[漂流瓶] 海洋";
+  const SEED=[
+    "愿你被这个世界温柔以待。",
+    "今天也辛苦了，喝口水歇会儿。",
+    "海的那边，也有人想着你。",
+    "把烦恼折进瓶子，让它漂走吧。",
+    "慢一点，海一直都在。",
+    "你不是一个人。"
+  ];
   let html = `<canvas class="nc-hero" id="bottle-cv"></canvas>`;
   html += `<div class="q-hint">写一句扔进海里，会被某个陌生人轻轻捡起；你也去捡一只别人扔的瓶子。匿名、轻、不回复也行。</div>`;
   html += `<div class="room-meta" id="bottle-count"></div>`;
@@ -5020,34 +5040,36 @@ function renderBottle(c){
   html += `<div class="q-actions"><div class="q-btn primary" id="bottle-throw">扔出瓶子</div><div class="q-btn" id="bottle-pick">捡一只瓶子</div></div>`;
   html += `<div id="bottle-show"></div>`;
   c.innerHTML = html;
-  let serverId=null;
-  async function refreshCount(){
+  function allBottles(){ return Sanctuary.store.bottle.sent.concat(Sanctuary.store.bottle.found); }
+  function refreshCount(){
     const el=c.querySelector("#bottle-count"); if(!el) return;
-    if(!serverId) serverId=await roomEnsure(TITLE);
-    const localN=roomLocalCount(TITLE);
-    if(serverId){ el.textContent="海洋已连接 · 瓶中漂流着大家的留言"; }
-    else { el.textContent="当前为本地模式（网络连不上 GitHub）· 你扔的瓶子先存在本机"; }
-    const cv=c.querySelector("#bottle-cv"); if(cv) NatureCanvas(cv,"bottle",{count: Math.max(1, localN + (serverId?4:1))});
+    const n=Sanctuary.store.bottle.sent.length;
+    const pool = allBottles().length + SEED.length;
+    el.textContent = `海里漂着你扔出的 ${n} 只瓶子，还有 ${SEED.length} 只陌生人的瓶子在浪里 · 联网后还能遇见更多`;
+    const cv=c.querySelector("#bottle-cv"); if(cv) NatureCanvas(cv,"bottle",{count: Math.max(1, pool)});
+  }
+  function throwBottle(){
+    const v=c.querySelector("#bottle-text").value.trim(); if(!v){ flashToast("先写一句吧"); return; }
+    Sanctuary.store.bottle.sent.push({t:v, ts:Date.now()}); Sanctuary.save();
+    c.querySelector("#bottle-text").value="";
+    c.querySelector("#bottle-show").innerHTML = `<div class="bottle-card">${escapeHtml(v)}<div class="bottle-meta">已漂向海里 · 愿它被温柔捡起</div></div>`;
+    flashToast("瓶子已扔出"); refreshCount();
+    (async()=>{ try{ const id=await roomEnsure(TITLE); if(id) await roomPost(TITLE, id, JSON.stringify({t:v, ts:Date.now()})); }catch(e){} })();
+  }
+  function pickBottle(){
+    const el=c.querySelector("#bottle-show");
+    const pool = allBottles().concat(SEED.map(t=>({t, seed:true})));
+    if(!pool.length){ el.innerHTML=`<div class="q-hint">海里还很安静，还没有瓶子。你先扔一只？</div>`; return; }
+    const pick=pool[Math.floor(Math.random()*pool.length)];
+    if(pick.t && !pick.seed && !Sanctuary.store.bottle.found.some(b=>b.t===pick.t)){
+      Sanctuary.store.bottle.found.push({t:pick.t, ts:Date.now()}); Sanctuary.save(); refreshCount();
+    }
+    el.innerHTML=`<div class="bottle-card">${escapeHtml(pick.t)}<div class="bottle-meta">一只陌生的瓶子，漂到了你手里</div></div>`;
   }
   refreshCount();
-  c.querySelector("#bottle-throw").addEventListener("click", async ()=>{
-    const v=c.querySelector("#bottle-text").value.trim(); if(!v){ flashToast("先写一句吧"); return; }
-    if(!serverId) serverId=await roomEnsure(TITLE);
-    await roomPost(TITLE, serverId, JSON.stringify({t:v, ts:Date.now()}));
-    Sanctuary.store.bottle = Sanctuary.store.bottle || {}; Sanctuary.store.bottle.sent = Sanctuary.store.bottle.sent || [];
-    Sanctuary.store.bottle.sent.push({t:v, ts:Date.now()}); Sanctuary.save();
-    c.querySelector("#bottle-show").innerHTML = `<div class="bottle-card">${escapeHtml(v)}<div class="bottle-meta">已漂向海里 · 愿它被温柔捡起</div></div>`;
-    c.querySelector("#bottle-text").value=""; refreshCount();
-  });
-  c.querySelector("#bottle-pick").addEventListener("click", async ()=>{
-    const el=c.querySelector("#bottle-show"); el.innerHTML=`<div class="q-hint">正在海边寻找…</div>`;
-    if(!serverId) serverId=await roomEnsure(TITLE);
-    const list=await roomList(TITLE, serverId, 100);
-    const bottles=list.map(n=>{ try{ return JSON.parse(n.body); }catch(e){ return {t:n.body}; } }).filter(o=>o&&o.t);
-    if(!bottles.length){ el.innerHTML=`<div class="q-hint">海里还很安静，还没有瓶子。你先扔一只？</div>`; return; }
-    const pick=bottles[Math.floor(Math.random()*bottles.length)];
-    el.innerHTML=`<div class="bottle-card">${escapeHtml(pick.t)}<div class="bottle-meta">一只陌生的瓶子，漂到了你手里</div></div>`;
-  });
+  c.querySelector("#bottle-throw").addEventListener("click", throwBottle);
+  c.querySelector("#bottle-pick").addEventListener("click", pickBottle);
+  (async()=>{ try{ const id=await Promise.race([roomEnsure(TITLE), new Promise(r=>setTimeout(()=>r(null),3500))]); if(!id) return; const ns=await roomList(TITLE, id, 100); const remote=ns.map(n=>{ try{ return JSON.parse(n.body); }catch(e){ return {t:n.body}; } }).filter(o=>o&&o.t); if(remote.length){ const f=Sanctuary.store.bottle.found; for(const r of remote){ if(!f.some(b=>b.t===r.t)) f.push({t:r.t, ts:Date.now()}); } Sanctuary.save(); refreshCount(); } }catch(e){} })();
 }
 
 function renderNotes(c){
@@ -5966,9 +5988,8 @@ function importAccount(file){
 
 function exportAllData(){
   ACC.load();
-  const bundle = { app:"calm-nature-backup", version:1, exportedAt:Date.now(), accounts:ACC.list, active:ACC.active, stores:{} };
-  (ACC.list||[]).forEach(p=>{ try{ bundle.stores[p.pid] = JSON.parse(localStorage.getItem("quiet-nature-"+p.pid)||"null"); }catch(e){} });
-  try{ bundle.stores.__guest = JSON.parse(localStorage.getItem("quiet-nature-guest")||"null"); }catch(e){}
+  const bundle = { app:"calm-nature-backup", version:1, exportedAt:Date.now(), accounts:ACC.list, active:ACC.active, stores:{ main: Sanctuary.store } };
+  try{ bundle.stores.__guest = JSON.parse(localStorage.getItem("quiet-nature-data")||"null"); }catch(e){}
   downloadJSON("calm-nature-backup-"+new Date().toISOString().slice(0,10)+".json", bundle);
   flashToast("已导出全部身份与记录");
 }
@@ -6073,7 +6094,7 @@ async function loadPublicWall(listEl){
         }
       }}
     }`, {repoId:WALL_CFG.repoId, catId:WALL_CFG.categoryId});
-    const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]") && !d.title.startsWith("[读者]"));
+    const posts = data.node.discussions.nodes.filter(d => !d.title.startsWith("[反馈]") && !d.title.startsWith("[读者]") && !d.title.startsWith("[room]") && (d.bodyText||"")!=="room");
     if(!posts.length){ listEl.innerHTML = `<div class="q-hint" style="text-align:center">全网共笔墙还空着。写下第一句吧。</div>`; return; }
     const mine = getWallMine();
     const likes = getWallLikes();
@@ -6667,7 +6688,7 @@ function init(){
   document.getElementById("btn-sanctuary-splash").addEventListener("click", ()=> showView("sanctuary"));
   document.getElementById("btn-sanct-gallery").addEventListener("click", ()=> showView("sanctuary"));
   document.getElementById("btn-sanct-back").addEventListener("click", ()=> showView("gallery"));
-  document.getElementById("sd-close").addEventListener("click", ()=>{ EchoMixer.stopAll(); FlowTimer.stop(); document.getElementById("sanct-detail").classList.remove("open"); });
+  document.getElementById("sd-close").addEventListener("click", ()=>{ EchoMixer.stopAll(); FlowTimer.stop(); stopScene3D(); document.getElementById("sanct-detail").classList.remove("open"); });
 
   // ---- floating mood badge ----
   const mb = document.createElement("div"); mb.id = "mood-badge"; mb.className = "mood-badge";
@@ -6694,6 +6715,40 @@ function init(){
   window.addEventListener("orientationchange", ()=> setTimeout(()=>window.scrollTo(0,0), 200));
 
   window.addEventListener("resize", ()=> window.scrollTo(0,0));
+
+  // ===== 返回键 / 物理返回键 处理 =====
+  function isHome(){ var g=document.getElementById("view-gallery"), sd=document.getElementById("sanct-detail"), pl=document.getElementById("view-player"); return g && g.classList.contains("active") && (!sd||!sd.classList.contains("open")) && (!pl||!pl.classList.contains("active")); }
+  function softBack(){
+    var sd=document.getElementById("sanct-detail");
+    if(sd && sd.classList.contains("open")){ if(typeof EchoMixer!=="undefined") EchoMixer.stopAll(); if(typeof FlowTimer!=="undefined") FlowTimer.stop(); stopScene3D(); sd.classList.remove("open"); return; }
+    var pl=document.getElementById("view-player");
+    if(pl && pl.classList.contains("active")){ exitPlayer(); return; }
+    if(document.getElementById("view-sanctuary").classList.contains("active")){
+      if(window.__sanctInStack){ window.__sanctInStack=false; renderSanctuary(); return; }
+      showView("gallery"); return;
+    }
+    showView("gallery");
+  }
+  function confirmExit(){ var m=document.getElementById("exit-confirm"); if(m) m.classList.add("show"); }
+  try{ history.pushState({qn:1},""); }catch(e){}   // 启动时占位：物理返回先弹确认而非直接退出
+  window.addEventListener("popstate", function(){
+    try{ history.pushState({qn:1},""); }catch(e){}   // 抵消，防止浏览器真的退出
+    if(isHome()){ confirmExit(); } else { softBack(); }
+  });
+  var ec=document.getElementById("exit-confirm");
+  if(ec){
+    var es=ec.querySelector("#exit-stay"); if(es) es.addEventListener("click", ()=> ec.classList.remove("show"));
+    var el=ec.querySelector("#exit-leave"); if(el) el.addEventListener("click", ()=>{ ec.classList.remove("show"); try{ window.close(); }catch(e){} try{ window.location.href="about:blank"; }catch(e){} });
+  }
+  // 事件委托：覆盖 innerHTML 重渲染后的返回箭头（防止重进后箭头点击失效）
+  document.addEventListener("click", function(e){
+    var t = e.target && e.target.closest ? e.target.closest("#btn-back, #btn-sanct-back, #sd-close, #stack-back") : null;
+    if(!t) return;
+    if(t.id==="btn-back"){ if(typeof exitPlayer==="function") exitPlayer(); }
+    else if(t.id==="btn-sanct-back"){ showView("gallery"); }
+    else if(t.id==="sd-close"){ if(typeof EchoMixer!=="undefined") EchoMixer.stopAll(); if(typeof FlowTimer!=="undefined") FlowTimer.stop(); stopScene3D(); var sd=document.getElementById("sanct-detail"); if(sd) sd.classList.remove("open"); }
+    else if(t.id==="stack-back"){ renderSanctuary(); }
+  });
 
 
 
@@ -6730,6 +6785,8 @@ init();
 
 <!-- 3D 海滩模块（复刻 adams914/beach-wallpaper，本地 Three.js，无外部图片依赖） -->
 <script type="module" src="beach.js"></script>
+<script type="module" src="garden3d.js"></script>
+<script src="ambient.js"></script>
 
 <!-- 访问统计 · 不蒜子（即时数字，零账号，加载即计数） -->
 <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
