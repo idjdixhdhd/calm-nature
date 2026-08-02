@@ -1,6 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 
 export function startBeach(container, opts={}){
+let beachUIEl=null, cleanupBeachUI=null;   // 控制浮层（全屏/4阶段/进度条/隐藏功能）
 /* ============================================================
  * 治愈系热带海滩动态壁纸 · 全 3D 重制版（Three.js r160 + GLSL）
  * ------------------------------------------------------------
@@ -1432,6 +1433,9 @@ function dispose(){
   try{ _io.disconnect(); }catch(e){}
   try{ _ro.disconnect(); }catch(e){}
   try{ if(camCtl._unbind) camCtl._unbind(); }catch(e){}
+  try{ if(cleanupBeachUI) cleanupBeachUI(); }catch(e){}
+  try{ if(beachUIEl && beachUIEl.parentNode) beachUIEl.parentNode.removeChild(beachUIEl); }catch(e){}
+  beachUIEl=null; cleanupBeachUI=null;
   if(canvas.parentNode) canvas.parentNode.removeChild(canvas);
   try{ if(renderer && renderer.dispose) renderer.dispose(); }catch(e){}
   try{ if(renderer && renderer.forceContextLoss) renderer.forceContextLoss(); }catch(e){}
@@ -1474,6 +1478,117 @@ function bindInteract(){
   /* 立即启动渲染循环；离屏时由 IntersectionObserver 暂停 */
   running=true; startLoops();
   window.addEventListener('resize', resize);
+
+  /* ==================== 4b. 控制浮层：全屏 / 4 阶段 / 进度条 / 隐藏功能 ==================== */
+  (function attachBeachUI(){
+    const fsRoot = container.closest ? (container.closest('[data-fs]') || container) : container;
+    const ui = document.createElement('div');
+    ui.className = 'beach-ui';
+    ui.innerHTML =
+      '<button class="bz-gear" type="button" aria-label="设置">⚙</button>' +
+      '<div class="bz-panel" hidden>' +
+        '<div class="bz-stages">' +
+          '<button type="button" data-h="6.5">晨</button>' +
+          '<button type="button" data-h="12">昼</button>' +
+          '<button type="button" data-h="18.2">暮</button>' +
+          '<button type="button" data-h="0">夜</button>' +
+        '</div>' +
+        '<input class="bz-time" type="range" min="0" max="24" step="0.1" value="' + Time.hour.toFixed(1) + '">' +
+        '<div class="bz-clock">场景时刻 <span class="bz-clk">--:--</span></div>' +
+        '<div class="bz-row">' +
+          '<label class="bz-sync"><input type="checkbox"> 跟随真实时间</label>' +
+          '<button type="button" class="bz-fs">⛶ 全屏</button>' +
+        '</div>' +
+      '</div>';
+    container.appendChild(ui);
+    beachUIEl = ui;
+
+    const gear = ui.querySelector('.bz-gear');
+    const panel = ui.querySelector('.bz-panel');
+    const slider = ui.querySelector('.bz-time');
+    const syncCb = ui.querySelector('.bz-sync input');
+    const fsBtn = ui.querySelector('.bz-fs');
+    const clk = ui.querySelector('.bz-clk');
+    const stages = ui.querySelectorAll('.bz-stages button');
+
+    function refreshClock(){
+      if (clk) clk.textContent = Time.clock();
+      if (document.activeElement !== slider) slider.value = Time.hour.toFixed(1);
+    }
+    function setStage(h){
+      Time.hour = ((h % 24) + 24) % 24;
+      Time.sync = false; Time.speed = 0;     // 手动定格当前时段
+      syncCb.checked = false;
+      slider.value = Time.hour.toFixed(1);
+      panel.hidden = false;
+      showUI();
+    }
+    stages.forEach(b => b.addEventListener('click', () => setStage(parseFloat(b.dataset.h))));
+    slider.addEventListener('input', () => {
+      Time.hour = parseFloat(slider.value);
+      Time.sync = false; Time.speed = 0;
+      syncCb.checked = false;
+      panel.hidden = false;
+      showUI();
+    });
+    syncCb.addEventListener('change', () => {
+      Time.sync = syncCb.checked;
+      if (!syncCb.checked) Time.speed = (CFG.speed > 0 ? CFG.speed : 1);
+      panel.hidden = false;
+      showUI();
+    });
+    fsBtn.addEventListener('click', () => {
+      try{
+        if (!document.fullscreenElement){ if (fsRoot.requestFullscreen) fsRoot.requestFullscreen(); else if (fsRoot.webkitRequestFullscreen) fsRoot.webkitRequestFullscreen(); }
+        else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); }
+      }catch(e){}
+      showUI();
+    });
+    gear.addEventListener('click', () => { panel.hidden = !panel.hidden; showUI(); });
+
+    // 隐藏功能：无操作 4 秒后浮层淡出（含齿轮）；移动 / 触摸即显示
+    let hideTimer = 0;
+    function showUI(){
+      ui.classList.remove('bz-hidden');
+      refreshClock();
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        if (!panel.hidden) return;                       // 面板打开时不自动隐藏
+        if (extraSel && document.activeElement && document.activeElement.closest && document.activeElement.closest(extraSel)) return; // 正在输入聊天
+        ui.classList.add('bz-hidden');
+      }, 4000);
+    }
+
+    const extraSel = (opts && opts.hideSelector) ? opts.hideSelector : null;
+    let mo = null;
+    let onFsChange = null;
+    if (extraSel){
+      const syncExtra = () => {
+        // 仅在全屏时，聊天随浮层一同自动隐藏；普通视图下保持可见
+        const fs = (document.fullscreenElement === fsRoot) || (document.webkitFullscreenElement === fsRoot);
+        document.querySelectorAll(extraSel).forEach(el => el.classList.toggle('bz-hidden', !!fs && ui.classList.contains('bz-hidden')));
+      };
+      mo = new MutationObserver(syncExtra);
+      mo.observe(ui, { attributes: true, attributeFilter: ['class'] });
+      onFsChange = syncExtra;
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange);
+      syncExtra();
+    }
+
+    const evs = ['pointermove', 'pointerdown', 'touchstart', 'wheel', 'keydown'];
+    evs.forEach(ev => container.addEventListener(ev, showUI, { passive: true }));
+    const clkTimer = setInterval(refreshClock, 1000); refreshClock();
+
+    cleanupBeachUI = () => {
+      clearTimeout(hideTimer); clearInterval(clkTimer);
+      evs.forEach(ev => container.removeEventListener(ev, showUI));
+      if (mo) mo.disconnect();
+      if (onFsChange){ document.removeEventListener('fullscreenchange', onFsChange); document.removeEventListener('webkitfullscreenchange', onFsChange); }
+    };
+    showUI();
+  })();
+
   return {
     stop(){ dispose(); },
     setVisible(v){ if(disposed) return; if(v && !running){ running=true; startLoops(); } else if(!v && running){ running=false; try{cancelAnimationFrame(rafId);}catch(e){} } },
