@@ -1,11 +1,11 @@
-// 专注花园 · 3D 花朵绽放（Three.js 本地模块，无外部依赖）
-// 花瓣弯曲/绽放算法移植自 garettwong/flower-3d（Ethereal Bloom，MIT 风格开源），
-// 改为自然色 + 真实花茎 + 花园场景，按场景聚焦生长。
+// 专注花园 · 3D 花朵绽放（Three.js 本地模块）
+// 用「标准材质 + 变换动画」实现，保证移动端 GPU 也能稳定渲染（不依赖自定义着色器，避免手机端着色器编译失败导致白屏）。
 // 接口：const g = startGarden(container, {count, getGrow});  g.stop() / g.addBloom()
 import * as THREE from './vendor/three.module.js';
 
 function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
 function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+function lerp(a, b, t) { return a + (b - a) * t; }
 
 // 程序化柔光贴图（花心光晕用，避免外部图片）
 function makeGlow() {
@@ -17,101 +17,45 @@ function makeGlow() {
   grd.addColorStop(1, 'rgba(255,200,120,0)');
   g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
   const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
+  if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
 
-// 花瓣几何：平面重塑为宽卵形 + 横截面凹勺，沿长度弯曲交给 shader
-function petalGeometry() {
-  const geo = new THREE.PlaneGeometry(1, 1, 12, 28);
-  const pos = geo.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i), y = pos.getY(i);
-    const t = y + 0.5;                                   // 0=基部 1=尖端
-    const w = Math.pow(Math.sin(Math.PI * Math.pow(t, 0.55)), 0.6) * 0.62 + 0.10;
-    const nx = x * 2 * w;
-    const cup = -(Math.pow(x * 2, 2)) * 0.32 * (0.35 + 0.65 * t);
-    pos.setXYZ(i, nx, t, cup);
-  }
-  geo.computeVertexNormals();
-  return geo;
-}
-
-// 花瓣材质：顶点着色器按 uOpen 把花瓣从含苞(curled)弯到舒展(recurved)
-function makePetalMat(th0c, th0o, kc, ko, baseHex, tipHex) {
-  return new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    uniforms: {
-      uOpen: { value: 0 },
-      uTh0c: { value: th0c }, uTh0o: { value: th0o }, uKc: { value: kc }, uKo: { value: ko },
-      uBase: { value: new THREE.Color(baseHex) },
-      uTip: { value: new THREE.Color(tipHex) },
-      uRim: { value: new THREE.Color(0xffffff) },
-      uRimPow: { value: 2.4 }, uRimStr: { value: 0.35 }, uInt: { value: 0.95 }, uAlpha: { value: 0.94 }
-    },
-    vertexShader: `
-      uniform float uOpen, uTh0c, uTh0o, uKc, uKo;
-      varying vec3 vN; varying vec3 vV; varying float vT;
-      void main(){
-        vT = uv.y;
-        float s  = position.y;
-        float x  = position.x;
-        float z0 = position.z;
-        float th0 = mix(uTh0c, uTh0o, uOpen);
-        float k   = mix(uKc,  uKo,  uOpen);
-        float th  = th0 + k * s;
-        float cy, cz;
-        if(abs(k) < 0.001){ cy = cos(th0) * s; cz = sin(th0) * s; }
-        else { cy = (sin(th) - sin(th0)) / k; cz = (cos(th0) - cos(th)) / k; }
-        vec3  nrm = vec3(0.0, -sin(th), cos(th));
-        vec3  local = vec3(x, cy, cz) + nrm * z0;
-        vec4  wp = modelMatrix * vec4(local, 1.0);
-        vN = normalize(mat3(modelMatrix) * nrm);
-        vV = normalize(cameraPosition - wp.xyz);
-        gl_Position = projectionMatrix * viewMatrix * wp;
-      }`,
-    fragmentShader: `
-      varying vec3 vN; varying vec3 vV; varying float vT;
-      uniform vec3 uBase,uTip,uRim; uniform float uRimPow,uRimStr,uInt,uAlpha;
-      void main(){
-        vec3 N = normalize(vN);
-        if(dot(N,vV) < 0.0) N = -N;
-        float f = pow(1.0 - clamp(dot(N,vV),0.0,1.0), uRimPow);
-        vec3 col = mix(uBase, uTip, smoothstep(0.0,1.0,vT));
-        col += uRim * f * uRimStr;
-        float a = uAlpha * (0.82 + 0.18*f);
-        gl_FragColor = vec4(col * uInt, a);
-      }`
-  });
-}
+// 花瓣：细长椭圆平面，基部在原点（绕基部旋转实现开合）。所有花共用同一几何，省内存。
+const PETAL_GEO = (() => {
+  const g = new THREE.PlaneGeometry(0.5, 1.2, 1, 6);
+  g.translate(0, 0.6, 0);
+  return g;
+})();
 
 // 花头（多圈花瓣 + 花心光晕），不含茎
-function buildHead(rings, glow) {
+function buildHead(rings, glow, baseHex, tipHex) {
   const head = new THREE.Group();
-  const ringMats = [];
+  const petals = [];
   rings.forEach((r, ri) => {
-    const mat = makePetalMat(r.th0c, r.th0o, r.kc, r.ko, r.baseHex, r.tipHex);
-    ringMats.push(mat);
+    const mat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(baseHex), roughness: 0.6, metalness: 0.0,
+      side: THREE.DoubleSide, emissive: new THREE.Color(tipHex), emissiveIntensity: 0.08
+    });
     for (let i = 0; i < r.count; i++) {
       const pivot = new THREE.Group();
-      pivot.rotation.y = (i / r.count) * Math.PI * 2 + ri * 0.45;
-      const mesh = new THREE.Mesh(PETAL, mat);
-      mesh.scale.set(r.wid, r.len, r.len);
-      mesh.position.set(0, 0, r.base);
-      pivot.add(mesh);
+      pivot.rotation.y = (i / r.count) * Math.PI * 2 + ri * 0.6;
+      const petal = new THREE.Mesh(PETAL_GEO, mat);
+      petal.scale.set(r.wid, r.len, 1);
+      pivot.add(petal);
       head.add(pivot);
+      petals.push({ pivot, openX: r.openX, delay: r.delay });
     }
   });
-  // 花心：小穹顶 + 柔光晕
-  const recept = new THREE.Mesh(new THREE.SphereGeometry(0.15, 18, 14),
+  const recept = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 12),
     new THREE.MeshStandardMaterial({ color: 0xb89a4e, roughness: 0.6 }));
-  recept.scale.y = 0.6; recept.position.y = 0.02; head.add(recept);
+  recept.scale.y = 0.6; recept.position.y = 0.04; head.add(recept);
   const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({
     map: glow, color: 0xffd58a, transparent: true, opacity: 0,
     blending: THREE.AdditiveBlending, depthWrite: false
   }));
-  coreGlow.scale.set(1.1, 1.1, 1); coreGlow.position.y = 0.08; head.add(coreGlow);
-  return { head, ringMats, coreGlow };
+  coreGlow.scale.set(1.0, 1.0, 1); coreGlow.position.y = 0.1; head.add(coreGlow);
+  return { head, petals, coreGlow };
 }
 
 export function startGarden(container, opts) {
@@ -120,77 +64,80 @@ export function startGarden(container, opts) {
   const getGrow = () => (typeof opts.getGrow === 'function' ? opts.getGrow() : 0);
 
   const DPR = Math.min(2, window.devicePixelRatio || 1);
-  let alive = true, raf = 0, t0 = performance.now();
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let alive = true, raf = 0, t0 = performance.now();
 
-  const PETAL = petalGeometry();
   const GLOW = makeGlow();
 
   // 自然配色 [base, tip]
   const palette = [
-    [0xffd9e6, 0xff8fb3], [0xfff3c4, 0xffcf4d], [0xe9d6ff, 0xb98cff],
-    [0xffffff, 0xffe6f0], [0xffd0c0, 0xff7a5c]
+    [0xff9ec0, 0xffd1e6], [0xffcf4d, 0xfff3c4], [0xb98cff, 0xe9d6ff],
+    [0xffffff, 0xffe6f0], [0xff7a5c, 0xffd0c0]
   ];
-  const FOCUS = [0xfff1ea, 0xffc7d6];   // 焦点花：暖白偏粉
+  const FOCUS = [0xffc7d6, 0xfff1ea];   // 焦点花：暖白偏粉
 
-  const SCATTER_RINGS = (c) => [
-    { count: 6, wid: 0.8, len: 1.0, base: 0.06, th0c: 0.12, th0o: 0.42, kc: -1.05, ko: 0.62, baseHex: c[0], tipHex: c[1] },
-    { count: 9, wid: 0.95, len: 1.4, base: 0.13, th0c: 0.15, th0o: 0.66, kc: -1.15, ko: 0.85, baseHex: c[0], tipHex: c[1] },
-    { count: 12, wid: 1.1, len: 1.8, base: 0.22, th0c: 0.18, th0o: 0.92, kc: -1.25, ko: 1.08, baseHex: c[0], tipHex: c[1] }
+  // 花瓣开合：CLOSED_X=收拢成花苞，openX=绽放到外倾
+  const CLOSED_X = 0.12;
+  const SCATTER_RINGS = (c0, c1) => [
+    { count: 6,  wid: 0.85, len: 1.0,  openX: 0.70, delay: 0.00, baseHex: c0, tipHex: c1 },
+    { count: 9,  wid: 0.95, len: 1.35, openX: 0.92, delay: 0.12, baseHex: c0, tipHex: c1 },
+    { count: 12, wid: 1.10, len: 1.70, openX: 1.12, delay: 0.24, baseHex: c0, tipHex: c1 }
   ];
   const FOCUS_RINGS = [
-    { count: 7, wid: 0.8, len: 1.0, base: 0.06, th0c: 0.12, th0o: 0.42, kc: -1.05, ko: 0.62, baseHex: FOCUS[0], tipHex: FOCUS[1] },
-    { count: 10, wid: 0.95, len: 1.4, base: 0.13, th0c: 0.15, th0o: 0.66, kc: -1.15, ko: 0.85, baseHex: FOCUS[0], tipHex: FOCUS[1] },
-    { count: 13, wid: 1.1, len: 1.8, base: 0.22, th0c: 0.18, th0o: 0.92, kc: -1.25, ko: 1.08, baseHex: FOCUS[0], tipHex: FOCUS[1] },
-    { count: 16, wid: 1.25, len: 2.1, base: 0.32, th0c: 0.22, th0o: 1.12, kc: -1.35, ko: 1.35, baseHex: FOCUS[0], tipHex: FOCUS[1] }
+    { count: 7,  wid: 0.85, len: 1.0,  openX: 0.70, delay: 0.00, baseHex: FOCUS[0], tipHex: FOCUS[1] },
+    { count: 10, wid: 0.95, len: 1.35, openX: 0.92, delay: 0.10, baseHex: FOCUS[0], tipHex: FOCUS[1] },
+    { count: 13, wid: 1.10, len: 1.70, openX: 1.12, delay: 0.20, baseHex: FOCUS[0], tipHex: FOCUS[1] },
+    { count: 16, wid: 1.22, len: 2.0,  openX: 1.28, delay: 0.30, baseHex: FOCUS[0], tipHex: FOCUS[1] }
   ];
 
-  // 一朵完整花（茎 + 花头），growth g∈[0,1]
+  // 一朵完整花（茎 + 花头），growth b∈[0,1]
   function makeFlower(rings, scaleBase) {
     const root = new THREE.Group();
     const stem = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.03, 0.05, 1.4, 8).translate(0, 0.7, 0),
+      new THREE.CylinderGeometry(0.035, 0.06, 1.4, 8).translate(0, 0.7, 0),
       new THREE.MeshStandardMaterial({ color: 0x57a766, roughness: 0.9 })
     );
     root.add(stem);
-    const { head, ringMats, coreGlow } = buildHead(rings, GLOW);
+    const { head, petals, coreGlow } = buildHead(rings, GLOW, rings[0].baseHex, rings[0].tipHex);
     head.position.y = 1.4;
     root.add(head);
     root.scale.setScalar(scaleBase || 1);
-    return { root, stem, head, ringMats, coreGlow, seed: Math.random() * 6.28, baseY: root.rotation.y };
+    return { root, stem, head, petals, coreGlow, seed: Math.random() * 6.28, baseY: 0 };
   }
 
   function setBloom(f, b) {
     b = clamp01(b);
-    const ss = 0.08 + 0.92 * b;
+    const ss = 0.12 + 0.88 * b;          // 整株随生长放大
     f.stem.scale.y = ss;
     f.head.position.y = 1.4 * ss;
-    f.head.scale.setScalar(0.35 + 0.65 * b);
-    const n = f.ringMats.length;
-    for (let ri = 0; ri < n; ri++) {
-      const d = (n - 1 - ri) * 0.14;          // 外圈先开，内圈最后开
-      const o = reduce ? 1 : easeOutCubic(clamp01((b - d) / 0.56));
-      f.ringMats[ri].uniforms.uOpen.value = o;
-    }
-    f.coreGlow.material.opacity = (0.45 + 0.15 * Math.sin(performance.now() * 0.002)) * clamp01((b - 0.35) / 0.4);
+    f.head.scale.setScalar(0.4 + 0.6 * b);
+    f.petals.forEach(p => {
+      const t = reduce ? 1 : easeOutCubic(clamp01((b - p.delay) / 0.55));
+      p.pivot.rotation.x = lerp(CLOSED_X, p.openX, t);   // 花瓣由收拢→外倾
+    });
+    f.coreGlow.material.opacity = (0.4 + 0.2 * Math.sin(performance.now() * 0.002)) * clamp01((b - 0.3) / 0.4);
   }
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
-  camera.position.set(0, 3.0, 8.0);
-  camera.lookAt(0, 1.8, 0);
+  camera.position.set(0, 2.6, 7); camera.lookAt(0, 1.6, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(DPR);
   renderer.setClearColor(0x000000, 0);
   if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  // 容器自适应：绝对定位铺满，避免容器高度塌缩导致画布 0 高
+  if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+  container.style.overflow = 'hidden';
   container.appendChild(renderer.domElement);
   const cv = renderer.domElement;
+  cv.style.position = 'absolute'; cv.style.left = 0; cv.style.top = 0;
   cv.style.width = '100%'; cv.style.height = '100%'; cv.style.display = 'block';
 
-  scene.add(new THREE.HemisphereLight(0xfff2dd, 0x3c5e34, 0.9));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.05); sun.position.set(3.5, 7, 4.5); scene.add(sun);
-  const rim = new THREE.DirectionalLight(0xffd9e8, 0.3); rim.position.set(-4, 3, -3); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xfff2dd, 0x3c5e34, 1.0));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.1); sun.position.set(3.5, 7, 4.5); scene.add(sun);
+  const rim = new THREE.DirectionalLight(0xffd9e8, 0.35); rim.position.set(-4, 3, -3); scene.add(rim);
 
   // 草地 + 柔光环
   const ground = new THREE.Mesh(new THREE.CircleGeometry(7, 56).rotateX(-Math.PI / 2),
@@ -217,7 +164,7 @@ export function startGarden(container, opts) {
   const n = Math.max(getCount(), 6);   // 至少 6 朵装饰花，保证初次进入也是座花园而非空地
   for (let i = 0; i < n; i++) {
     const c = palette[i % palette.length];
-    const f = makeFlower(SCATTER_RINGS(c), 0.55 + Math.random() * 0.45);
+    const f = makeFlower(SCATTER_RINGS(c[0], c[1]), 0.55 + Math.random() * 0.45);
     const a = Math.random() * 6.28, r = 0.9 + Math.random() * 5.2;
     f.root.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
     f.root.rotation.y = Math.random() * 6.28;
@@ -232,7 +179,7 @@ export function startGarden(container, opts) {
   scene.add(focus.root);
 
   function resize() {
-    const w = container.clientWidth || 320, h = container.clientHeight || 200;
+    const w = container.clientWidth || 320, h = container.clientHeight || 300;
     renderer.setSize(w, h, false);
     camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
   }
@@ -251,12 +198,12 @@ export function startGarden(container, opts) {
     const g = clamp01(getGrow());
     setBloom(focus, g < 0.001 ? 0.001 : g);
     flowers.forEach(f => {
-      f.root.rotation.z = Math.sin(t * 0.6 + f.seed) * 0.035;
-      f.root.rotation.y = f.baseY + Math.sin(t * 0.2 + f.seed) * 0.05;
+      f.root.rotation.z = Math.sin(t * 0.6 + f.seed) * 0.03;
+      f.root.rotation.y = f.seed + Math.sin(t * 0.2 + f.seed) * 0.05;
     });
     focus.root.rotation.z = Math.sin(t * 0.5) * 0.02;
-    const ca = Math.sin(t * 0.08) * 0.6;
-    camera.position.x = ca; camera.position.z = Math.cos(t * 0.08) * 8.0; camera.lookAt(0, 1.8, 0);
+    const ca = Math.sin(t * 0.08) * 0.5;
+    camera.position.x = ca; camera.position.z = Math.cos(t * 0.08) * 7; camera.lookAt(0, 1.6, 0);
     renderer.render(scene, camera);
     raf = requestAnimationFrame(loop);
   }
@@ -278,7 +225,7 @@ export function startGarden(container, opts) {
     if (cv && cv.parentNode) cv.parentNode.removeChild(cv);
     if (window.__gGarden === api) window.__gGarden = null;
     scene.traverse(o => {
-      if (o.geometry) o.geometry.dispose();
+      if (o.geometry && o.geometry !== PETAL_GEO) o.geometry.dispose();
       if (o.material) { const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => { if (m.map) m.map.dispose(); m.dispose(); }); }
     });
   }
@@ -289,7 +236,7 @@ export function startGarden(container, opts) {
     setGrow() {},
     addBloom() {
       const c = palette[flowers.length % palette.length];
-      const f = makeFlower(SCATTER_RINGS(c), 0.55 + Math.random() * 0.45);
+      const f = makeFlower(SCATTER_RINGS(c[0], c[1]), 0.55 + Math.random() * 0.45);
       const a = Math.random() * 6.28, r = 0.9 + Math.random() * 5.2;
       f.root.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
       f.root.rotation.y = Math.random() * 6.28;
