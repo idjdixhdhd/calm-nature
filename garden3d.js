@@ -1,122 +1,249 @@
 // 专注花园 · 3D 花朵绽放（Three.js 本地模块）
-// 用「标准材质 + 变换动画」实现，保证移动端 GPU 也能稳定渲染（不依赖自定义着色器，避免手机端着色器编译失败导致白屏）。
-// 接口：const g = startGarden(container, {count, getGrow});  g.stop() / g.addBloom()
+// 花瓣形状与弯曲全部用「CPU 几何 + 标准材质」实现，杜绝自定义着色器——
+// 避免手机端着色器编译失败导致白屏。花瓣几何参考 Ethereal Bloom(garettwong/flower-3d)
+// 的写实质感：卵形宽度轮廓 + 横截面勺状凹曲 + 沿长度的纵向卷曲，全部烘焙进顶点。
+// 接口：const g = startGarden(container, {count, getGrow});  g.stop() / g.addBloom() / g.three
 import * as THREE from './vendor/three.module.js';
 
-function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
-function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
-function lerp(a, b, t) { return a + (b - a) * t; }
+function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
+function clamp01(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }
+function lerp(a, b, t){ return a + (b - a) * t; }
+// 平滑过渡 smoothstep(a,b,x)
+function smooth(a, b, x){ const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); }
 
-// 程序化柔光贴图（花心光晕用，避免外部图片）
-function makeGlow() {
-  const c = document.createElement('canvas'); c.width = c.height = 64;
-  const g = c.getContext('2d');
-  const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-  grd.addColorStop(0, 'rgba(255,244,214,1)');
-  grd.addColorStop(0.4, 'rgba(255,214,150,0.45)');
-  grd.addColorStop(1, 'rgba(255,200,120,0)');
-  g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
-  const t = new THREE.CanvasTexture(c);
-  if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
-  return t;
+const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* ====================== 花瓣几何（写实弯曲，全部烘焙进顶点） ====================== */
+// 基础平面：沿长度 12 段、宽 20 段，足够平滑又省顶点。
+const BASE = new THREE.PlaneGeometry(1, 1, 10, 20);
+const VC = BASE.attributes.position.count;
+const BASE_XW = new Float32Array(VC);   // 宽度坐标 -1..1
+const BASE_T  = new Float32Array(VC);   // 沿长度 0(基部)..1(尖端)
+{
+  const p = BASE.attributes.position;
+  for (let i = 0; i < VC; i++){
+    BASE_XW[i] = p.getX(i) * 2;
+    BASE_T[i]  = p.getY(i) + 0.5;
+  }
+}
+// 顶点灰度渐变（基部略深、尖端略亮），用 vertexColors 与材质色相乘，增强写实层次。
+{
+  const col = new Float32Array(VC * 3);
+  for (let i = 0; i < VC; i++){
+    const g = 0.80 + 0.20 * BASE_T[i];
+    col[i*3] = g; col[i*3+1] = g; col[i*3+2] = g;
+  }
+  BASE.setAttribute('color', new THREE.BufferAttribute(col, 3));
 }
 
-// 花瓣：细长椭圆平面，基部在原点（绕基部旋转实现开合）。所有花共用同一几何，省内存。
-const PETAL_GEO = (() => {
-  const g = new THREE.PlaneGeometry(0.5, 1.2, 1, 6);
-  g.translate(0, 0.6, 0);
-  return g;
-})();
+// 把（基部仰角 th0, 沿长卷曲 k）烘焙进几何体：得到写实弯曲的花瓣。
+// th0c/kc = 闭合花苞态；th0o/ko = 绽放态。二者皆烘焙，之后按绽放度在两者间插值。
+function bakePetal(geo, th0, k){
+  const p = geo.attributes.position;
+  for (let i = 0; i < VC; i++){
+    const xw = BASE_XW[i], t = BASE_T[i];
+    // 卵形宽度轮廓：中部略下最宽，尖端圆收
+    const w = Math.pow(Math.sin(Math.PI * Math.pow(t, 0.55)), 0.6) * 0.62 + 0.10;
+    const x = xw * w;
+    // 横截面勺状凹曲（越近尖端越深）
+    const cup = -(xw * xw) * 0.32 * (0.35 + 0.65 * t);
+    // 沿长度的纵向弯曲：切线角 th=th0+k*t，对切线积分得到中心线 (cy,cz)
+    const th = th0 + k * t;
+    let cy, cz;
+    if (Math.abs(k) < 1e-3){ cy = Math.cos(th0) * t; cz = Math.sin(th0) * t; }
+    else { cy = (Math.sin(th) - Math.sin(th0)) / k; cz = (Math.cos(th0) - Math.cos(th)) / k; }
+    // 沿法线叠加勺状凹曲
+    const ny = -Math.sin(th), nz = Math.cos(th);
+    const lx = x;
+    const ly = cy + ny * cup;
+    const lz = cz + nz * cup;
+    p.setXYZ(i, lx, ly, lz);
+  }
+  p.needsUpdate = true;
+  geo.computeVertexNormals();
+}
 
-// 花头（多圈花瓣 + 花心光晕），不含茎
-function buildHead(rings, glow, baseHex, tipHex) {
-  const head = new THREE.Group();
-  const petals = [];
-  rings.forEach((r, ri) => {
-    const mat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(baseHex), roughness: 0.6, metalness: 0.0,
-      side: THREE.DoubleSide, emissive: new THREE.Color(tipHex), emissiveIntensity: 0.08
-    });
-    for (let i = 0; i < r.count; i++) {
-      const pivot = new THREE.Group();
-      pivot.rotation.y = (i / r.count) * Math.PI * 2 + ri * 0.6;
-      const petal = new THREE.Mesh(PETAL_GEO, mat);
-      petal.scale.set(r.wid, r.len, 1);
-      pivot.add(petal);
-      head.add(pivot);
-      petals.push({ pivot, openX: r.openX, delay: r.delay });
-    }
+// 生成一朵花某一环的「可形变几何」：保存闭合/绽放两套顶点与法线，按绽放度插值。
+function makeMorphGeo(ring){
+  const geo = BASE.clone();
+  bakePetal(geo, ring.th0c, ring.kc);
+  const closed  = Float32Array.from(geo.attributes.position.array);
+  const closedN = Float32Array.from(geo.attributes.normal.array);
+  bakePetal(geo, ring.th0o, ring.ko);
+  const open  = Float32Array.from(geo.attributes.position.array);
+  const openN = Float32Array.from(geo.attributes.normal.array);
+  geo.attributes.position.array.set(closed); geo.attributes.position.needsUpdate = true;
+  geo.attributes.normal.array.set(closedN);   geo.attributes.normal.needsUpdate = true;
+  return { geo, closed, open, closedN, openN, _last: -1 };
+}
+
+function applyMorph(r, amt){
+  amt = clamp01(amt);
+  if (Math.abs(amt - r._last) < 0.003) return;
+  r._last = amt;
+  const pos = r.geo.attributes.position.array, nrm = r.geo.attributes.normal.array;
+  for (let i = 0; i < pos.length; i++){
+    let a = r.closed[i] + (r.open[i] - r.closed[i]) * amt;
+    let b = r.closedN[i] + (r.openN[i] - r.closedN[i]) * amt;
+    pos[i] = a; nrm[i] = b;
+  }
+  // 重新归一化法线（线性插值后略偏离单位向量）
+  for (let i = 0; i < nrm.length; i += 3){
+    const l = Math.hypot(nrm[i], nrm[i+1], nrm[i+2]) || 1;
+    nrm[i] /= l; nrm[i+1] /= l; nrm[i+2] /= l;
+  }
+  r.geo.attributes.position.needsUpdate = true;
+  r.geo.attributes.normal.needsUpdate = true;
+}
+
+/* ====================== 花瓣环参数（写实质感，外大内小） ====================== */
+// 焦点花：暖白偏粉，4 环更饱满
+const FOCUS_RINGS = [
+  { count: 7,  wid: 0.95, len: 1.25, base: 0.06, th0c: 0.12, th0o: 0.42, kc: -1.05, ko: 0.62 },
+  { count: 10, wid: 1.12, len: 1.75, base: 0.13, th0c: 0.15, th0o: 0.66, kc: -1.15, ko: 0.85 },
+  { count: 13, wid: 1.30, len: 2.25, base: 0.22, th0c: 0.18, th0o: 0.92, kc: -1.25, ko: 1.08 },
+  { count: 16, wid: 1.48, len: 2.70, base: 0.32, th0c: 0.22, th0o: 1.12, kc: -1.35, ko: 1.35 }
+];
+// 装饰花：3 环（控制网格量，手机更稳）
+const SCATTER_RINGS = [
+  { count: 6,  wid: 0.95, len: 1.25, base: 0.06, th0c: 0.12, th0o: 0.42, kc: -1.05, ko: 0.62 },
+  { count: 9,  wid: 1.12, len: 1.75, base: 0.13, th0c: 0.15, th0o: 0.66, kc: -1.15, ko: 0.85 },
+  { count: 12, wid: 1.30, len: 2.25, base: 0.22, th0c: 0.18, th0o: 0.92, kc: -1.25, ko: 1.08 }
+];
+
+const PALETTE = [
+  [0xff9ec0, 0xffd1e6], [0xffcf4d, 0xfff3c4], [0xb98cff, 0xe9d6ff],
+  [0xffffff, 0xffe6f0], [0xff7a5c, 0xffd0c0], [0xffb07a, 0xffe0c0]
+];
+const FOCUS_PAIR = [0xffe0ec, 0xfff7f0];   // 焦点花：暖白偏粉
+
+function petalMaterial(baseHex, tipHex){
+  return new THREE.MeshStandardMaterial({
+    color: new THREE.Color(baseHex), roughness: 0.72, metalness: 0.0,
+    side: THREE.DoubleSide, vertexColors: true,
+    emissive: new THREE.Color(tipHex), emissiveIntensity: 0.04
   });
-  const recept = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 12),
-    new THREE.MeshStandardMaterial({ color: 0xb89a4e, roughness: 0.6 }));
-  recept.scale.y = 0.6; recept.position.y = 0.04; head.add(recept);
-  const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glow, color: 0xffd58a, transparent: true, opacity: 0,
-    blending: THREE.AdditiveBlending, depthWrite: false
-  }));
-  coreGlow.scale.set(1.0, 1.0, 1); coreGlow.position.y = 0.1; head.add(coreGlow);
-  return { head, petals, coreGlow };
 }
 
-export function startGarden(container, opts) {
+// 一片叶子（细长椭球，压扁）
+function makeLeaf(scale){
+  scale = scale || 1;
+  const m = new THREE.Mesh(
+    new THREE.SphereGeometry(0.16, 8, 6).scale(0.42, 0.07, 1.0),
+    new THREE.MeshStandardMaterial({ color: 0x4f9d5f, roughness: 0.9 })
+  );
+  m.scale.setScalar(scale);
+  return m;
+}
+
+// 一朵完整花：种子 + 幼苗 + 茎 + 叶 + 花头（多环写实花瓣）+ 花心
+function makeFlower(rings, pair, scaleBase, isFocus){
+  const root = new THREE.Group();
+
+  // 茎（基部在地面，向上生长）
+  const stem = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.04, 0.07, 1.4, 8).translate(0, 0.7, 0),
+    new THREE.MeshStandardMaterial({ color: 0x4f9d5f, roughness: 0.9 })
+  );
+  root.add(stem);
+
+  // 叶（沿茎两片）
+  const leaves = new THREE.Group();
+  for (let i = 0; i < 2; i++){
+    const leaf = makeLeaf();
+    leaf.position.set(0, 0.45 + i * 0.35, 0);
+    leaf.rotation.y = i * Math.PI + 0.5;
+    leaf.rotation.z = 0.5;
+    leaves.add(leaf);
+  }
+  root.add(leaves);
+
+  // 种子（地面小种粒）
+  const seed = new THREE.Mesh(
+    new THREE.SphereGeometry(0.11, 12, 10).scale(1, 1.3, 1),
+    new THREE.MeshStandardMaterial({ color: 0x6b4a2b, roughness: 1 })
+  );
+  seed.position.y = 0.06; root.add(seed);
+
+  // 幼苗（两片子叶）
+  const sprout = new THREE.Group();
+  for (let i = 0; i < 2; i++){
+    const sl = makeLeaf(0.45);
+    sl.rotation.y = i * Math.PI;
+    sl.rotation.z = 0.6;
+    sprout.add(sl);
+  }
+  sprout.position.y = 0.12; root.add(sprout);
+
+  // 花头
+  const head = new THREE.Group();
+  const ringObjs = rings.map((r, ri) => {
+    const mat = petalMaterial(pair[0], pair[1]);
+    const mo = makeMorphGeo(r);
+    const rg = new THREE.Group();
+    for (let i = 0; i < r.count; i++){
+      const piv = new THREE.Group();
+      piv.rotation.y = (i / r.count) * Math.PI * 2 + ri * 0.45;   // 螺旋交错排布
+      const m = new THREE.Mesh(mo.geo, mat);
+      m.scale.set(r.wid, r.len, r.len);
+      m.position.set(0, 0, r.base);
+      piv.add(m); rg.add(piv);
+    }
+    head.add(rg);
+    return Object.assign({ ring: r, ri, mat }, mo);
+  });
+  // 花心（花蕊）
+  const center = new THREE.Mesh(
+    new THREE.SphereGeometry(0.12, 16, 12),
+    new THREE.MeshStandardMaterial({ color: 0xf2c14e, roughness: 0.6, emissive: 0x6b4a12, emissiveIntensity: 0.15 })
+  );
+  center.scale.set(1, 0.6, 1); head.add(center);
+  head.position.y = 1.4;
+  root.add(head);
+
+  root.scale.setScalar(scaleBase || 1);
+  return { root, stem, leaves, seed, sprout, head, ringObjs, isFocus, seedRand: Math.random() * 6.28 };
+}
+
+// 按生长度 g∈[0,1] 设置一朵花的所有形态：种子→幼苗→茎→叶→花苞→绽放
+function applyGrowth(f, g){
+  g = clamp01(g);
+  const stemS = smooth(0.10, 0.46, g);
+  f.stem.visible = stemS > 0.01;
+  f.stem.scale.y = Math.max(0.0001, stemS);
+
+  const leafS = smooth(0.18, 0.42, g);
+  f.leaves.visible = leafS > 0.01;
+  f.leaves.scale.setScalar(leafS);
+
+  const headS = smooth(0.44, 0.62, g);
+  f.head.visible = headS > 0.01;
+  f.head.scale.setScalar(headS);
+  f.head.position.y = 1.4 * stemS;
+
+  f.seed.visible = g < 0.16;
+  f.seed.scale.setScalar(clamp01(1 - g / 0.14));
+
+  f.sprout.visible = g > 0.03 && g < 0.24;
+  f.sprout.scale.setScalar(smooth(0.04, 0.12, g) * (1 - smooth(0.16, 0.24, g)));
+
+  const bloomP = smooth(0.58, 1.0, g);
+  const n = f.ringObjs.length;
+  f.ringObjs.forEach((r, ri) => {
+    const d = (n - 1 - ri) * 0.14;                 // 外环先开，内环后开
+    const ringOpen = easeOutCubic(clamp01((bloomP - d) / 0.56));
+    applyMorph(r, ringOpen);
+  });
+}
+
+/* ============================================================ */
+export function startGarden(container, opts){
   opts = opts || {};
   const getCount = () => (typeof opts.count === 'function' ? opts.count() : (opts.count || 0));
-  const getGrow = () => (typeof opts.getGrow === 'function' ? opts.getGrow() : 0);
+  const getGrow  = () => (typeof opts.getGrow  === 'function' ? opts.getGrow()  : 0);
 
   const DPR = Math.min(2, window.devicePixelRatio || 1);
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let alive = true, raf = 0, t0 = performance.now();
-
-  const GLOW = makeGlow();
-
-  // 自然配色 [base, tip]
-  const palette = [
-    [0xff9ec0, 0xffd1e6], [0xffcf4d, 0xfff3c4], [0xb98cff, 0xe9d6ff],
-    [0xffffff, 0xffe6f0], [0xff7a5c, 0xffd0c0]
-  ];
-  const FOCUS = [0xffc7d6, 0xfff1ea];   // 焦点花：暖白偏粉
-
-  // 花瓣开合：CLOSED_X=收拢成花苞，openX=绽放到外倾
-  const CLOSED_X = 0.12;
-  const SCATTER_RINGS = (c0, c1) => [
-    { count: 6,  wid: 0.85, len: 1.0,  openX: 0.70, delay: 0.00, baseHex: c0, tipHex: c1 },
-    { count: 9,  wid: 0.95, len: 1.35, openX: 0.92, delay: 0.12, baseHex: c0, tipHex: c1 },
-    { count: 12, wid: 1.10, len: 1.70, openX: 1.12, delay: 0.24, baseHex: c0, tipHex: c1 }
-  ];
-  const FOCUS_RINGS = [
-    { count: 7,  wid: 0.85, len: 1.0,  openX: 0.70, delay: 0.00, baseHex: FOCUS[0], tipHex: FOCUS[1] },
-    { count: 10, wid: 0.95, len: 1.35, openX: 0.92, delay: 0.10, baseHex: FOCUS[0], tipHex: FOCUS[1] },
-    { count: 13, wid: 1.10, len: 1.70, openX: 1.12, delay: 0.20, baseHex: FOCUS[0], tipHex: FOCUS[1] },
-    { count: 16, wid: 1.22, len: 2.0,  openX: 1.28, delay: 0.30, baseHex: FOCUS[0], tipHex: FOCUS[1] }
-  ];
-
-  // 一朵完整花（茎 + 花头），growth b∈[0,1]
-  function makeFlower(rings, scaleBase) {
-    const root = new THREE.Group();
-    const stem = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.06, 1.4, 8).translate(0, 0.7, 0),
-      new THREE.MeshStandardMaterial({ color: 0x57a766, roughness: 0.9 })
-    );
-    root.add(stem);
-    const { head, petals, coreGlow } = buildHead(rings, GLOW, rings[0].baseHex, rings[0].tipHex);
-    head.position.y = 1.4;
-    root.add(head);
-    root.scale.setScalar(scaleBase || 1);
-    return { root, stem, head, petals, coreGlow, seed: Math.random() * 6.28, baseY: 0 };
-  }
-
-  function setBloom(f, b) {
-    b = clamp01(b);
-    const ss = 0.12 + 0.88 * b;          // 整株随生长放大
-    f.stem.scale.y = ss;
-    f.head.position.y = 1.4 * ss;
-    f.head.scale.setScalar(0.4 + 0.6 * b);
-    f.petals.forEach(p => {
-      const t = reduce ? 1 : easeOutCubic(clamp01((b - p.delay) / 0.55));
-      p.pivot.rotation.x = lerp(CLOSED_X, p.openX, t);   // 花瓣由收拢→外倾
-    });
-    f.coreGlow.material.opacity = (0.4 + 0.2 * Math.sin(performance.now() * 0.002)) * clamp01((b - 0.3) / 0.4);
-  }
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
@@ -127,7 +254,6 @@ export function startGarden(container, opts) {
   renderer.setClearColor(0x000000, 0);
   if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  // 容器自适应：绝对定位铺满，避免容器高度塌缩导致画布 0 高
   if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
   container.style.overflow = 'hidden';
   container.appendChild(renderer.domElement);
@@ -151,7 +277,7 @@ export function startGarden(container, opts) {
   const blade = new THREE.ConeGeometry(0.03, 0.5, 4);
   const bladeMat = new THREE.MeshStandardMaterial({ color: 0x4f9d5f, roughness: 1 });
   const grass = new THREE.Group();
-  for (let i = 0; i < 56; i++) {
+  for (let i = 0; i < 40; i++){
     const a = Math.random() * 6.28, r = 0.6 + Math.random() * 5.8;
     const b = new THREE.Mesh(blade, bladeMat);
     b.position.set(Math.cos(a) * r, 0.22 + Math.random() * 0.1, Math.sin(a) * r);
@@ -160,46 +286,50 @@ export function startGarden(container, opts) {
   }
   scene.add(grass);
 
+  // 装饰花（至少 6 朵，已绽放）
   const flowers = [];
-  const n = Math.max(getCount(), 6);   // 至少 6 朵装饰花，保证初次进入也是座花园而非空地
-  for (let i = 0; i < n; i++) {
-    const c = palette[i % palette.length];
-    const f = makeFlower(SCATTER_RINGS(c[0], c[1]), 0.55 + Math.random() * 0.45);
+  const n = Math.max(getCount(), 6);
+  for (let i = 0; i < n; i++){
+    const pair = PALETTE[i % PALETTE.length];
+    const f = makeFlower(SCATTER_RINGS, pair, 0.55 + Math.random() * 0.4, false);
     const a = Math.random() * 6.28, r = 0.9 + Math.random() * 5.2;
     f.root.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
     f.root.rotation.y = Math.random() * 6.28;
-    setBloom(f, 1);
+    applyGrowth(f, 1);
     scene.add(f.root); flowers.push(f);
   }
 
-  // 中央焦点花（暖白，随 getGrow() 生长）
-  const focus = makeFlower(FOCUS_RINGS, 1.0);
+  // 中央焦点花（随 getGrow() 从种子生长）
+  const focus = makeFlower(FOCUS_RINGS, FOCUS_PAIR, 1.05, true);
   focus.root.position.set(0, 0, 0);
-  setBloom(focus, clamp01(getGrow()));
+  applyGrowth(focus, clamp01(getGrow()));
   scene.add(focus.root);
 
-  function resize() {
+  function resize(){
     const w = container.clientWidth || 320, h = container.clientHeight || 300;
     renderer.setSize(w, h, false);
     camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
   }
   resize();
 
-  function renderOnce() { resize(); renderer.render(scene, camera); }
+  function renderOnce(){ resize(); renderer.render(scene, camera); }
 
-  let inView = true, tabVisible = !document.hidden;
-  function active() { return alive && inView && tabVisible; }
-  function kick() { if (raf) cancelAnimationFrame(raf); raf = 0; if (active() && !reduce) raf = requestAnimationFrame(loop); else if (reduce) renderOnce(); }
+  let inView = true, tabVisible = !document.hidden, dispG = clamp01(getGrow());
+  function active(){ return alive && inView && tabVisible; }
+  function kick(){ if (raf) cancelAnimationFrame(raf); raf = 0; if (active() && !reduce) raf = requestAnimationFrame(loop); else if (reduce) renderOnce(); }
 
-  function loop(now) {
+  function loop(now){
     if (!alive) return;
-    if (!container.isConnected) { stop(); return; }
+    if (!container.isConnected){ stop(); return; }
     const t = (now - t0) / 1000;
-    const g = clamp01(getGrow());
-    setBloom(focus, g < 0.001 ? 0.001 : g);
+    // 焦点花：平滑跟随生长度，按绽放度形变（仅变化时更新几何）
+    const tg = clamp01(getGrow());
+    dispG += (tg - dispG) * 0.08;
+    applyGrowth(focus, dispG < 0.001 ? 0.001 : dispG);
+    // 轻风摇曳
     flowers.forEach(f => {
-      f.root.rotation.z = Math.sin(t * 0.6 + f.seed) * 0.03;
-      f.root.rotation.y = f.seed + Math.sin(t * 0.2 + f.seed) * 0.05;
+      f.root.rotation.z = Math.sin(t * 0.6 + f.seedRand) * 0.03;
+      f.root.rotation.y = f.seedRand + Math.sin(t * 0.2 + f.seedRand) * 0.05;
     });
     focus.root.rotation.z = Math.sin(t * 0.5) * 0.02;
     const ca = Math.sin(t * 0.08) * 0.5;
@@ -215,7 +345,7 @@ export function startGarden(container, opts) {
 
   if (reduce) renderOnce(); else raf = requestAnimationFrame(loop);
 
-  function stop() {
+  function stop(){
     alive = false; if (raf) cancelAnimationFrame(raf); raf = 0;
     document.removeEventListener('visibilitychange', onVis);
     if (io) try { io.disconnect(); } catch (e) {}
@@ -225,22 +355,22 @@ export function startGarden(container, opts) {
     if (cv && cv.parentNode) cv.parentNode.removeChild(cv);
     if (window.__gGarden === api) window.__gGarden = null;
     scene.traverse(o => {
-      if (o.geometry && o.geometry !== PETAL_GEO) o.geometry.dispose();
+      if (o.geometry) o.geometry.dispose();
       if (o.material) { const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => { if (m.map) m.map.dispose(); m.dispose(); }); }
     });
   }
 
   const api = {
     stop,
-    setVisible(v) { tabVisible = !!v; kick(); },
-    setGrow() {},
-    addBloom() {
-      const c = palette[flowers.length % palette.length];
-      const f = makeFlower(SCATTER_RINGS(c[0], c[1]), 0.55 + Math.random() * 0.45);
+    setVisible(v){ tabVisible = !!v; kick(); },
+    setGrow(){},
+    addBloom(){
+      const pair = PALETTE[flowers.length % PALETTE.length];
+      const f = makeFlower(SCATTER_RINGS, pair, 0.55 + Math.random() * 0.4, false);
       const a = Math.random() * 6.28, r = 0.9 + Math.random() * 5.2;
       f.root.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
       f.root.rotation.y = Math.random() * 6.28;
-      setBloom(f, 1); scene.add(f.root); flowers.push(f);
+      applyGrowth(f, 1); scene.add(f.root); flowers.push(f);
     },
     three: { scene, camera, renderer }
   };
