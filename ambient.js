@@ -170,7 +170,7 @@
       case "sea": {
         // 海浪：低通噪声 + 大幅慢 LFO 调制音量（涌动）
         const L = noiseLayer({ filter: "lowpass", freq: 600, q: 0.4, vol: 0.0, lfo: 0.1, lfoDepth: 0.16, lfoTarget: "gain" });
-        L.seaBase = 0.12; L.set(0.12); return L;
+        L.seaBase = 0.2; L.set(0.2); return L;
       }
       default: return noiseLayer(cfg);
     }
