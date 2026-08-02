@@ -2014,7 +2014,7 @@ const Audio = {
 
   ctx:null, master:null, nodes:new Map(),
 
-  ensure(){ Audio.ctx = window.NatureAmbient.ensure(); },
+  ensure(){ if(window.NatureAmbient) Audio.ctx = window.NatureAmbient.ensure(); },
 
   clear(){ window.NatureAmbient.stop(); },
 
@@ -2371,6 +2371,8 @@ function enterPlayer(id){
   const gate = document.getElementById("gate");
 
   gate.classList.remove("hidden"); gate.style.display="flex";
+  try{ gate.removeEventListener("click", sceneGateTap); }catch(e){}
+  gate.addEventListener("click", sceneGateTap);
 
   const vp = document.getElementById("view-player");
 
@@ -2399,13 +2401,12 @@ function enterPlayer(id){
       pb.style.display="block";
       try{ if(window._sceneBeach){ window._sceneBeach.stop(); } }catch(e){}
       if(typeof window.startBeach==="function"){
-        window._sceneBeach = startBeach(pb, {hour:Number(currentScene.beachHour)||15, speed:55, audio:false, interactive:true, hideSelector:'.sea-chat'});
+        window._sceneBeach = startBeach(pb, {hour:Number(currentScene.beachHour)||15, speed:55, audio:false, interactive:true});
         try{ if(window.NatureAmbient){ window.NatureAmbient.ensure(); window.NatureAmbient.play({id:"beach-shore"}); } }catch(e){}
       } else {
         pimg.style.display="block"; pimg.style.backgroundImage="url("+currentScene.image+")";
         if(pback) pback.style.backgroundImage="url("+currentScene.image+")";
       }
-      mountPlayerSeaChat(pb);
     }
     if(videoEl){ videoEl.style.display="none"; videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load(); }
     const dock=document.getElementById("dock"); if(dock) dock.style.display="none";
@@ -2494,6 +2495,7 @@ function enterPlayer(id){
 
 function exitPlayer(){
 
+  try{ document.getElementById("gate").removeEventListener("click", sceneGateTap); }catch(e){}
   exitFs();
 
   if(videoEl){ videoEl.pause(); videoEl.removeAttribute("src"); videoEl.load(); videoEl.style.display="block"; }
@@ -2822,31 +2824,33 @@ function loop(now){
 
 // ---------- UI ----------
 
+function sceneGateTap(e){
+  // 进场遮罩：除输入框外，点任意处即可进入（确保解锁/出声；后台按钮仍可独立退出）
+  if(e.target && e.target.closest && e.target.closest("input,textarea")) return;
+  unlock();
+}
+
 function unlock(){
 
   if(unlocked) return;
 
   unlocked = true;
 
+  /* 视频：先解除静音并播放——不依赖音频引擎，避免引擎异常吞掉画面声音 */
+  if(videoEl && currentScene && currentScene.mediaType !== "image"){
+    try{ videoEl.muted = false; const p = videoEl.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}
+  }
+
+  /* 音频引擎：独立 try，失败也不影响视频声音 */
   try{
-
     Audio.ensure();
-
     if(Audio.ctx && Audio.ctx.state === "suspended") Audio.ctx.resume();
-
     if(currentScene.type === "24h") Audio.apply24h(vh);
-
     else Audio.applyLoop();
-
-    // 视频场景：解锁后取消静音，放出素材本来的声音
-    if(videoEl && currentScene && currentScene.mediaType !== "image"){
-      try{ videoEl.muted = false; const p = videoEl.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}
-    }
-
-  }catch(e){ console.warn("audio unlock skipped:", e); }
+  }catch(e){ console.warn("audio engine skipped:", e); }
 
   const gate = document.getElementById("gate");
-
+  try{ gate.removeEventListener("click", sceneGateTap); }catch(e){}
   gate.classList.add("hidden");
 
   setTimeout(()=>{ try{ gate.style.display="none"; }catch(e){} }, 900);
@@ -2856,11 +2860,6 @@ function unlock(){
   document.getElementById("btn-sound").innerHTML = getIcon("sound");
 
   document.getElementById("btn-sound").classList.add("active");
-
-  /* 在用户手势内确保视频真正开始播放（移动端自动播放策略要求） */
-  if(videoEl && currentScene && currentScene.mediaType !== "image"){
-    try{ const p = videoEl.play(); if(p && p.then) p.catch(()=>{}); }catch(e){}
-  }
 
 }
 
