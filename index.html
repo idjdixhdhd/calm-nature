@@ -1343,19 +1343,7 @@
 
 </style>
 
-<!-- 访问统计 · Umami Cloud（隐私友好，<3KB，异步上报不拖慢页面；后台看来源/页面/地区）。
-     带测试参数 ?src=me / ?self=1 / ?test=1 / ?debug=1 打开的页面不计入统计，专供站长自检，避免污染真实访客数据。 -->
-<script>
-  (function(){
-    var q = location.search || '';
-    if(/[?&](src=me|self=1|test=1|debug=1)(&|$)/.test(q)) return; // 站长自检：跳过追踪
-    var s = document.createElement('script');
-    s.defer = true;
-    s.src = 'https://cloud.umami.is/script.js';
-    s.setAttribute('data-website-id', 'd69157f6-54aa-4499-9930-74d889b0ea8d');
-    document.head.appendChild(s);
-  })();
-</script>
+<!-- 访问统计：仅国内部署版注入（见 _build_dist.mjs），GitHub 公开版不携带任何上报脚本 -->
 
 </head>
 
@@ -4304,14 +4292,16 @@ function NatureCanvas(canvas, theme, opts){
       const count = (opts&&opts.count)||0;
       const grow = (opts&&opts.getGrow)?opts.getGrow():(opts&&opts.grow!=null?opts.grow:0.6);
       ctx.fillStyle="rgba(18,46,30,.55)"; ctx.fillRect(0,h*0.86,w,h*0.14);
-      const cols=Math.max(1,Math.ceil(Math.sqrt(count+1)));
-      for(let i=0;i<count;i++){
+      const shown = Math.max(count, 5);
+      const cols=Math.max(1,Math.ceil(Math.sqrt(shown+1)));
+      for(let i=0;i<shown;i++){
         const gx=w*(0.12+0.76*((i%cols)/(cols-1||1)));
         const gy=h*0.86 - Math.floor(i/cols)*(Math.min(w,h)*0.11);
         flower(ctx, gx+Math.sin(t*0.8+i)*2, gy, Math.min(w,h)*0.07, t+i, "rgba(230,155,191,.9)");
       }
       const cxp=w/2, byp=h*0.86;
-      flower(ctx, cxp+Math.sin(t*0.6)*3, byp, Math.min(w,h)*0.16*grow, t, grow>0.05?"rgba(242,193,78,.95)":"rgba(230,155,191,.35)");
+      const crad=Math.min(w,h)*0.16*Math.max(grow,0.2);
+      flower(ctx, cxp+Math.sin(t*0.6)*3, byp, crad, t, grow>0.05?"rgba(242,193,78,.95)":"rgba(230,155,191,.55)");
     }
   }
   function frame(now){ if(!alive) return; if(!canvas.isConnected){ alive=false; return; } draw((now-t0)/1000); if(reduce){ alive=false; return; } raf=requestAnimationFrame(frame); }
@@ -4463,7 +4453,7 @@ function renderGarden(c){
       <div class="mod-h">专注花园</div>
       <div class="mod-sub">开始专注，中央那朵金色的花会随倒计时慢慢绽放；完成一次（满 15 分钟），就有一朵花永远留在你的花园里。</div>
       <div class="garden-stat"><div><b id="gd-sess">${g.sessions}</b>次专注</div><div><b id="gd-flower">${g.flowers}</b>朵花</div><div><b id="gd-left">${focusing?(done?'可结束':fmt(leftMs)):'已绽放'}</b></div></div>
-      <button class="mod-btn" id="gd-start" ${canEnd?'':'disabled'}>${startLabel}</button>
+      <button class="mod-btn" id="gd-start" ${focusing && !done ? 'disabled' : ''}>${startLabel}</button>
       ${focusing?'<button class="mod-btn ghost" id="gd-stop">中止（不计入花园）</button>':''}
       <div class="room-meta" id="gd-tip">${focusing?(done?'15 分钟到了，点「结束这次专注」让花绽放':'花正在生长，陪你一起呼吸…（满 15 分钟才能结束）'):'点开始，让一朵花为你而开。'}</div>`;
     const gbox = c.querySelector("#gd-cv");
@@ -4598,7 +4588,7 @@ function renderSyncBreath(c){
 
 function renderWatchSea(c){
   const TITLE="[同看一片海]";
-  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。· 拖拽旋转视角，滚轮或双指缩放海面</div><div class="nc-hero" id="ws-cv"></div><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><div class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></div><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
+  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。· 拖拽旋转视角，滚轮或双指缩放海面</div><div class="nc-hero tall" id="ws-cv" style="height:300px"></div><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><textarea class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></textarea><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
   const wsBox=c.querySelector("#ws-cv");
   if(window._wsBeach){ try{ window._wsBeach.stop(); }catch(e){} window._wsBeach=null; }
   try {
@@ -4612,8 +4602,28 @@ function renderWatchSea(c){
   }
   const list=c.querySelector("#ws-list"); const stat=c.querySelector("#ws-stat");
   let serverId=null;
-  async function load(){ const ns = serverId ? await roomList(TITLE, serverId, 12).catch(()=>[]) : []; if(serverId){ stat.textContent = ns.length ? ("海已连接 · 已有 "+ns.length+" 句话漂在这里") : "海已连接 · 还很安静"; } else { stat.textContent="本地模式 · 你的话先存本机"; } if(!ns.length){ list.innerHTML='<div class="room-meta">还没有人说话，海很安静。</div>'; return; } list.innerHTML=ns.slice(0,8).reverse().map(n=>`<div class="room-post">${escapeHtml(n.body||"")}</div>`).join(""); }
-  c.querySelector("#ws-send").onclick=async()=>{ const t=c.querySelector("#ws-in").value.trim(); if(!t){flashToast("写点什么");return;} if(!serverId) serverId=await roomEnsure(TITLE); await roomPost(TITLE, serverId, t); c.querySelector("#ws-in").value=""; flashToast("已说"); load(); };
+  const LS_WS="cn_ws_local";
+  function localMsgs(){ try{ return JSON.parse(localStorage.getItem(LS_WS)||"[]"); }catch(e){ return []; } }
+  async function load(){
+    if(serverId){
+      const ns = await roomList(TITLE, serverId, 12).catch(()=>[]) || [];
+      stat.textContent = ns.length ? ("海已连接 · 已有 "+ns.length+" 句话漂在这里") : "海已连接 · 还很安静";
+      if(!ns.length){ list.innerHTML='<div class="room-meta">还没有人说话，海很安静。</div>'; return; }
+      list.innerHTML=ns.slice(0,8).reverse().map(n=>`<div class="room-post">${escapeHtml(n.body||"")}</div>`).join("");
+    } else {
+      const arr=localMsgs();
+      stat.textContent = arr.length ? ("本地模式 · 你的 "+arr.length+" 句话已存本机（联网后漂给陌生人）") : "本地模式 · 你的话先存本机";
+      if(!arr.length){ list.innerHTML='<div class="room-meta">还没有人说话，海很安静。</div>'; return; }
+      list.innerHTML=arr.slice(-8).reverse().map(t=>`<div class="room-post">${escapeHtml(t)}</div>`).join("");
+    }
+  }
+  c.querySelector("#ws-send").onclick=async()=>{
+    const el=c.querySelector("#ws-in"); const t=(el.value||"").trim();
+    if(!t){ flashToast("写点什么"); return; }
+    if(serverId){ try{ await roomPost(TITLE, serverId, t); }catch(e){} flashToast("已说"); }
+    else { const arr=localMsgs(); arr.push(t); try{ localStorage.setItem(LS_WS, JSON.stringify(arr.slice(-50))); }catch(e){} stat.textContent="本地模式 · 已存本机（联网后会漂给陌生人）"; flashToast("已存本机"); }
+    el.value=""; load();
+  };
   load();
 }
 
@@ -6246,21 +6256,7 @@ function renderWall(c){
       🔧 <b>自检专用</b>：点下面按钮复制的链接，打开后<b>不计入统计</b>（无论普通浏览器 / 无痕 / QQ / 微信）。看板里出现的每一个访客，都是除你之外的真实访问。
     </div>
     <div class="wall-acts"><div class="q-btn" id="copy-test-link">📋 复制测试链接（自检 · 不计入）</div></div>
-    <div class="wall-sec-title">访问数据 · Umami 实时看板</div>
-    <div class="umami-legend">
-      <span><b>实时在线</b> 此刻正在看的人数</span>
-      <span><b>访客</b> 独立人数（同一人只算一次）</span>
-      <span><b>浏览量</b> 页面被打开的总次数</span>
-      <span><b>来源</b> 从哪来（直接 / 微信 / QQ / 搜索）</span>
-      <span><b>页面</b> 大家看了哪些页</span>
-      <span><b>设备·浏览器·系统</b> 自动识别访客用的手机或电脑</span>
-      <span><b>地区</b> 访客所在国家 / 省份</span>
-      <span><b>回访</b> 同一个人来过几次（新访客 / 回访访客）</span>
-      <span><b>平均停留</b> 每次打开平均看多久</span>
-      <span><b>时间分布</b> 集中在几点 / 哪天来（趋势图）</span>
-    </div>
-    <div class="umami-wrap"><iframe class="umami-iframe" src="https://cloud.umami.is/share/U6luwWBJ7AYy1vUP" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="访问数据实时看板"></iframe></div>
-    <div class="umami-fallback">完整看板（来源 / 页面 / 地区 / 设备 / 浏览器 / 系统 / 实时在线）由 Umami 提供。图表从国外服务器加载，偶现空白或偏慢——可<a href="https://cloud.umami.is/share/U6luwWBJ7AYy1vUP" target="_blank" rel="noopener">在新标签打开 Umami 看板 ↗</a>。下方「不蒜子」为本站累计访问量。</div>
+    <!-- UMAMI_WALL_PLACEHOLDER -->
     <div class="wall-note">站长模式：所有共笔墙 / 共读库留言都会显示「删除」按钮，可清理违规文字 / 头像。上方「不蒜子」显示全站累计访客 / 访问量；下方「访问信息」免后端实时识别你本次的来源 / 设备 / 系统 / 浏览器（切换微信、QQ、系统浏览器刷新即可见变化）。</div>
     <div class="wall-acts"><div class="q-btn" id="wall-admin-exit">隐藏站长面板</div></div>
   </div>` : `<div class="wall-admin" id="wall-admin" style="display:none"></div>`);
@@ -6793,11 +6789,7 @@ init();
 <script type="module" src="garden3d.js"></script>
 <script src="ambient.js"></script>
 
-<!-- 访问统计 · 不蒜子（即时数字，零账号，加载即计数） -->
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<!-- 访问统计 · Cloudflare Web Analytics（真实回访趋势，免费、隐私友好、无需实名）。
-     站长注册免费 Cloudflare 账号 → Web Analytics → 添加本站 → 拿到 beacon token，把下面 CF_TOKEN_PLACEHOLDER 替换掉即可。 -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"CF_TOKEN_PLACEHOLDER"}'></script>
+<!-- STATS_PLACEHOLDER -->
 </body>
 
 </html>
