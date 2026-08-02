@@ -1,10 +1,27 @@
 import * as THREE from './vendor/three.module.js';
 
-/* 治愈系热带海滩 · 从 adams914/beach-wallpaper 复刻并改造为可嵌入模块
-   天空+海洋(Gerstner波)+沙滩+椰树+篝火+海鸥/螃蟹/海龟+云雾+昼夜
-   用法: const c = startBeach(containerEl, {hour:14, speed:40, audio:false}); */
-
 export function startBeach(container, opts={}){
+/* ============================================================
+ * 治愈系热带海滩动态壁纸 · 全 3D 重制版（Three.js r160 + GLSL）
+ * ------------------------------------------------------------
+ *   0. 工具 & URL 参数
+ *   1. 时间系统（现实 1 分钟 = 场景 1 小时；?t= ?speed= ?mute= ?still=）
+ *   2. 调色板（13 关键帧低饱和插值，沿用旧版）
+ *   3. 渲染器 / 场景 / 相机（呼吸漂移 + 鼠标视差）
+ *   4. 程序化纹理（canvas：细沙/树皮/羽叶/云/光晕/雾/噪声）
+ *   5. 天空穹顶 shader（时段渐变/日轮/满月环形山/星空/地平线雾霭）
+ *   6. 海洋 shader（Gerstner 波 + fresnel + Blinn 高光 + 泡沫）
+ *   7. 沙滩地形（缓坡 + 湿沙带）
+ *   8. 椰树（锥形 Tube 树干 + 羽状叶 + 椰子，软阴影）
+ *   9. 篝火（木柴/石圈/粒子火焰/火星/闪烁点光/光晕）
+ *  10. 生物（海鸥 / 螃蟹 / 海龟）
+ *  11. 云与薄雾 billboard
+ *  12. 光照装配（日/月 DirectionalLight 投影 + Hemisphere）
+ *  13. 音频引擎（沿用旧版 Web Audio 交叉淡变）
+ *  14. UI & 启动遮罩（沿用旧版）
+ *  15. 主循环 / resize / 可见性 / still 停帧
+ * ============================================================ */
+
 /* ==================== 0. 工具 & 参数 ==================== */
 const clamp=(x,a,b)=>x<a?a:(x>b?b:x);
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -26,11 +43,15 @@ function fbm2(x,z,oct=4){
   return v;
 }
 
-  const CFG={
-    startHour: (opts&&Number.isFinite(opts.hour))?((opts.hour%24)+24)%24:10,
-    speed: (opts&&Number.isFinite(opts.speed)&&opts.speed>0)?opts.speed:60,
-    still: !!(opts&&opts.still),
-  };
+const CFG={
+  startHour: (opts&&Number.isFinite(opts.hour))?((opts.hour%24)+24)%24:14,
+  speed: (opts&&Number.isFinite(opts.speed)&&opts.speed>0)?opts.speed:1,
+  interactive: !!(opts&&opts.interactive),
+  audio: (opts&&opts.audio!==undefined)?opts.audio:null,
+  still: !!(opts&&opts.still),
+  muted: true,
+};
+const INTERACTIVE = CFG.interactive;
 
 /* ==================== 1. 时间系统 ==================== */
 const Time={
@@ -117,15 +138,15 @@ function moonState(h){
 
 
 /* ==================== 3. 渲染器 / 场景 / 相机 ==================== */
-  const canvas=document.createElement('canvas');
-  canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block';
-  container.appendChild(canvas);
-  if(getComputedStyle(container).position==='static') container.style.position='relative';
-  container.style.overflow='hidden';
+const canvas=document.createElement('canvas');
+canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block';
+container.appendChild(canvas);
+if(getComputedStyle(container).position==='static') container.style.position='relative';
+container.style.overflow='hidden';
 const renderer=new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.05;
+renderer.toneMappingExposure=1.18;
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 
@@ -138,44 +159,11 @@ const LOOK_BASE=new THREE.Vector3(0, 1.55, -26);
 camera.position.copy(CAM_BASE);
 camera.lookAt(LOOK_BASE);
 
-/* ==================== 3b. 交互控制器（缩放/拖拽旋转） ==================== */
-/* 仅当 startBeach(container,{interactive:true}) 时启用；否则保持原来的呼吸漂移+鼠标视差 */
-const INTERACTIVE = !!(opts && opts.interactive);
-const camCtl = { yaw:0, pitch:0, dist:1, dragging:false, lastX:0, lastY:0, pinchDist:0 };
-const ZMIN=0.42, ZMAX=2.4;
-const _baseOff = new THREE.Vector3(0, CAM_BASE.y-LOOK_BASE.y, CAM_BASE.z-LOOK_BASE.z); // ≈(0,1.45,39)
-const _baseEl = Math.atan2(_baseOff.y, _baseOff.z);
-const _camOff = new THREE.Vector3();
-function applyCam(dt){
-  const L = _baseOff.length() * camCtl.dist;
-  const el = clamp(_baseEl + camCtl.pitch, -0.45, 0.85);
-  const az = camCtl.yaw;
-  _camOff.set(
-    L*Math.cos(el)*Math.sin(az),
-    L*Math.sin(el),
-    L*Math.cos(el)*Math.cos(az)
-  );
-  const driftK = INTERACTIVE ? 0.22 : 1.0;
-  camera.position.set(
-    LOOK_BASE.x + _camOff.x + Math.sin(Time.anim*0.273)*0.30*driftK,
-    LOOK_BASE.y + _camOff.y + Math.sin(Time.anim*0.217+1.3)*0.16*driftK,
-    LOOK_BASE.z + _camOff.z + Math.sin(Time.anim*0.199+2.1)*0.22*driftK
-  );
-  const px = INTERACTIVE ? 0 : mouse.x;
-  const py = INTERACTIVE ? 0 : mouse.y;
-  camera.lookAt(
-    LOOK_BASE.x + px*1.1,
-    LOOK_BASE.y + Math.sin(Time.anim*0.242+0.7)*0.10*driftK + py*0.45,
-    LOOK_BASE.z
-  );
-}
-
 const mouse={x:0,y:0,tx:0,ty:0};
-function onMove(e){
+window.addEventListener('mousemove',e=>{
   mouse.tx=(e.clientX/window.innerWidth)*2-1;
   mouse.ty=-((e.clientY/window.innerHeight)*2-1);
-}
-window.addEventListener('mousemove', onMove, {passive:true});
+},{passive:true});
 
 /* 调色板颜色 → THREE.Color（sRGB → linear 工作空间），预分配避免每帧 GC */
 const mkCol=(arr)=>new THREE.Color().setRGB(arr[0]/255,arr[1]/255,arr[2]/255,THREE.SRGBColorSpace);
@@ -250,29 +238,45 @@ TEX_BARK.repeat.set(2,5);
 const TEX_FROND=canvasTex(512,1024,(ctx,w,h)=>{
   ctx.clearRect(0,0,w,h);
   const cx=w/2;
-  /* 小叶：从中脉两侧斜出、略下垂、尖端细的泪滴形填充；基部交叠保证密度 */
-  for(let y=20;y<h-10;y+=4.4){
+  /* 主脉底色渐变：基部深、叶尖浅偏黄绿，略透 */
+  for(let y=8;y<h-4;y++){
     const t=y/h;
-    const prof=Math.sin(Math.PI*clamp((y-14)/(h-28),0,1));      /* 两端短中间长 */
-    const len=(34+Math.pow(prof,0.72)*(w*0.455))*(0.86+hash2(y,7)*0.28);
-    const wb=(8.5+prof*4.5)*(0.80+hash2(y,13)*0.40);            /* 小叶基部宽 */
+    const shade=0.55+0.45*t;
+    const r=46+18*t, g=70+34*t, b=40+10*t;
+    const a=0.90;
+    ctx.strokeStyle=`rgba(${r|0},${g|0},${b|0},${a})`;
+    ctx.lineWidth=10*(1-t*0.55);
+    ctx.beginPath(); ctx.moveTo(cx,y); ctx.lineTo(cx,y+1.2); ctx.stroke();
+  }
+  /* 小叶：高密度排列，细长尖、基部宽、向外略垂，带叶脉明暗与轻微色偏 */
+  for(let y=14;y<h-8;y+=3.0){
+    const t=y/h;
+    const prof=Math.sin(Math.PI*clamp((y-10)/(h-20),0,1));
+    const len=(26+Math.pow(prof,0.7)*(w*0.47))*(0.85+hash2(y,7)*0.30);
+    const wb=(6.5+prof*4.0)*(0.80+hash2(y,13)*0.40);
     for(const s of [-1,1]){
-      const droop=0.40+0.36*t+(hash2(y,s*3)-0.5)*0.10;          /* 下垂角，基部更垂 */
-      const ex=cx+s*Math.cos(droop)*len, ey=y+Math.sin(droop)*len*0.60;
-      const mx=cx+s*Math.cos(droop)*len*0.5, my=y+Math.sin(droop)*len*0.15-5;
-      const g=98+hash2(y,s*11)*60;
-      let r=42+g*0.30, b=38+g*0.25;
-      if(hash2(y,21)>0.82){ r+=34; b-=12; }                     /* 少量黄绿变化 */
-      ctx.fillStyle=`rgba(${clamp(r,0,255)|0},${g|0},${clamp(b,0,255)|0},0.97)`;
+      const droop=0.34+0.40*t+(hash2(y,s*3)-0.5)*0.12;
+      const ex=cx+s*Math.cos(droop)*len, ey=y+Math.sin(droop)*len*0.62;
+      const mx=cx+s*Math.cos(droop)*len*0.5, my=y+Math.sin(droop)*len*0.16-4;
+      /* 颜色：基部深绿，叶尖黄绿，偶发黄尖 */
+      let g=86+hash2(y,s*11)*54+ t*22;
+      let r=40+g*0.26, b=36+g*0.22;
+      if(hash2(y,21)>0.86){ r+=30; g+=8; b-=10; }
+      const a=0.96*(1.0-0.18*t);
+      ctx.fillStyle=`rgba(${clamp(r,0,255)|0},${clamp(g,0,255)|0},${clamp(b,0,255)|0},${a})`;
       ctx.beginPath();
       ctx.moveTo(cx,y-wb*0.5);
-      ctx.quadraticCurveTo(mx,my-wb*0.30,ex,ey);                /* 上缘到细尖 */
-      ctx.quadraticCurveTo(mx,my+wb*0.66,cx,y+wb*0.5);          /* 下缘鼓回基部 */
+      ctx.quadraticCurveTo(mx,my-wb*0.34,ex,ey);
+      ctx.quadraticCurveTo(mx,my+wb*0.62,cx,y+wb*0.5);
       ctx.closePath(); ctx.fill();
+      /* 小叶中脉暗线 */
+      ctx.strokeStyle=`rgba(${clamp(r*0.55,0,255)|0},${clamp(g*0.55,0,255)|0},${clamp(b*0.5,0,255)|0},0.5)`;
+      ctx.lineWidth=1.1;
+      ctx.beginPath(); ctx.moveTo(cx,y); ctx.lineTo(ex,ey); ctx.stroke();
     }
   }
-  /* 中轴 */
-  ctx.strokeStyle='rgba(118,126,62,0.96)'; ctx.lineWidth=9; ctx.lineCap='round';
+  /* 中轴主脉高光 */
+  ctx.strokeStyle='rgba(150,158,84,0.9)'; ctx.lineWidth=4.5; ctx.lineCap='round';
   ctx.beginPath(); ctx.moveTo(cx,6); ctx.lineTo(cx,h-4); ctx.stroke();
 });
 
@@ -508,9 +512,9 @@ void main(){
   vec3 disp=vec3(0.0);
   vec3 nrm=vec3(0.0,1.0,0.0);
   float crest=0.0;
-  gerstner(wp.xz,vec2(0.148,0.989), 0.150*dA,14.0,1.15,0.30,0.42,disp,nrm,crest);
-  gerstner(wp.xz,vec2(-0.196,0.981),0.085*dA, 8.5,0.95,0.26,0.30,disp,nrm,crest);
-  gerstner(wp.xz,vec2(0.349,0.937), 0.050*dA, 5.2,0.80,0.20,0.18,disp,nrm,crest);
+  gerstner(wp.xz,vec2(0.148,0.989), 0.245*dA,18.0,1.08,0.44,0.54,disp,nrm,crest);
+  gerstner(wp.xz,vec2(-0.196,0.981),0.115*dA, 9.2,0.95,0.34,0.32,disp,nrm,crest);
+  gerstner(wp.xz,vec2(0.349,0.937), 0.048*dA, 5.2,0.80,0.22,0.18,disp,nrm,crest);
   gerstner(wp.xz,vec2(-0.0995,0.995),0.032*dA,3.4,1.35,0.14,0.10,disp,nrm,crest);
   vec3 pos=position+disp;
   vWorld=(modelMatrix*vec4(pos,1.0)).xyz;
@@ -532,50 +536,84 @@ void main(){
   vec3 view=normalize(cameraPosition-vWorld);
   float dist=length(cameraPosition-vWorld);
   vec3 n=normalize(vNrm);
-  /* 两片滚动噪声扰动法线（远处衰减防闪烁；近岸降频降幅，水面平滑映天色） */
-  float detK=exp(-dist*0.006);
-  float calmK=mix(0.34,1.0,smoothstep(0.08,2.6,vDepth));   /* 近岸削弱细波 */
-  float fScale=mix(0.68,1.0,smoothstep(0.0,2.2,vDepth));   /* 近岸降频 */
+  /* 三层滚动噪声扰动法线：大、中、细，近岸削弱 */
+  float detK=exp(-dist*0.005);
+  float calmK=mix(0.26,1.0,smoothstep(0.08,2.6,vDepth));
+  float fScale=mix(0.62,1.0,smoothstep(0.0,2.2,vDepth));
   vec2 wuv=vWorld.xz;
-  vec2 uv1=wuv*0.045*fScale+vec2(uTime*0.021,uTime*0.013);
-  vec2 uv2=wuv*0.14*fScale+vec2(-uTime*0.017,uTime*0.026);
+  vec2 uv1=wuv*0.032*fScale+vec2(uTime*0.017,uTime*0.011);
+  vec2 uv2=wuv*0.10*fScale+vec2(-uTime*0.014,uTime*0.021);
+  vec2 uv3=wuv*0.38*fScale+vec2(uTime*0.032,-uTime*0.018);
   float h1a=texture2D(uNoise,uv1).g;
   float h1b=texture2D(uNoise,uv1+vec2(0.06,0.0)).g;
   float h1c=texture2D(uNoise,uv1+vec2(0.0,0.06)).g;
   float h2a=texture2D(uNoise,uv2).g;
   float h2b=texture2D(uNoise,uv2+vec2(0.05,0.0)).g;
   float h2c=texture2D(uNoise,uv2+vec2(0.0,0.05)).g;
-  n.x-=((h1b-h1a)*0.56+(h2b-h2a)*0.30)*detK*calmK;
-  n.z-=((h1c-h1a)*0.56+(h2c-h2a)*0.30)*detK*calmK;
+  float h3a=texture2D(uNoise,uv3).g;
+  float h3b=texture2D(uNoise,uv3+vec2(0.04,0.0)).g;
+  float h3c=texture2D(uNoise,uv3+vec2(0.0,0.04)).g;
+  n.x-=((h1b-h1a)*0.95+(h2b-h2a)*0.38+(h3b-h3a)*0.12)*detK*calmK;
+  n.z-=((h1c-h1a)*0.95+(h2c-h2a)*0.38+(h3c-h3a)*0.12)*detK*calmK;
   n=normalize(n);
-  /* 基色：近岸浅绿松石 → 远海深蓝 */
-  vec3 base=mix(uShallow,uDeep,smoothstep(0.12,5.5,vDepth));
-  /* fresnel 反射天色 */
-  float fres=0.028+0.972*pow(1.0-max(dot(n,view),0.0),5.0);
-  /* 远海面掠射角强制 fresnel：海平线处海面映天色，海天衔接自然 */
+  /* 水体颜色：Beer-Lambert 吸收 + 浅水散射 */
+  float dep=max(vDepth,0.0);
+  vec3 absorb=exp(-vec3(0.55,0.30,0.18)*dep);
+  vec3 base=mix(uDeep*0.48,uShallow*1.16,absorb);
+  base=mix(base,vec3(0.12,0.68,0.82)*0.55,smoothstep(0.0,1.2,dep)*0.18);
+  base+=uHor*0.045*exp(-dep*0.55);
+  /* Fresnel 反射天空 */
+  float fres=0.020+0.980*pow(1.0-max(dot(n,view),0.0),5.0);
   float grazing=1.0-max(dot(vec3(0.0,1.0,0.0),view),0.0);
-  fres=max(fres,pow(grazing,6.0)*0.62);
+  fres=max(fres,pow(grazing,5.0)*0.72);
   vec3 rdir=reflect(-view,n);
-  vec3 refl=mix(uHor,uZen,pow(clamp(rdir.y,0.0,1.0),0.55));
-  refl=mix(refl,uFogCol,exp(-max(rdir.y,0.0)*6.0)*0.35);
-  vec3 col=mix(base,refl,clamp(fres,0.0,1.0)*0.9);
-  col+=uHor*0.045;   /* 环境微光，夜里不死黑 */
-  /* 太阳 Blinn 高光带（碎闪） */
-  float sparkle=texture2D(uNoise,wuv*0.21+vec2(uTime*0.05,-uTime*0.03)).b;
+  vec3 refl=mix(uHor,uZen,pow(clamp(rdir.y,0.0,1.0),0.45));
+  refl=mix(refl,uFogCol,exp(-max(rdir.y,0.0)*5.0)*0.32);
+  /* 太阳/月亮在反射向量中的镜像 */
+  float sunRef=max(dot(rdir,uSunDir),0.0);
+  refl+=uSunCol*pow(sunRef,120.0)*0.55*uSunVis;
+  float moonRef=max(dot(rdir,uMoonDir),0.0);
+  refl+=vec3(0.80,0.86,0.97)*pow(moonRef,140.0)*0.45*uMoonVis;
+  vec3 col=mix(base,refl,clamp(fres,0.0,1.0)*0.94);
+  /* 直接高光：GGX 风格多层碎闪 */
+  float sparkle=texture2D(uNoise,wuv*0.24+vec2(uTime*0.04,-uTime*0.03)).b;
   if(uSunVis>0.002){
     vec3 hv=normalize(view+uSunDir);
     float ndh=max(dot(n,hv),0.0);
-    float sp=pow(ndh,260.0)*(0.35+2.3*smoothstep(0.55,0.9,sparkle))+pow(ndh,36.0)*0.10;
-    col+=uSunCol*sp*uSunVis*1.35;
+    float sp=pow(ndh,200.0)*(0.55+2.4*smoothstep(0.55,0.94,sparkle));
+    sp+=pow(ndh,28.0)*0.14;
+    col+=uSunCol*sp*uSunVis*1.55;
   }
-  /* 月光银色碎光路 */
   if(uMoonVis>0.002){
     vec3 hv=normalize(view+uMoonDir);
-    float ndm=max(dot(n,hv),0.0);
-    float sp=pow(ndm,300.0)*(0.30+2.6*smoothstep(0.5,0.9,sparkle))+pow(ndm,40.0)*0.05;
-    col+=vec3(0.80,0.86,0.97)*sp*uMoonVis*1.25;
+    float ndh=max(dot(n,hv),0.0);
+    float sp=pow(ndh,240.0)*(0.45+2.2*smoothstep(0.5,0.94,sparkle));
+    sp+=pow(ndh,32.0)*0.08;
+    col+=vec3(0.80,0.86,0.97)*sp*uMoonVis*1.35;
   }
-  /* 泡沫：岸线呼吸带 + 碎浪线 + 浪尖白沫 */
+  /* 次表面散射：逆光波背透光 */
+  float backLit=max(dot(n,-uSunDir),0.0)*smoothstep(0.1,0.6,grazing);
+  col+=uSunCol*backLit*0.085*uSunVis;
+  /* 浅水焦散：近岸/浅处亮纹（用噪声脊线近似） */
+  float depC=max(vDepth,0.0);
+  float caK=smoothstep(3.2,0.15,depC)*uSunVis;
+  if(caK>0.002){
+    vec2 cuv0=wuv*0.55+vec2(uTime*0.05,uTime*0.035);
+    float n0=texture2D(uNoise,cuv0).r;
+    float n1=texture2D(uNoise,cuv0*1.9+vec2(0.31,0.17)).g;
+    float caust=pow(clamp(1.0-abs(n0-n1)*2.2,0.0,1.0),7.0);
+    col+=uShallow*caust*caK*0.5;
+  }
+  /* 太阳碎光带：沿反射方向的各向异性闪片 */
+  if(uSunVis>0.002){
+    vec3 rd=normalize(reflect(-view,n));
+    float along=dot(rd,uSunDir);
+    float across=length(rd-uSunDir*along);
+    float glit=pow(clamp(along,0.0,1.0),60.0)*exp(-across*across*90.0);
+    glit*=0.6+0.8*texture2D(uNoise,wuv*0.5+vec2(uTime*0.06,-uTime*0.04)).b;
+    col+=uSunCol*glit*uSunVis*0.9;
+  }
+  /* 泡沫：岸 + 碎浪 + 浪尖 */
   float nz=texture2D(uNoise,wuv*0.045+vec2(uTime*0.008,uTime*0.004)).r;
   float lace=texture2D(uNoise,wuv*0.30+vec2(-uTime*0.03,uTime*0.05)).g;
   float breath=sin(uTime*0.32)*0.5+0.5;
@@ -583,18 +621,18 @@ void main(){
   float foamShore=band*smoothstep(0.30,0.72,lace*0.7+band*0.38);
   float wline=sin(vWorld.z*0.42+uTime*0.7+nz*6.0);
   float breaker=smoothstep(0.55,0.95,wline)*(1.0-smoothstep(0.9,2.4,vDepth))*smoothstep(0.25,0.55,vDepth)*smoothstep(0.42,0.78,lace);
-  float crestF=smoothstep(0.60,0.86,vCrest)*smoothstep(0.5,0.82,lace)*smoothstep(0.35,1.2,vDepth)*0.7;
+  float crestF=smoothstep(0.52,0.90,vCrest)*smoothstep(0.5,0.82,lace)*smoothstep(0.35,1.2,vDepth)*0.80;
   float foam=clamp(foamShore+breaker*0.8+crestF,0.0,1.0);
-  vec3 foamCol=mix(vec3(0.93,0.95,0.96),uHor,0.30)*uFoamK;
-  col=mix(col,foamCol,foam*0.88);
-  /* 近岸 alpha 渐隐融入湿沙 */
+  vec3 foamCol=mix(vec3(0.96,0.98,0.99),uHor,0.18)*uFoamK;
+  col=mix(col,foamCol,foam*0.92);
+  /* alpha */
   float alpha=smoothstep(0.02,0.5,vDepth+(nz-0.5)*0.22);
   alpha=max(alpha,foam*smoothstep(0.0,0.2,vDepth+0.06));
   alpha*=0.97;
-  /* 雾 + 远处融入海平线 */
+  /* 雾 + 远距 */
   float fogF=1.0-exp(-pow(dist*uFogDensity,2.0));
   col=mix(col,uFogCol,fogF);
-  col=mix(col,uHor,smoothstep(190.0,420.0,dist)*0.72);
+  col=mix(col,uHor,smoothstep(220.0,520.0,dist)*0.72);
   gl_FragColor=vec4(col,alpha);
 }`;
 const oceanU={
@@ -649,7 +687,8 @@ sandGeo.rotateX(-Math.PI/2);
   sandGeo.computeVertexNormals();
 }
 const sandMat=new THREE.MeshStandardMaterial({
-  map:TEX_SAND, vertexColors:true, roughness:0.96, metalness:0.0, color:0xd9bd96
+  map:TEX_SAND, bumpMap:TEX_NOISE, bumpScale:0.095,
+  vertexColors:true, roughness:0.96, metalness:0.0, color:0xccb085
 });
 sandMat.onBeforeCompile=(sh)=>{
   sh.vertexShader=sh.vertexShader
@@ -657,7 +696,7 @@ sandMat.onBeforeCompile=(sh)=>{
     .replace('#include <begin_vertex>','#include <begin_vertex>\nvWet=aWet;');
   sh.fragmentShader=sh.fragmentShader
     .replace('#include <common>','#include <common>\nvarying float vWet;')
-    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.30,vWet*0.92);');
+    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.18,vWet*0.94);\n');
 };
 const sand=new THREE.Mesh(sandGeo,sandMat);
 sand.position.z=8;
@@ -665,13 +704,13 @@ sand.receiveShadow=true;
 scene.add(sand);
 
 /* ==================== 8. 椰树（锥形树干 + 羽状叶冠 + 椰子） ==================== */
-const barkMat=new THREE.MeshStandardMaterial({map:TEX_BARK,roughness:0.92,metalness:0.0,color:0xb9a183});
+const barkMat=new THREE.MeshStandardMaterial({map:TEX_BARK,bumpMap:TEX_BARK,bumpScale:0.05,roughness:0.94,metalness:0.0,color:0xb09a7d});
 const frondMat=new THREE.MeshStandardMaterial({
-  map:TEX_FROND,alphaTest:0.30,side:THREE.DoubleSide,roughness:0.85,metalness:0.0,color:0xcfd8b8
+  map:TEX_FROND,alphaTest:0.28,side:THREE.DoubleSide,roughness:0.78,metalness:0.0,color:0xb9c79a
 });
 /* 分层叶色：上层新叶偏黄绿鲜亮，下层老叶偏暗偏黄 */
-const frondMatTop=frondMat.clone(); frondMatTop.color.set(0xdde4b4);
-const frondMatLow=frondMat.clone(); frondMatLow.color.set(0xbcbd98);
+const frondMatTop=frondMat.clone(); frondMatTop.color.set(0xc9d49a);
+const frondMatLow=frondMat.clone(); frondMatLow.color.set(0xa9b286);
 const nutMat=new THREE.MeshStandardMaterial({roughness:0.75,metalness:0.0,color:0x6e5230});
 
 /* 沿样条的锥形管树干（TubeGeometry 逐环缩径） */
@@ -693,7 +732,7 @@ function taperedTube(curve,segs,radial,r0,r1){
   return g;
 }
 /* 单片羽叶：沿二次贝塞尔弯成弓箭形的三折条带（arch 控制中脉上拱弧度） */
-function frondGeometry(len,wid,droop,arch=0.34,segs=16){
+function frondGeometry(len,wid,droop,arch=0.34,segs=26){
   const P=[],UV=[],I=[];
   const p0=new THREE.Vector3(0,0,0),p1=new THREE.Vector3(0,len*arch,len*0.40),p2=new THREE.Vector3(0,-droop,len);
   const B=t=>new THREE.Vector3(
@@ -703,7 +742,7 @@ function frondGeometry(len,wid,droop,arch=0.34,segs=16){
   const ridge=wid*0.14;   /* 中脉折起高度，随叶宽缩放 */
   for(let i=0;i<=segs;i++){
     const t=i/segs, c=B(t);
-    const w=wid*(t<0.14?t/0.14:1-(t-0.14)/0.86*0.93);
+    const w=wid*(t<0.10?t/0.10:Math.pow(1-(t-0.10)/0.90,1.5)*0.96);
     P.push(c.x-w,c.y-ridge*0.45,c.z,  c.x,c.y+ridge,c.z,  c.x+w,c.y-ridge*0.45,c.z);
     UV.push(0,t, 0.5,t, 1,t);
   }
@@ -763,6 +802,7 @@ function makePalm(h,lean,scale){
   const nuts=2+Math.floor(rand(0,2));
   for(let i=0;i<nuts;i++){
     const nut=new THREE.Mesh(new THREE.SphereGeometry(0.15*scale,10,8),nutMat);
+    const a=rand(0,6.28);
     nut.position.set(Math.cos(a)*0.20*scale,-0.22*scale,Math.sin(a)*0.20*scale);
     nut.castShadow=true;
     crown.add(nut);
@@ -962,7 +1002,7 @@ function spawnGulls(){
     u.t=-i*rand(0.5,1.4); u.dur=rand(20,30);
     g.visible=true;
   }
-  /* 音频已移除（站点自带自然音效） */
+/* audio removed in embed */
 }
 let nextGull=8;
 function updateGulls(dt){
@@ -1253,10 +1293,23 @@ function updateScene(dt){
   /* 沙色随时段 */
   setCol(sandMat.color,pal.sand);
 
-  /* ---- 相机：交互（缩放/拖拽）或直接呼吸漂移 ---- */
+  /* ---- 相机：呼吸漂移 + 鼠标微视差 ---- */
   mouse.x+=(mouse.tx-mouse.x)*Math.min(1,dt*1.5);
   mouse.y+=(mouse.ty-mouse.y)*Math.min(1,dt*1.5);
-  applyCam(dt);
+  if(INTERACTIVE){
+    applyCam(dt);
+  } else {
+    camera.position.set(
+      CAM_BASE.x+Math.sin(t*0.273)*0.30+mouse.x*0.55,
+      CAM_BASE.y+Math.sin(t*0.217+1.3)*0.16+mouse.y*0.22,
+      CAM_BASE.z+Math.sin(t*0.199+2.1)*0.22
+    );
+    camera.lookAt(
+      LOOK_BASE.x+mouse.x*1.1,
+      LOOK_BASE.y+Math.sin(t*0.242+0.7)*0.10+mouse.y*0.45,
+      LOOK_BASE.z
+    );
+  }
 
   /* ---- 椰树：海风摇摆 ---- */
   const gust=Math.sin(t*0.5)*0.5+Math.sin(t*0.23+1.7)*0.5;
@@ -1341,58 +1394,84 @@ function startLoops(){
   }
   rafId=requestAnimationFrame(frame);
 }
-  /* ---- 控制器：进入/离开视口自动播放暂停；提供 stop/dispose ---- */
-  let disposed=false;
-  function dispose(){
-    if(disposed) return; disposed=true; running=false;
-    try{ cancelAnimationFrame(rafId); }catch(e){}
-    try{ _io.disconnect(); }catch(e){}
-    try{ _ro.disconnect(); }catch(e){}
-    try{ window.removeEventListener('mousemove', onMove); }catch(e){}
-    try{ window.removeEventListener('resize', resize); }catch(e){}
-    try{ if(camCtl._unbind) camCtl._unbind(); }catch(e){}
-    if(canvas.parentNode) canvas.parentNode.removeChild(canvas);
-    /* 关键：释放 WebGL 上下文，否则反复开关模块会耗尽浏览器上下文上限
-       （约 16 个），后续新建 WebGLRenderer 失败 → 静默落到 2D 兜底（白屏/模糊） */
-    try{ if(renderer && renderer.dispose) renderer.dispose(); }catch(e){}
-    try{ if(renderer && renderer.forceContextLoss) renderer.forceContextLoss(); }catch(e){}
-  }
-  /* 交互事件绑定（缩放/拖拽/双指捏合/双击复位） */
-  function bindInteract(){
-    if(!INTERACTIVE) return;
-    const el=canvas;
-    el.style.touchAction='none';
-    el.style.cursor='grab';
-    const onDown=(e)=>{ camCtl.dragging=true; camCtl.lastX=e.clientX; camCtl.lastY=e.clientY; el.style.cursor='grabbing'; try{ el.setPointerCapture(e.pointerId); }catch(_){} };
-    const onMove=(e)=>{ if(!camCtl.dragging) return; const dx=e.clientX-camCtl.lastX, dy=e.clientY-camCtl.lastY; camCtl.lastX=e.clientX; camCtl.lastY=e.clientY; camCtl.yaw-=dx*0.005; camCtl.pitch=clamp(camCtl.pitch-dy*0.004,-0.45,0.85); };
-    const onUp=(e)=>{ camCtl.dragging=false; el.style.cursor='grab'; try{ el.releasePointerCapture(e.pointerId); }catch(_){} };
-    const onWheel=(e)=>{ e.preventDefault(); camCtl.dist=clamp(camCtl.dist*(1+e.deltaY*0.0012), ZMIN, ZMAX); };
-    const onTouch=(e)=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(camCtl.pinchDist>0){ camCtl.dist=clamp(camCtl.dist*(camCtl.pinchDist/d), ZMIN, ZMAX); } camCtl.pinchDist=d; } };
-    const onTouchEnd=()=>{ camCtl.pinchDist=0; };
-    const onDbl=()=>{ camCtl.yaw=0; camCtl.pitch=0; camCtl.dist=1; };
-    el.addEventListener('pointerdown', onDown);
-    el.addEventListener('pointermove', onMove);
-    el.addEventListener('pointerup', onUp);
-    el.addEventListener('pointercancel', onUp);
-    el.addEventListener('wheel', onWheel, {passive:false});
-    el.addEventListener('touchmove', onTouch, {passive:true});
-    el.addEventListener('touchend', onTouchEnd);
-    el.addEventListener('dblclick', onDbl);
-    camCtl._unbind=()=>{ el.removeEventListener('pointerdown', onDown); el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerup', onUp); el.removeEventListener('pointercancel', onUp); el.removeEventListener('wheel', onWheel); el.removeEventListener('touchmove', onTouch); el.removeEventListener('touchend', onTouchEnd); el.removeEventListener('dblclick', onDbl); };
-  }
+
+/* ==================== 3b. 交互控制器（缩放/拖拽旋转，仅 interactive 时启用） ==================== */
+const camCtl = { yaw:0, pitch:0, dist:1, dragging:false, lastX:0, lastY:0, pinchDist:0 };
+const ZMIN=0.42, ZMAX=2.4;
+const _baseOff = new THREE.Vector3(0, CAM_BASE.y-LOOK_BASE.y, CAM_BASE.z-LOOK_BASE.z);
+const _baseEl = Math.atan2(_baseOff.y, _baseOff.z);
+const _camOff = new THREE.Vector3();
+function applyCam(dt){
+  const L = _baseOff.length() * camCtl.dist;
+  const el = clamp(_baseEl + camCtl.pitch, -0.45, 0.85);
+  const az = camCtl.yaw;
+  _camOff.set(
+    L*Math.cos(el)*Math.sin(az),
+    L*Math.sin(el),
+    L*Math.cos(el)*Math.cos(az)
+  );
+  const driftK = INTERACTIVE ? 0.22 : 1.0;
+  camera.position.set(
+    LOOK_BASE.x + _camOff.x + Math.sin(Time.anim*0.273)*0.30*driftK,
+    LOOK_BASE.y + _camOff.y + Math.sin(Time.anim*0.217+1.3)*0.16*driftK,
+    LOOK_BASE.z + _camOff.z + Math.sin(Time.anim*0.199+2.1)*0.22*driftK
+  );
+  const px = INTERACTIVE ? 0 : mouse.x;
+  const py = INTERACTIVE ? 0 : mouse.y;
+  camera.lookAt(
+    LOOK_BASE.x + px*1.1,
+    LOOK_BASE.y + Math.sin(Time.anim*0.242+0.7)*0.10*driftK + py*0.45,
+    LOOK_BASE.z
+  );
+}
+
+let disposed=false;
+function dispose(){
+  if(disposed) return; disposed=true; running=false;
+  try{ cancelAnimationFrame(rafId); }catch(e){}
+  try{ _io.disconnect(); }catch(e){}
+  try{ _ro.disconnect(); }catch(e){}
+  try{ if(camCtl._unbind) camCtl._unbind(); }catch(e){}
+  if(canvas.parentNode) canvas.parentNode.removeChild(canvas);
+  try{ if(renderer && renderer.dispose) renderer.dispose(); }catch(e){}
+  try{ if(renderer && renderer.forceContextLoss) renderer.forceContextLoss(); }catch(e){}
+}
+/* 交互事件绑定（缩放/拖拽/双指捏合/双击复位） */
+function bindInteract(){
+  if(!INTERACTIVE) return;
+  const el=canvas;
+  el.style.touchAction='none';
+  el.style.cursor='grab';
+  const onDown=(e)=>{ camCtl.dragging=true; camCtl.lastX=e.clientX; camCtl.lastY=e.clientY; el.style.cursor='grabbing'; try{ el.setPointerCapture(e.pointerId); }catch(_){} };
+  const onMove=(e)=>{ if(!camCtl.dragging) return; const dx=e.clientX-camCtl.lastX, dy=e.clientY-camCtl.lastY; camCtl.lastX=e.clientX; camCtl.lastY=e.clientY; camCtl.yaw-=dx*0.005; camCtl.pitch=clamp(camCtl.pitch-dy*0.004,-0.45,0.85); };
+  const onUp=(e)=>{ camCtl.dragging=false; el.style.cursor='grab'; try{ el.releasePointerCapture(e.pointerId); }catch(_){} };
+  const onWheel=(e)=>{ e.preventDefault(); camCtl.dist=clamp(camCtl.dist*(1+e.deltaY*0.0012), ZMIN, ZMAX); };
+  const onTouch=(e)=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(camCtl.pinchDist>0){ camCtl.dist=clamp(camCtl.dist*(camCtl.pinchDist/d), ZMIN, ZMAX); } camCtl.pinchDist=d; } };
+  const onTouchEnd=()=>{ camCtl.pinchDist=0; };
+  const onDbl=()=>{ camCtl.yaw=0; camCtl.pitch=0; camCtl.dist=1; };
+  el.addEventListener('pointerdown', onDown);
+  el.addEventListener('pointermove', onMove);
+  el.addEventListener('pointerup', onUp);
+  el.addEventListener('pointercancel', onUp);
+  el.addEventListener('wheel', onWheel, {passive:false});
+  el.addEventListener('touchmove', onTouch, {passive:true});
+  el.addEventListener('touchend', onTouchEnd);
+  el.addEventListener('dblclick', onDbl);
+  camCtl._unbind=()=>{ el.removeEventListener('pointerdown', onDown); el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerup', onUp); el.removeEventListener('pointercancel', onUp); el.removeEventListener('wheel', onWheel); el.removeEventListener('touchmove', onTouch); el.removeEventListener('touchend', onTouchEnd); el.removeEventListener('dblclick', onDbl); };
+}
+
   resize();
   const _ro=new ResizeObserver(()=>{ try{ resize(); }catch(e){} });
   _ro.observe(container);
   const _io=new IntersectionObserver((es)=>{
-    for(const e of es){
-      if(e.isIntersecting){ if(!running && !disposed){ running=true; startLoops(); } }
+    for(const ev of es){
+      if(ev.isIntersecting){ if(!running && !disposed){ running=true; startLoops(); } }
       else { if(running){ running=false; try{cancelAnimationFrame(rafId);}catch(e){} } }
     }
   },{threshold:0.01});
   _io.observe(container);
   bindInteract();
-  /* 立即启动渲染循环（不依赖初始尺寸/可视判定）——尺寸由 ResizeObserver 校正，
-     离屏时由 IntersectionObserver 暂停；避免面板过渡期尺寸为 0 导致静默落到 2D 兜底 */
+  /* 立即启动渲染循环；离屏时由 IntersectionObserver 暂停 */
   running=true; startLoops();
   window.addEventListener('resize', resize);
   return {
