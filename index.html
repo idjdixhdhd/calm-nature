@@ -239,6 +239,31 @@
   #p-beach{position:absolute;inset:0;z-index:1;display:none;background:#04080c;overflow:hidden}
   #p-beach canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
 
+  /* 海滩控制浮层（全屏 / 4 阶段 / 进度条 / 隐藏功能） */
+  .beach-ui{position:absolute;inset:0;z-index:6;pointer-events:none;transition:opacity .6s ease}
+  .beach-ui.bz-hidden{opacity:0}
+  .beach-ui .bz-gear{pointer-events:auto;position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(10,20,30,.45);color:#fff;font-size:18px;line-height:38px;cursor:pointer;backdrop-filter:blur(4px)}
+  .beach-ui .bz-panel{pointer-events:auto;position:absolute;top:60px;right:12px;width:188px;padding:12px;border-radius:14px;background:rgba(10,20,30,.55);border:1px solid rgba(255,255,255,.18);color:#eef;backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  .beach-ui .bz-stages{display:flex;gap:6px;margin-bottom:10px}
+  .beach-ui .bz-stages button{flex:1;padding:6px 0;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#eef;font-size:13px;cursor:pointer}
+  .beach-ui .bz-stages button:hover{background:rgba(255,255,255,.18)}
+  .beach-ui .bz-time{width:100%;margin:2px 0 8px;accent-color:#ffd58a}
+  .beach-ui .bz-clock{font-size:12px;opacity:.8;margin-bottom:8px}
+  .beach-ui .bz-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .beach-ui .bz-sync{font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer}
+  .beach-ui .bz-fs{padding:6px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#eef;font-size:12px;cursor:pointer}
+  .beach-ui .bz-fs:hover{background:rgba(255,255,255,.18)}
+
+  /* 同看一片海：海面 + 聊天同框，全屏时聊天浮于底部且不挡视线 */
+  .ws-wrap{position:relative;width:100%}
+  .ws-wrap .ws-chat{margin-top:10px;transition:opacity .6s ease}
+  .ws-wrap .ws-chat.bz-hidden{opacity:0;pointer-events:none}
+  .ws-wrap:fullscreen{display:block;width:100vw;height:100vh;background:#04080c;overflow:hidden}
+  .ws-wrap:fullscreen #ws-cv{position:absolute;inset:0;height:100%!important;width:100%!important;border-radius:0;box-shadow:none}
+  .ws-wrap:fullscreen .ws-chat{position:absolute;left:0;right:0;bottom:0;max-height:42vh;overflow:auto;margin:0;padding:14px 16px;background:linear-gradient(transparent, rgba(0,0,0,.6));color:#fff;z-index:7}
+  .ws-wrap:fullscreen .ws-chat .room-post{border-color:rgba(255,255,255,.18)}
+  .ws-wrap:fullscreen .ws-chat .room-input{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.25)}
+
   /* original full-bleed: cover the screen edge-to-edge on every orientation */
   @media (orientation: portrait){
     #pv{ object-fit: cover; }
@@ -4588,12 +4613,12 @@ function renderSyncBreath(c){
 
 function renderWatchSea(c){
   const TITLE="[同看一片海]";
-  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。· 拖拽旋转视角，滚轮或双指缩放海面</div><div class="nc-hero tall" id="ws-cv" style="height:300px"></div><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><textarea class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></textarea><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button>`;
+  c.innerHTML=`<div class="mod-h">同看一片海</div><div class="mod-sub">和陌生人同看一段海。不用说话，只是知道：此刻，有人也在这里。· 拖拽旋转视角，滚轮或双指缩放海面</div><div class="ws-wrap" data-fs><div class="nc-hero tall" id="ws-cv"></div><div class="ws-chat"><div class="room-meta" id="ws-stat"></div><div id="ws-list"></div><textarea class="room-input" id="ws-in" placeholder="想说点什么，或只是打个招呼…"></textarea><button class="mod-btn" id="ws-send" style="margin-top:8px">说一句</button></div></div>`;
   const wsBox=c.querySelector("#ws-cv");
   if(window._wsBeach){ try{ window._wsBeach.stop(); }catch(e){} window._wsBeach=null; }
   try {
     if(typeof window.startBeach==="function"){
-      window._wsBeach = startBeach(wsBox, {hour:15, speed:45, audio:false, interactive:true});
+      window._wsBeach = startBeach(wsBox, {hour:15, speed:45, audio:false, interactive:true, hideSelector:'.ws-chat'});
     } else {
       throw new Error("no-3d");
     }
