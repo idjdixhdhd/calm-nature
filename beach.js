@@ -1352,6 +1352,10 @@ function startLoops(){
     try{ window.removeEventListener('resize', resize); }catch(e){}
     try{ if(camCtl._unbind) camCtl._unbind(); }catch(e){}
     if(canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    /* 关键：释放 WebGL 上下文，否则反复开关模块会耗尽浏览器上下文上限
+       （约 16 个），后续新建 WebGLRenderer 失败 → 静默落到 2D 兜底（白屏/模糊） */
+    try{ if(renderer && renderer.dispose) renderer.dispose(); }catch(e){}
+    try{ if(renderer && renderer.forceContextLoss) renderer.forceContextLoss(); }catch(e){}
   }
   /* 交互事件绑定（缩放/拖拽/双指捏合/双击复位） */
   function bindInteract(){
