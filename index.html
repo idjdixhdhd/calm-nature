@@ -1398,6 +1398,30 @@
 @media (prefers-reduced-motion:reduce){.gt-grow,.gt-leaves{animation:none}}
 @keyframes treeSway{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
 
+/* ===== 动态效果：漂流瓶 / 微光 / 身体扫描 / UI 微交互（极简克制，移动端安全） ===== */
+/* 漂流瓶卡片：从海面浮起 + 涟漪脚注 */
+.bottle-card{ animation: bottleFloat 1s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes bottleFloat{ 0%{opacity:0; transform:translateY(18px) rotate(-1.4deg);} 100%{opacity:1; transform:none;} }
+.bottle-card::after{ content:""; position:absolute; left:14px; right:14px; bottom:0; height:1px; background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.45),transparent); }
+/* 微光：留言逐条淡入 + hero 呼吸光晕 */
+.room-post{ animation: postRise .7s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes postRise{ 0%{opacity:0; transform:translateY(10px);} 100%{opacity:1; transform:none;} }
+#gn-cv{ animation: glowPulse 4.6s ease-in-out infinite; }
+@keyframes glowPulse{ 0%,100%{box-shadow: inset 0 0 40px rgba(0,0,0,.45), 0 0 18px -8px rgba(var(--accent-rgb),.4);} 50%{box-shadow: inset 0 0 40px rgba(0,0,0,.45), 0 0 34px -4px rgba(var(--accent-rgb),.7);} }
+/* 身体扫描：引导文字逐段浮入 */
+.body-step{ animation: stepRise .6s ease both; }
+.body-intro{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; padding:18px 6px 6px; }
+.body-intro .mod-sub,.body-intro .q-hint{ text-align:center; }
+@keyframes stepRise{ 0%{opacity:0; transform:translateY(8px);} 100%{opacity:1; transform:none;} }
+/* 通用微交互：按钮悬浮微抬、卡片入场、标题淡入 */
+.q-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 22px -12px rgba(var(--accent-rgb),.7); }
+.mod-btn:hover{ filter:brightness(1.06); }
+.note-card{ animation: postRise .6s ease both; }
+.fold-card{ animation: postRise .55s ease both; }
+.mod-h{ animation: fadeDown .5s ease both; }
+@keyframes fadeDown{ 0%{opacity:0; transform:translateY(-6px);} 100%{opacity:1; transform:none;} }
+@media (prefers-reduced-motion:reduce){ .bottle-card,.room-post,.body-step,.body-intro,.note-card,.fold-card,.mod-h,#gn-cv{ animation:none !important; } }
+
 </style>
 
 <!-- 访问统计：仅国内部署版注入（见 _build_dist.mjs），GitHub 公开版不携带任何上报脚本 -->
@@ -3484,6 +3508,7 @@ function openModule(key){
   EchoMixer.stopAll(); FlowTimer.stop();
   try{ if(window.NatureAmbient) window.NatureAmbient.stop(); }catch(e){}
   if(window.speechSynthesis) window.speechSynthesis.cancel();
+  try{ bodyAmbientStop(); }catch(e){}
 
   const titles = {mood:"心境", reader:"每日一读", fav:"收藏连播", solar:"我的节气历", echo:"回声·声景", flow:"心流·专注", create:"拼帖·创作", wall:"共笔墙", notes:"灵感手账", capsule:"时间胶囊", fold:"折纸冥想", ritual:"我的仪式", garden:"专注花园", verse:"随机诗句", relay:"共读接力", moon:"月相画廊", morningnight:"晨启夜收", glownote:"微光留言", syncbreath:"同步呼吸", watchsea:"同看一片海"};
 
@@ -5215,7 +5240,33 @@ function renderGrowth(c){
 
 let bodyVoiceOn = true;
 let _voicesPinged=false;
+let _bodyAmbient=null;
 function pickZhVoice(){ try{ const vs=speechSynthesis.getVoices()||[]; return vs.find(v=>/zh|cmn|Chinese/i.test(v.lang+v.name))||vs.find(v=>/zh|cmn/i.test(v.lang))||null; }catch(e){ return null; } }
+// 轻柔背景音垫：保证手机端身体扫描一定有声音（TTS 中文语音常缺，会整段静音）
+function bodyAmbientStart(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    let ctx = _bodyAmbient && _bodyAmbient.ctx;
+    if(!ctx){ ctx = new AC(); }
+    if(ctx.state==="suspended"){ try{ ctx.resume(); }catch(e){} }
+    if(_bodyAmbient){ _bodyAmbient.master.gain.setTargetAtTime(0.08, ctx.currentTime, 1.4); return; }
+    const master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+    const lp = ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=520; lp.Q.value=0.6; lp.connect(master);
+    const freqs=[110, 110*1.5, 220];
+    const oscs = freqs.map((f,i)=>{ const o=ctx.createOscillator(); o.type = i===2?"sine":"triangle"; o.frequency.value=f; const g=ctx.createGain(); g.gain.value = i===0?0.5:0.26; o.connect(g); g.connect(lp); o.start(); return o; });
+    const lfo=ctx.createOscillator(); lfo.frequency.value=0.07; const lfoG=ctx.createGain(); lfoG.gain.value=0.03; lfo.connect(lfoG); lfoG.connect(master.gain); lfo.start();
+    master.gain.setTargetAtTime(0.08, ctx.currentTime, 2);
+    _bodyAmbient = {ctx, master, oscs, lfo};
+  }catch(e){}
+}
+function bodyAmbientStop(){
+  try{
+    if(!_bodyAmbient) return;
+    const b=_bodyAmbient; _bodyAmbient=null;
+    b.master.gain.setTargetAtTime(0, b.ctx.currentTime, 0.8);
+    setTimeout(()=>{ try{ b.oscs.forEach(o=>o.stop()); b.lfo.stop(); }catch(e){} }, 1500);
+  }catch(e){}
+}
 function speakBody(text){
   try{
     if(!bodyVoiceOn) return;
@@ -5246,8 +5297,9 @@ function renderBody(c){
     if(timer){ clearInterval(timer); timer=null; }
     if(i>=steps.length){
       if(window.speechSynthesis) window.speechSynthesis.cancel();
+      bodyAmbientStop();
       c.innerHTML = `<div class="body-done">${getIcon('moon')}<div>扫描完成。愿你安心入睡。</div><div class="q-actions"><div class="q-btn" id="body-restart">再扫一次</div></div></div>`;
-      c.querySelector("#body-restart").addEventListener("click", ()=>{ i=0; paint(); });
+      c.querySelector("#body-restart").addEventListener("click", ()=>{ startScan(); });
       return;
     }
     const pct = Math.round(i/steps.length*100);
@@ -5261,7 +5313,14 @@ function renderBody(c){
     c.querySelector("#body-auto").addEventListener("click", ()=>{ if(timer) return; flashToast("自动播放中，每段约 15 秒"); const tick=()=>{ if(i>=steps.length){ paint(); return; } i++; paint(); }; timer=setInterval(tick, 15000); });
     c.querySelector("#body-voice").addEventListener("click", ()=>{ bodyVoiceOn=!bodyVoiceOn; if(!bodyVoiceOn && window.speechSynthesis) window.speechSynthesis.cancel(); paint(); });
   }
-  paint();
+  function startScan(){ bodyAmbientStart(); i=0; paint(); }
+  function intro(){
+    try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(e){}
+    bodyAmbientStop();
+    c.innerHTML = `<div class="body-intro">${getIcon('moon')}<div class="mod-h">身体扫描</div><div class="mod-sub">跟着声音，从脚趾到头顶，把身体一点点松开。</div><div class="q-hint">建议戴耳机、调暗灯光。约 3 分钟，可随时停下。</div><div class="q-actions"><div class="q-btn primary" id="body-go">▶ 开始身体扫描</div></div><div class="q-hint">${window.speechSynthesis?"会念出每一步引导（可关语音）":"本设备无语音引擎，将用轻柔背景音 + 文字引导"}</div></div>`;
+    c.querySelector("#body-go").addEventListener("click", startScan);
+  }
+  intro();
 }
 
 function applyQuietMode(){
